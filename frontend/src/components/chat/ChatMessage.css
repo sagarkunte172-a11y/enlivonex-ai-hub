@@ -1,0 +1,51 @@
+.message{
+
+    display:flex;
+
+    margin:15px 0;
+
+}
+
+.user-message{
+
+    justify-content:flex-end;
+
+}
+
+.ai-message{
+
+    justify-content:flex-start;
+
+}
+
+.message-bubble{
+
+    max-width:70%;
+
+    padding:14px 18px;
+
+    border-radius:16px;
+
+    line-height:1.6;
+
+    word-wrap:break-word;
+
+    font-size:15px;
+
+}
+
+.user-message .message-bubble{
+
+    background:#4f46e5;
+
+    color:white;
+
+}
+
+.ai-message .message-bubble{
+
+    background:#f3f4f6;
+
+    color:#222;
+
+}
