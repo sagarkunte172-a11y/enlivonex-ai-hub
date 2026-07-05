@@ -1,0 +1,97 @@
+.image-page{
+
+    min-height:100vh;
+
+    background:#172033;
+
+    color:white;
+
+    padding:50px;
+
+}
+
+.image-page h1{
+
+    color:#39b7ff;
+
+    font-size:40px;
+
+}
+
+.image-page p{
+
+    color:#cfcfcf;
+
+    margin:15px 0 30px;
+
+}
+
+.image-generator{
+
+    display:flex;
+
+    gap:20px;
+
+    margin-bottom:40px;
+
+}
+
+.image-generator input{
+
+    flex:1;
+
+    padding:16px;
+
+    border:none;
+
+    border-radius:10px;
+
+    outline:none;
+
+    font-size:16px;
+
+}
+
+.image-generator button{
+
+    background:#39b7ff;
+
+    color:white;
+
+    border:none;
+
+    border-radius:10px;
+
+    padding:16px 30px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.image-generator button:hover{
+
+    background:#239ce5;
+
+}
+
+.image-preview{
+
+    height:420px;
+
+    background:#293347;
+
+    border-radius:18px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:#a8a8a8;
+
+    font-size:20px;
+
+}

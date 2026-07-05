@@ -9,7 +9,7 @@ function Navbar() {
         🚀 ENLIVONEX AI HUB
       </div>
 
-      <ul>
+      <ul className="nav-links">
 
         <li>
           <NavLink
@@ -52,6 +52,19 @@ function Navbar() {
             }
           >
             Contact
+          </NavLink>
+        </li>
+
+        <li>
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) =>
+              isActive
+                ? "dashboard-btn dashboard-active"
+                : "dashboard-btn"
+            }
+          >
+            Dashboard →
           </NavLink>
         </li>
 

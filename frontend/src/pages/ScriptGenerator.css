@@ -1,0 +1,77 @@
+.script-page{
+
+    min-height:100vh;
+
+    background:#172033;
+
+    color:white;
+
+    padding:50px;
+
+}
+
+.script-page h1{
+
+    color:#39b7ff;
+
+    font-size:40px;
+
+}
+
+.script-page p{
+
+    color:#cfcfcf;
+
+    margin:15px 0 30px;
+
+}
+
+.script-page textarea{
+
+    width:100%;
+
+    min-height:320px;
+
+    border:none;
+
+    border-radius:15px;
+
+    background:#293347;
+
+    color:white;
+
+    padding:20px;
+
+    resize:vertical;
+
+    outline:none;
+
+    font-size:16px;
+
+}
+
+.script-page button{
+
+    margin-top:25px;
+
+    padding:15px 30px;
+
+    background:#39b7ff;
+
+    color:white;
+
+    border:none;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.script-page button:hover{
+
+    background:#239ce5;
+
+}

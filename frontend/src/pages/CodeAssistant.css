@@ -1,0 +1,85 @@
+.code-page{
+
+    min-height:100vh;
+
+    background:#172033;
+
+    color:white;
+
+    padding:50px;
+
+}
+
+.code-page h1{
+
+    color:#39b7ff;
+
+    font-size:40px;
+
+}
+
+.code-page p{
+
+    color:#cfcfcf;
+
+    margin:15px 0 30px;
+
+}
+
+.code-box{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+
+}
+
+.code-box textarea{
+
+    min-height:350px;
+
+    background:#293347;
+
+    color:white;
+
+    border:none;
+
+    border-radius:15px;
+
+    padding:20px;
+
+    resize:vertical;
+
+    font-size:16px;
+
+    outline:none;
+
+}
+
+.code-box button{
+
+    width:220px;
+
+    padding:15px;
+
+    background:#39b7ff;
+
+    color:white;
+
+    border:none;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.code-box button:hover{
+
+    background:#239ce5;
+
+}
