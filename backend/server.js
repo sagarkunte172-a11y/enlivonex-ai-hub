@@ -1,17 +1,16 @@
 const express = require("express");
 const cors = require("cors");
+require("dotenv").config();
 
 const chatRoutes = require("./routes/chatRoutes");
 
 const app = express();
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
-// Middlewares
 app.use(cors());
 app.use(express.json());
 
-// Home Route
 app.get("/", (req, res) => {
     res.json({
         success: true,
@@ -19,10 +18,8 @@ app.get("/", (req, res) => {
     });
 });
 
-// AI Routes
 app.use("/api", chatRoutes);
 
-// Start Server
-app.listen(PORT, "0.0.0.0", () => {
-    console.log(`🚀 Server running on port ${PORT}`);
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

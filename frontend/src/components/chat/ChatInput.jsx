@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import "./ChatInput.css";
 
 function ChatInput({ onSend }) {
@@ -19,9 +20,7 @@ function ChatInput({ onSend }) {
 
         <div className="chat-input-container">
 
-            <input
-
-                type="text"
+            <textarea
 
                 placeholder="Ask Enlivonex AI anything..."
 
@@ -31,13 +30,17 @@ function ChatInput({ onSend }) {
 
                 onKeyDown={(e) => {
 
-                    if (e.key === "Enter") {
+                    if (e.key === "Enter" && !e.shiftKey) {
+
+                        e.preventDefault();
 
                         handleSend();
 
                     }
 
                 }}
+
+                rows="1"
 
             />
 

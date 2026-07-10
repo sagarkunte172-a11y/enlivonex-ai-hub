@@ -36,7 +36,7 @@ function About() {
           <h2>👨‍💻 Founder</h2>
 
           <p>
-            Enlivonex AI Hub is being developed by <strong>Sagar Kunte</strong>
+            Enlivonex AI Hub is being developed by <strong>Sagar Kunte </strong>
             with the vision of creating an affordable AI ecosystem for
             students and developers.
           </p>

@@ -1,48 +1,59 @@
 import "./Home.css";
+import Hero from "../components/Hero";
 
 function Home() {
   return (
     <div className="home-page">
 
-      <section className="hero">
+      {/* Hero Section */}
+      <Hero />
 
-        <h1>🚀 Welcome to Enlivonex AI Hub</h1>
-
-        <p>
-          Your all-in-one AI platform for chatting, coding,
-          image generation and productivity.
-        </p>
-
-        <button className="hero-btn">
-          Explore Features
-        </button>
-
-      </section>
-
+      {/* Features Section */}
       <section className="home-features">
 
-        <h2>Why Choose Enlivonex?</h2>
+        <h2>Why Choose Enlivonex AI Hub?</h2>
 
         <div className="feature-grid">
 
           <div className="feature-card">
             <h3>🤖 AI Chat</h3>
             <p>
-              Chat with multiple AI models from one platform.
+              Chat with multiple AI models in one place with fast responses.
             </p>
           </div>
 
           <div className="feature-card">
-            <h3>💻 Coding Assistant</h3>
+            <h3>💻 Code Assistant</h3>
             <p>
-              Generate, debug and improve your code faster.
+              Generate, debug and optimize code using powerful AI.
             </p>
           </div>
 
           <div className="feature-card">
-            <h3>🎨 AI Images</h3>
+            <h3>🎨 Image Generator</h3>
             <p>
-              Create stunning AI-generated images instantly.
+              Create high-quality AI images from simple text prompts.
+            </p>
+          </div>
+
+          <div className="feature-card">
+            <h3>📝 Script Generator</h3>
+            <p>
+              Generate YouTube scripts, blogs, stories and social media content.
+            </p>
+          </div>
+
+          <div className="feature-card">
+            <h3>🚀 Fast Performance</h3>
+            <p>
+              Built with React, Node.js and modern technologies for speed.
+            </p>
+          </div>
+
+          <div className="feature-card">
+            <h3>🌍 Community Driven</h3>
+            <p>
+              Join developers and creators building the future with AI.
             </p>
           </div>
 

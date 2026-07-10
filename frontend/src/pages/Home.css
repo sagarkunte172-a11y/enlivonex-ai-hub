@@ -2,91 +2,28 @@
     color:white;
 }
 
-/* Hero Section */
-
-.hero{
-
-    min-height:85vh;
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:center;
-
-    align-items:center;
-
-    text-align:center;
-
-    padding:0 20px;
-}
-
-.hero h1{
-
-    font-size:52px;
-
-    color:#39b7ff;
-
-    margin-bottom:20px;
-}
-
-.hero p{
-
-    max-width:700px;
-
-    font-size:20px;
-
-    color:#d7d7d7;
-
-    line-height:1.8;
-
-    margin-bottom:35px;
-}
-
-.hero-btn{
-
-    background:#39b7ff;
-
-    color:white;
-
-    border:none;
-
-    padding:16px 38px;
-
-    border-radius:10px;
-
-    font-size:18px;
-
-    cursor:pointer;
-
-    transition:.3s;
-}
-
-.hero-btn:hover{
-
-    background:#2196f3;
-
-    transform:translateY(-5px);
-
-    box-shadow:0 12px 30px rgba(57,183,255,.35);
-}
-
-/* Features */
+/* ===========================
+   FEATURES SECTION
+=========================== */
 
 .home-features{
 
-    padding:80px 8%;
+    padding:100px 8%;
 
     text-align:center;
+
+    background:#101827;
+
 }
 
 .home-features h2{
 
+    font-size:42px;
+
     color:#39b7ff;
 
-    font-size:40px;
+    margin-bottom:60px;
 
-    margin-bottom:50px;
 }
 
 .feature-grid{
@@ -96,63 +33,63 @@
     grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
 
     gap:30px;
+
 }
 
 .feature-card{
 
-    background:#293347;
-
-    padding:35px;
+    background:#1d2638;
 
     border-radius:18px;
+
+    padding:35px;
 
     transition:.35s;
 
     cursor:pointer;
 
-    box-shadow:0 5px 15px rgba(0,0,0,.25);
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
+
 }
 
 .feature-card:hover{
 
     transform:translateY(-10px);
 
-    box-shadow:0 18px 35px rgba(0,0,0,.35);
+    box-shadow:0 20px 40px rgba(0,0,0,.35);
+
 }
 
 .feature-card h3{
 
     color:#39b7ff;
 
+    font-size:24px;
+
     margin-bottom:18px;
 
-    font-size:24px;
 }
 
 .feature-card p{
 
-    color:#d8d8d8;
+    color:#cfd8ea;
 
     line-height:1.8;
-}
 
-/* Responsive */
+}
 
 @media(max-width:768px){
 
-.hero h1{
+.home-features{
 
-    font-size:38px;
-}
+padding:70px 6%;
 
-.hero p{
-
-    font-size:18px;
 }
 
 .home-features h2{
 
-    font-size:32px;
+font-size:34px;
+
 }
 
 }

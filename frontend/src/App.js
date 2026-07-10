@@ -1,6 +1,11 @@
 import "./App.css";
 
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -16,13 +21,27 @@ import CodeAssistant from "./pages/CodeAssistant";
 import ImageGenerator from "./pages/ImageGenerator";
 import ScriptGenerator from "./pages/ScriptGenerator";
 
-function App() {
-  return (
-    <BrowserRouter>
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Profile from "./pages/Profile";
 
-      <Navbar />
+function AppContent() {
+
+  const location = useLocation();
+
+  const hideLayout =
+    location.pathname === "/login" ||
+    location.pathname === "/register" ||
+    location.pathname === "/profile";
+
+  return (
+    <>
+
+      {!hideLayout && <Navbar />}
 
       <Routes>
+
+        {/* Public Pages */}
 
         <Route path="/" element={<Home />} />
 
@@ -32,7 +51,19 @@ function App() {
 
         <Route path="/contact" element={<Contact />} />
 
+        {/* Authentication */}
+
+        <Route path="/login" element={<Login />} />
+
+        <Route path="/register" element={<Register />} />
+
+        {/* User */}
+
+        <Route path="/profile" element={<Profile />} />
+
         <Route path="/dashboard" element={<Dashboard />} />
+
+        {/* AI Tools */}
 
         <Route path="/chat" element={<Chat />} />
 
@@ -44,8 +75,16 @@ function App() {
 
       </Routes>
 
-      <Footer />
+      {!hideLayout && <Footer />}
 
+    </>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
     </BrowserRouter>
   );
 }

@@ -1,7 +1,25 @@
+const SYSTEM_PROMPT = require("../config/system prompt");
+
 const OLLAMA_URL = "http://localhost:11434/api/generate";
 
-async function askOllama(prompt) {
+const MODEL = process.env.AI_MODEL || "gemma3:4b";
+
+async function askOllama(userPrompt) {
+
     try {
+
+        const finalPrompt = `
+${SYSTEM_PROMPT}
+
+==================================================
+
+Current Conversation
+
+User:
+${userPrompt}
+
+Enlivonex AI:
+`;
 
         const response = await fetch(OLLAMA_URL, {
 
@@ -13,29 +31,54 @@ async function askOllama(prompt) {
 
             body: JSON.stringify({
 
-                model: "qwen2.5:3b",
+                model: MODEL,
 
-                prompt: prompt,
+                prompt: finalPrompt,
 
-                stream: false
+                stream: false,
+
+                options: {
+
+                    temperature: 0.7,
+
+                    top_p: 0.9,
+
+                    top_k: 40,
+
+                    repeat_penalty: 1.1,
+
+                    num_predict: 1024
+
+                }
 
             })
 
         });
 
+        if (!response.ok) {
+
+            throw new Error(`HTTP ${response.status}`);
+
+        }
+
         const data = await response.json();
 
-        return data.response;
+        return data.response?.trim() || "⚠️ No response generated.";
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         console.error("Ollama Error:", error);
 
-        return "Failed to connect to Local AI.";
+        return "❌ Failed to connect to Enlivonex AI.";
 
     }
+
 }
 
 module.exports = {
+
     askOllama
+
 };

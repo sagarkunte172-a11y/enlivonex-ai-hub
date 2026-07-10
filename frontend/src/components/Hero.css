@@ -1,0 +1,393 @@
+/* =====================================
+   HERO SECTION
+===================================== */
+
+.hero{
+
+    min-height:90vh;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:80px;
+
+    padding:70px 8%;
+
+    background:linear-gradient(
+        135deg,
+        #09111f,
+        #101827,
+        #151d35
+    );
+
+    color:white;
+
+    overflow:hidden;
+
+}
+
+/* =====================================
+   LEFT
+===================================== */
+
+.hero-left{
+
+    flex:1;
+
+    max-width:650px;
+
+}
+
+.hero-badge{
+
+    display:inline-block;
+
+    padding:10px 22px;
+
+    border-radius:50px;
+
+    background:rgba(70,199,255,.10);
+
+    color:#46c7ff;
+
+    border:1px solid rgba(70,199,255,.35);
+
+    font-size:15px;
+
+    margin-bottom:30px;
+
+}
+
+.hero-left h1{
+
+    font-size:clamp(50px,6vw,72px);
+
+    line-height:1.1;
+
+    font-weight:800;
+
+    margin-bottom:28px;
+
+}
+
+.hero-left h1 span{
+
+    color:#46c7ff;
+
+}
+
+.hero-left p{
+
+    font-size:20px;
+
+    line-height:1.8;
+
+    color:#cbd5e1;
+
+    margin-bottom:45px;
+
+}
+
+/* =====================================
+   BUTTONS
+===================================== */
+
+.hero-buttons{
+
+    display:flex;
+
+    gap:20px;
+
+    flex-wrap:wrap;
+
+}
+
+.primary-btn{
+
+    padding:16px 38px;
+
+    border:none;
+
+    border-radius:14px;
+
+    cursor:pointer;
+
+    font-size:17px;
+
+    font-weight:600;
+
+    color:white;
+
+    background:linear-gradient(
+        135deg,
+        #39b7ff,
+        #0077ff
+    );
+
+    transition:.35s;
+
+    box-shadow:0 10px 30px rgba(0,136,255,.35);
+
+}
+
+.primary-btn:hover{
+
+    transform:translateY(-5px);
+
+    box-shadow:0 18px 40px rgba(0,136,255,.45);
+
+}
+
+.secondary-btn{
+
+    padding:16px 38px;
+
+    border-radius:14px;
+
+    border:2px solid #39b7ff;
+
+    background:transparent;
+
+    color:#39b7ff;
+
+    cursor:pointer;
+
+    font-size:17px;
+
+    font-weight:600;
+
+    transition:.35s;
+
+}
+
+.secondary-btn:hover{
+
+    background:#39b7ff;
+
+    color:white;
+
+    transform:translateY(-5px);
+
+}
+
+/* =====================================
+   RIGHT
+===================================== */
+
+.hero-right{
+
+    flex:1;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+.hero-card{
+
+    width:420px;
+
+    min-height:280px;
+
+    padding:42px;
+
+    border-radius:28px;
+
+    background:rgba(255,255,255,.06);
+
+    backdrop-filter:blur(20px);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.40),
+        inset 0 1px rgba(255,255,255,.08);
+
+    animation:floatCard 5s ease-in-out infinite;
+
+}
+
+.hero-card h3{
+
+    font-size:42px;
+
+    color:#46c7ff;
+
+    margin-bottom:25px;
+
+}
+
+.hero-card p{
+
+    font-size:21px;
+
+    color:#d6e3ff;
+
+    margin-bottom:45px;
+
+    line-height:1.8;
+
+}
+
+.status{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    color:#72ff9f;
+
+    font-size:18px;
+
+    font-weight:600;
+
+}
+
+.dot{
+
+    width:14px;
+
+    height:14px;
+
+    border-radius:50%;
+
+    background:#00ff7b;
+
+    box-shadow:0 0 18px #00ff7b;
+
+}
+
+/* =====================================
+   FLOAT
+===================================== */
+
+@keyframes floatCard{
+
+    0%{
+
+        transform:translateY(0px);
+
+    }
+
+    50%{
+
+        transform:translateY(-18px);
+
+    }
+
+    100%{
+
+        transform:translateY(0px);
+
+    }
+
+}
+
+/* =====================================
+   RESPONSIVE
+===================================== */
+
+@media (max-width:1100px){
+
+.hero{
+
+    flex-direction:column;
+
+    text-align:center;
+
+    padding-top:60px;
+
+    gap:60px;
+
+}
+
+.hero-left{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    max-width:800px;
+
+}
+
+.hero-buttons{
+
+    justify-content:center;
+
+}
+
+.hero-card{
+
+    width:100%;
+
+    max-width:420px;
+
+}
+
+}
+
+@media (max-width:650px){
+
+.hero{
+
+    padding:50px 25px;
+
+}
+
+.hero-left h1{
+
+    font-size:44px;
+
+}
+
+.hero-left p{
+
+    font-size:18px;
+
+}
+
+.hero-buttons{
+
+    flex-direction:column;
+
+    width:100%;
+
+}
+
+.primary-btn,
+.secondary-btn{
+
+    width:100%;
+
+}
+
+.hero-card{
+
+    padding:30px;
+
+}
+
+.hero-card h3{
+
+    font-size:34px;
+
+}
+
+.hero-card p{
+
+    font-size:18px;
+
+}
+
+}

@@ -6,52 +6,33 @@ function Navbar() {
     <nav className="navbar">
 
       <div className="logo">
-        🚀 ENLIVONEX AI HUB
+        <span className="logo-icon">🚀</span>
+        <span className="logo-text">ENLIVONEX AI HUB</span>
       </div>
 
       <ul className="nav-links">
 
         <li>
-          <NavLink
-            to="/"
-            className={({ isActive }) =>
-              isActive ? "active-link" : ""
-            }
-          >
+          <NavLink to="/" className={({ isActive }) => isActive ? "active-link" : ""}>
             Home
           </NavLink>
         </li>
 
         <li>
-          <NavLink
-            to="/features"
-            className={({ isActive }) =>
-              isActive ? "active-link" : ""
-            }
-          >
-            Features
+          <NavLink to="/features" className={({ isActive }) => isActive ? "active-link" : ""}>
+            AI Tools
           </NavLink>
         </li>
 
         <li>
-          <NavLink
-            to="/about"
-            className={({ isActive }) =>
-              isActive ? "active-link" : ""
-            }
-          >
+          <NavLink to="/about" className={({ isActive }) => isActive ? "active-link" : ""}>
+            Community
+          </NavLink>
+        </li>
+
+        <li>
+          <NavLink to="/contact" className={({ isActive }) => isActive ? "active-link" : ""}>
             About
-          </NavLink>
-        </li>
-
-        <li>
-          <NavLink
-            to="/contact"
-            className={({ isActive }) =>
-              isActive ? "active-link" : ""
-            }
-          >
-            Contact
           </NavLink>
         </li>
 

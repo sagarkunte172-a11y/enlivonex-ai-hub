@@ -1,34 +1,63 @@
-import Features from "./Features";
+import "./Hero.css";
 
 function Hero() {
-
-  function showMessage() {
-    alert(
-      "🚀 Welcome to Enlivonex AI Hub!\n\nVersion 0.1 Alpha\n\nCreated by Sagar\n\nMore exciting features are coming soon!"
-    );
-  }
-
   return (
-    <div className="App">
-      <div className="container">
+    <section className="hero">
 
-        <h1>🚀 Enlivonex AI Hub</h1>
+      <div className="hero-left">
 
-        <h2>Build. Learn. Create.</h2>
+        <span className="hero-badge">
+          🚀 Version 0.1 Alpha
+        </span>
+
+        <h1>
+          Build the Future
+          <br />
+          with <span>Enlivonex AI</span>
+        </h1>
 
         <p>
-          An AI platform built by students,
-          for creators, developers and innovators.
+          A modern open-source AI platform built by students
+          for developers, creators and innovators.
         </p>
 
-        <Features />
+        <div className="hero-buttons">
 
-        <button onClick={showMessage}>
-          Coming Soon
-        </button>
+          <button className="primary-btn">
+            Get Started
+          </button>
+
+          <button className="secondary-btn">
+            GitHub
+          </button>
+
+        </div>
 
       </div>
-    </div>
+
+      <div className="hero-right">
+
+        <div className="hero-card">
+
+          <h3>⚡ AI Hub</h3>
+
+          <p>
+            Chat • Image • Video • Code
+          </p>
+
+          <div className="status">
+
+            <span className="dot"></span>
+
+            Open Source
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
   );
 }
 
