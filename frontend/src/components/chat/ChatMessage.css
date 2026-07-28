@@ -121,11 +121,14 @@
     }
 
 }
-  /* Markdown */
+
+/* =====================================
+   Markdown
+===================================== */
 
 .message-bubble h1,
 .message-bubble h2,
-.message-bubble h3 {
+.message-bubble h3{
 
     margin:18px 0 10px;
 
@@ -198,9 +201,10 @@
     margin:15px 0;
 
 }
-/* ==========================
+
+/* =====================================
    CODE BLOCK
-========================== */
+===================================== */
 
 .code-block{
 
@@ -255,5 +259,113 @@
 .code-header button:hover{
 
     background:#4f46e5;
+
+}
+
+/* =====================================
+   MODEL BADGE
+===================================== */
+
+.model-badge{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:14px;
+
+    padding-bottom:10px;
+
+    border-bottom:1px solid #ececec;
+
+}
+
+.model-name{
+
+    font-size:13px;
+
+    font-weight:600;
+
+    color:#4f46e5;
+
+}
+
+.model-reason{
+
+    font-size:12px;
+
+    color:#6b7280;
+
+    background:#eef2ff;
+
+    padding:4px 10px;
+
+    border-radius:999px;
+
+}
+
+/* =====================================
+   STREAM CURSOR
+===================================== */
+
+.stream-cursor{
+
+    display:inline-block;
+
+    margin-left:2px;
+
+    font-weight:bold;
+
+    color:#4f46e5;
+
+    animation:blinkCursor 1s infinite;
+
+}
+
+@keyframes blinkCursor{
+
+    0%{
+
+        opacity:1;
+
+    }
+
+    50%{
+
+        opacity:0;
+
+    }
+
+    100%{
+
+        opacity:1;
+
+    }
+
+}
+
+/* =====================================
+   RESPONSIVE
+===================================== */
+
+@media(max-width:768px){
+
+    .message-bubble{
+
+        max-width:90%;
+
+    }
+
+    .model-badge{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:6px;
+
+    }
 
 }

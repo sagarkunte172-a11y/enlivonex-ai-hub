@@ -1,41 +1,103 @@
 const SYSTEM_PROMPT = require("../config/system prompt");
 
-const OLLAMA_URL = "http://localhost:11434/api/generate";
+const {
 
-const MODEL = process.env.AI_MODEL || "gemma3:4b";
+    getActiveSessionId,
+    getMessages
 
-async function askOllama(userPrompt) {
+} = require("../memory/sessionManager");
+
+const {
+
+    chooseModel
+
+} = require("./modelRouter");
+
+const OLLAMA_URL = "http://127.0.0.1:11434/api/chat";
+
+async function askOllama(userPrompt, onChunk = null) {
 
     try {
 
-        const finalPrompt = `
-${SYSTEM_PROMPT}
+        /*
+        ==================================
+        Active Session
+        ==================================
+        */
 
-==================================================
+        const sessionId = getActiveSessionId();
 
-Current Conversation
+        /*
+        ==================================
+        Select Best Model
+        ==================================
+        */
 
-User:
-${userPrompt}
+        const selectedModel = chooseModel(userPrompt);
 
-Enlivonex AI:
-`;
+        console.log("\n==================================");
+
+        console.log("Session ID     :", sessionId);
+
+        console.log("Selected Model :", selectedModel.name);
+
+        console.log("Model ID       :", selectedModel.model);
+
+        console.log("Reason         :", selectedModel.reason);
+
+        console.log("==================================\n");
+
+        /*
+        ==================================
+        Build Conversation
+        ==================================
+        */
+
+        const messages = [
+
+            {
+
+                role: "system",
+
+                content: SYSTEM_PROMPT
+
+            },
+
+            ...getMessages(sessionId),
+
+            {
+
+                role: "user",
+
+                content: userPrompt
+
+            }
+
+        ];
+
+        /*
+        ==================================
+        Send Request
+        ==================================
+        */
 
         const response = await fetch(OLLAMA_URL, {
 
             method: "POST",
 
             headers: {
+
                 "Content-Type": "application/json"
+
             },
 
             body: JSON.stringify({
 
-                model: MODEL,
+                model: selectedModel.model,
 
-                prompt: finalPrompt,
+                messages,
 
-                stream: false,
+                stream: true,
 
                 options: {
 
@@ -61,17 +123,75 @@ Enlivonex AI:
 
         }
 
-        const data = await response.json();
+        /*
+        ==================================
+        Stream Response
+        ==================================
+        */
 
-        return data.response?.trim() || "⚠️ No response generated.";
+        const reader = response.body.getReader();
+
+        const decoder = new TextDecoder();
+
+        let completeResponse = "";
+
+        while (true) {
+
+            const { done, value } = await reader.read();
+
+            if (done) break;
+
+            const chunk = decoder.decode(value);
+
+            const lines = chunk
+
+                .split("\n")
+
+                .filter(line => line.trim() !== "");
+
+            for (const line of lines) {
+
+                try {
+
+                    const json = JSON.parse(line);
+
+                    if (!json.message?.content) continue;
+
+                    const token = json.message.content;
+
+                    completeResponse += token;
+
+                    process.stdout.write(token);
+
+                    if (typeof onChunk === "function") {
+
+                        onChunk(token);
+
+                    }
+
+                }
+
+                catch {
+
+                    // Ignore Invalid JSON
+
+                }
+
+            }
+
+        }
+
+        console.log("\n\n✅ Stream Finished.\n");
+
+        return completeResponse.trim();
 
     }
 
     catch (error) {
 
-        console.error("Ollama Error:", error);
+        console.error("Ollama Chat Error:", error);
 
-        return "❌ Failed to connect to Enlivonex AI.";
+        throw error;
 
     }
 

@@ -4,15 +4,9 @@ const router = express.Router();
 
 /*
 ==================================
-Controllers
+Session Controller
 ==================================
 */
-
-const {
-
-    chatWithAI
-
-} = require("../controllers/chatController");
 
 const {
 
@@ -30,32 +24,43 @@ const {
 
 /*
 ==================================
-AI Chat
+Get All Sessions
 ==================================
 */
 
-router.post("/chat", chatWithAI);
+router.get("/", getSessions);
 
 /*
 ==================================
-Session APIs
+Create New Session
 ==================================
 */
 
-// Get all sessions
-router.get("/sessions", getSessions);
+router.post("/new", createNewSession);
 
-// Create new session
-router.post("/session/new", createNewSession);
+/*
+==================================
+Switch Active Session
+==================================
+*/
 
-// Switch active session
-router.post("/session/switch", switchSession);
+router.post("/switch", switchSession);
 
-// Get single session with messages
-router.get("/session/:id", getSingleSession);
+/*
+==================================
+Get Single Session
+==================================
+*/
 
-// Delete session
-router.delete("/session/:id", deleteChatSession);
+router.get("/:id", getSingleSession);
+
+/*
+==================================
+Delete Session
+==================================
+*/
+
+router.delete("/:id", deleteChatSession);
 
 /*
 ==================================

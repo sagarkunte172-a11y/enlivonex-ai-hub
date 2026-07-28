@@ -14,6 +14,8 @@ function ChatMessage({
 
     text,
 
+    model,
+
     streaming = false
 
 }) {
@@ -75,6 +77,30 @@ function ChatMessage({
             }
 
             <div className="message-bubble">
+
+                {
+
+                    sender === "ai" && model && (
+
+                        <div className="model-badge">
+
+                            <span className="model-name">
+
+                                🤖 {model.name}
+
+                            </span>
+
+                            <span className="model-reason">
+
+                                {model.reason}
+
+                            </span>
+
+                        </div>
+
+                    )
+
+                }
 
                 <ReactMarkdown
 
