@@ -2,12 +2,22 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
+const connectDB = require("./config/db");
+
 const chatRoutes = require("./routes/chatRoutes");
 const sessionRoutes = require("./routes/sessionRoutes");
 
 const app = express();
 
 const PORT = process.env.PORT || 5000;
+
+/*
+==================================
+Connect MongoDB
+==================================
+*/
+
+connectDB();
 
 /*
 ==================================
@@ -115,7 +125,7 @@ app.use((err, req, res, next) => {
 
 /*
 ==================================
-Server
+Start Server
 ==================================
 */
 
