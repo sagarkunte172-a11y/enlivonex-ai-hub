@@ -1,72 +1,387 @@
 .about-page{
+
     min-height:100vh;
-    background:#172033;
+
+    padding:80px 8%;
+
+    background:
+    radial-gradient(circle at top,#20304d 0%,#121a2b 45%,#0b1320 100%);
+
     color:white;
-    text-align:center;
-    padding:60px 20px;
+
 }
 
-.about-page h1{
-    color:#38bdf8;
-    font-size:42px;
-    margin-bottom:20px;
+/* ======================================
+            HERO
+====================================== */
+
+.about-hero{
+
+    max-width:950px;
+
+    margin:0 auto 70px;
+
+    text-align:center;
+
+}
+
+.about-hero h1{
+
+    font-size:52px;
+
+    color:#4fd4ff;
+
+    margin-bottom:25px;
+
+    font-weight:700;
+
+    letter-spacing:1px;
+
+    text-shadow:0 0 20px rgba(79,212,255,.25);
+
 }
 
 .about-intro{
-    max-width:850px;
-    margin:auto;
-    color:#d5d5d5;
-    font-size:18px;
-    line-height:1.8;
-    margin-bottom:50px;
+
+    color:#cdd8e8;
+
+    font-size:19px;
+
+    line-height:1.9;
+
 }
 
-.about-container{
-    max-width:1100px;
-    margin:auto;
+/* ======================================
+            STATS
+====================================== */
+
+.about-stats{
 
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+
+    gap:25px;
+
+    margin-bottom:60px;
+
+}
+
+.stat-card{
+
+    background:rgba(255,255,255,.05);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    backdrop-filter:blur(20px);
+
+    border-radius:18px;
+
+    padding:28px;
+
+    text-align:center;
+
+    transition:.35s ease;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.25);
+
+}
+
+.stat-card:hover{
+
+    transform:translateY(-8px);
+
+    border-color:#46c7ff;
+
+    box-shadow:0 18px 40px rgba(70,199,255,.22);
+
+}
+
+.stat-card h2{
+
+    font-size:40px;
+
+    color:#46c7ff;
+
+    margin-bottom:10px;
+
+}
+
+.stat-card p{
+
+    color:#d6dce8;
+
+    font-size:15px;
+
+}
+
+/* ======================================
+            CARDS
+====================================== */
+
+.about-container{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
 
     gap:30px;
+
 }
 
 .about-card{
 
-    background:#263248;
+    background:rgba(255,255,255,.05);
 
-    padding:30px;
+    border:1px solid rgba(255,255,255,.08);
 
-    border-radius:15px;
+    backdrop-filter:blur(18px);
 
-    transition:0.3s;
+    border-radius:18px;
 
-    box-shadow:0px 5px 15px rgba(0,0,0,.3);
+    padding:32px;
+
+    transition:.35s ease;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
+
+    position:relative;
+
+    overflow:hidden;
+
+}
+
+.about-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    left:-100%;
+
+    top:0;
+
+    width:100%;
+
+    height:100%;
+
+    background:linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.06),
+        transparent
+    );
+
+    transition:.7s;
+
+}
+
+.about-card:hover::before{
+
+    left:100%;
 
 }
 
 .about-card:hover{
 
-    transform:translateY(-8px);
+    transform:translateY(-10px);
 
-    box-shadow:0px 12px 25px rgba(56,189,248,.25);
+    border-color:#46c7ff;
+
+    box-shadow:0 18px 40px rgba(70,199,255,.20);
 
 }
 
 .about-card h2{
 
-    color:#38bdf8;
+    color:#46c7ff;
 
-    margin-bottom:20px;
+    font-size:24px;
+
+    margin-bottom:18px;
 
 }
 
 .about-card p{
 
-    color:#dddddd;
+    color:#d7dde8;
 
-    line-height:1.8;
+    line-height:1.9;
 
     font-size:16px;
+
+}
+
+.about-card strong{
+
+    color:white;
+
+}
+
+/* ======================================
+            LISTS
+====================================== */
+
+.progress-list,
+
+.roadmap-list{
+
+    list-style:none;
+
+    padding:0;
+
+    margin-top:15px;
+
+}
+
+.progress-list li,
+
+.roadmap-list li{
+
+    padding:12px 0;
+
+    border-bottom:1px solid rgba(255,255,255,.08);
+
+    color:#d6dce8;
+
+    line-height:1.6;
+
+    transition:.25s;
+
+}
+
+.progress-list li:last-child,
+
+.roadmap-list li:last-child{
+
+    border:none;
+
+}
+
+.progress-list li:hover,
+
+.roadmap-list li:hover{
+
+    color:#46c7ff;
+
+    padding-left:8px;
+
+}
+
+/* ======================================
+            SCROLL ANIMATION
+====================================== */
+
+.about-card{
+
+    animation:fadeUp .7s ease;
+
+}
+
+@keyframes fadeUp{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(30px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+/* ======================================
+            RESPONSIVE
+====================================== */
+
+@media(max-width:992px){
+
+.about-page{
+
+    padding:70px 6%;
+
+}
+
+.about-hero h1{
+
+    font-size:44px;
+
+}
+
+.about-intro{
+
+    font-size:17px;
+
+}
+
+}
+
+@media(max-width:768px){
+
+.about-page{
+
+    padding:60px 5%;
+
+}
+
+.about-hero h1{
+
+    font-size:36px;
+
+}
+
+.about-intro{
+
+    font-size:16px;
+
+}
+
+.about-container{
+
+    grid-template-columns:1fr;
+
+}
+
+.about-stats{
+
+    grid-template-columns:repeat(2,1fr);
+
+}
+
+.stat-card h2{
+
+    font-size:32px;
+
+}
+
+}
+
+@media(max-width:500px){
+
+.about-stats{
+
+    grid-template-columns:1fr;
+
+}
+
+.about-card{
+
+    padding:24px;
+
+}
+
+.about-card h2{
+
+    font-size:21px;
+
+}
 
 }

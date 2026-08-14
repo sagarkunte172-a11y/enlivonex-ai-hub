@@ -4,63 +4,88 @@ require("dotenv").config();
 
 const connectDB = require("./config/db");
 
+/*
+=====================================================
+ROUTES
+=====================================================
+*/
+
 const chatRoutes = require("./routes/chatRoutes");
 const sessionRoutes = require("./routes/sessionRoutes");
+const contactRoutes = require("./routes/contactRoutes");
 
 const app = express();
 
 const PORT = process.env.PORT || 5000;
 
 /*
-==================================
-Connect MongoDB
-==================================
+=====================================================
+CONNECT MONGODB
+=====================================================
 */
 
 connectDB();
 
 /*
-==================================
-Middleware
-==================================
+=====================================================
+MIDDLEWARE
+=====================================================
 */
 
-app.use(cors({
+app.use(
 
-    origin: "*",
+    cors({
 
-    methods: ["GET", "POST", "DELETE"],
+        origin: "*",
 
-    credentials: false,
+        methods: [
 
-    exposedHeaders: [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "OPTIONS"
 
-        "X-Model-Name",
+        ],
 
-        "X-Model-ID",
+        credentials: false,
 
-        "X-Model-Reason"
+        exposedHeaders: [
 
-    ]
+            "X-Model-Name",
+            "X-Model-ID",
+            "X-Model-Reason"
 
-}));
+        ]
 
-app.use(express.json({
+    })
 
-    limit: "2mb"
+);
 
-}));
+app.use(
 
-app.use(express.urlencoded({
+    express.json({
 
-    extended: true
+        limit: "2mb"
 
-}));
+    })
+
+);
+
+app.use(
+
+    express.urlencoded({
+
+        extended: true
+
+    })
+
+);
 
 /*
-==================================
-Health Check
-==================================
+=====================================================
+HEALTH CHECK
+=====================================================
 */
 
 app.get("/", (req, res) => {
@@ -76,19 +101,21 @@ app.get("/", (req, res) => {
 });
 
 /*
-==================================
-Routes
-==================================
+=====================================================
+API ROUTES
+=====================================================
 */
 
 app.use("/api", chatRoutes);
 
 app.use("/api", sessionRoutes);
 
+app.use("/api", contactRoutes);
+
 /*
-==================================
-404 Handler
-==================================
+=====================================================
+404 HANDLER
+=====================================================
 */
 
 app.use((req, res) => {
@@ -104,14 +131,14 @@ app.use((req, res) => {
 });
 
 /*
-==================================
-Global Error Handler
-==================================
+=====================================================
+GLOBAL ERROR HANDLER
+=====================================================
 */
 
 app.use((err, req, res, next) => {
 
-    console.error(err);
+    console.error("Server Error:", err);
 
     res.status(500).json({
 
@@ -124,13 +151,19 @@ app.use((err, req, res, next) => {
 });
 
 /*
-==================================
-Start Server
-==================================
+=====================================================
+START SERVER
+=====================================================
+
+0.0.0.0 allows devices on the same network
+to reach this backend.
+=====================================================
 */
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
 
-    console.log(`🚀 Enlivonex AI Backend running on http://localhost:${PORT}`);
+    console.log(
+        `🚀 Enlivonex AI Backend running on port ${PORT}`
+    );
 
 });

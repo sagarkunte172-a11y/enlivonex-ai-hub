@@ -1,50 +1,397 @@
+/* =========================================
+   ENLIVONEX AI HUB - FEATURES PAGE
+========================================= */
+
 .features-page{
-    min-height:80vh;
-    padding:120px 8%;
+    min-height:100vh;
+    background:#172033;
+    color:#fff;
+    padding:70px 20px;
+}
+
+/* Hero */
+
+.features-hero{
     text-align:center;
-    color:white;
-}
-
-.features-page h1{
-    color:#39b7ff;
-    font-size:42px;
-    margin-bottom:20px;
-}
-
-.features-page>p{
-    color:#cfcfcf;
     margin-bottom:60px;
 }
 
-.feature-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-    gap:30px;
-}
-
-.feature-card{
-    background:#293347;
-    padding:35px;
-    border-radius:18px;
-    transition:.35s;
-}
-
-.feature-card:hover{
-    transform:translateY(-8px);
-    box-shadow:0 10px 25px rgba(0,0,0,.3);
-}
-
-.feature-icon{
-    font-size:45px;
+.features-hero h1{
+    font-size:46px;
+    color:#38bdf8;
     margin-bottom:20px;
 }
 
-.feature-card h2{
-    color:#39b7ff;
-    margin-bottom:15px;
+.features-hero p{
+    max-width:900px;
+    margin:auto;
+    color:#d5d5d5;
+    font-size:18px;
+    line-height:1.8;
+}
+
+.version-badge{
+
+    display:inline-block;
+    margin-top:25px;
+
+    padding:12px 22px;
+
+    border-radius:50px;
+
+    background:#263248;
+
+    border:1px solid rgba(56,189,248,.15);
+
+    color:#38bdf8;
+
+    font-weight:600;
+}
+
+/* Section */
+
+.section-title{
+
+    text-align:center;
+
+    color:#38bdf8;
+
+    font-size:34px;
+
+    margin:70px 0 40px;
+}
+
+/* Cards */
+
+.feature-grid{
+
+    max-width:1200px;
+
+    margin:auto;
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+
+    gap:28px;
+}
+
+.feature-card{
+
+    background:#263248;
+
+    padding:30px;
+
+    border-radius:16px;
+
+    transition:.3s;
+
+    box-shadow:0 6px 18px rgba(0,0,0,.35);
+
+    text-align:left;
+}
+
+.feature-card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:0 14px 28px rgba(56,189,248,.25);
+}
+
+.feature-icon{
+
+    font-size:50px;
+
+    margin-bottom:18px;
+}
+
+.feature-card h3{
+
+    color:#38bdf8;
+
+    margin-bottom:16px;
+
+    font-size:25px;
 }
 
 .feature-card p{
-    color:#d9d9d9;
+
+    color:#f4f4f4;
+
     line-height:1.8;
+
+    font-size:16px;
+}
+
+/* Status */
+
+.status{
+
+    display:inline-block;
+
+    margin-top:22px;
+
+    padding:8px 16px;
+
+    border-radius:50px;
+
+    font-size:13px;
+
+    font-weight:700;
+}
+
+.Available{
+
+    background:rgba(34,197,94,.15);
+
+    color:#4ade80;
+}
+
+.ComingSoon{
+
+    background:rgba(59,130,246,.15);
+
+    color:#60a5fa;
+}
+
+.Future{
+
+    background:rgba(168,85,247,.15);
+
+    color:#c084fc;
+}
+
+/* Bottom */
+
+.feature-bottom{
+
+    max-width:1200px;
+
+    margin:80px auto 0;
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+
+    gap:28px;
+}
+
+.info-box{
+
+    background:#263248;
+
+    padding:30px;
+
+    border-radius:16px;
+
+    transition:.3s;
+
+    box-shadow:0 6px 18px rgba(0,0,0,.35);
+
+    color:#b6b4b4;
+
+}
+
+.info-box:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:0 14px 28px rgba(56,189,248,.25);
+
+}
+
+.info-box:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:0 14px 28px rgba(56,189,248,.25);
+}
+
+.info-box h2{
+
+    color:#1cb5df;
+
+    margin-bottom:20px;
+
+    text-align:center;
+}
+
+.info-box ul{
+
+    list-style:none;
+}
+
+.info-box li{
+
+    padding:12px 0;
+
+    color:#000000;
+
+    border-bottom:1px solid rgba(0, 0, 0, 0.05);
+}
+
+.info-box li:last-child{
+
+    border:none;
+}
+
+/* Roadmap */
+
+.roadmap{
+
+    max-width:1200px;
+
+    margin:90px auto 0;
+}
+
+.roadmap h2{
+
+    text-align:center;
+
+    color:#29b3ee;
+
+    margin-bottom:40px;
+
+    font-size:34px;
+}
+
+.roadmap-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+
+    gap:24px;
+}
+
+.roadmap-card{
+
+    background:#263248;
+
+    padding:28px;
+
+    border-radius:16px;
+
+    text-align:center;
+
+    transition:.3s;
+
+    box-shadow:0 6px 18px rgba(0,0,0,.35);
+
+    color:#fbf9f9;
+
+}
+
+.roadmap-card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:0 14px 28px rgba(56,189,248,.25);
+
+}
+
+.roadmap-card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:0 14px 28px rgba(56,189,248,.25);
+}
+
+.roadmap-card h3{
+
+    color:#38bdf8;
+
+    margin-bottom:15px;
+}
+
+.roadmap-card p{
+
+    color:#ddd;
+
+    line-height:1.8;
+}
+
+/* Vision */
+
+.vision-card{
+
+    max-width:1200px;
+
+    margin:90px auto 0;
+
+    background:#263248;
+
+    padding:45px;
+
+    border-radius:16px;
+
+    text-align:center;
+
+    transition:.3s;
+
+    box-shadow:0 6px 18px rgba(0,0,0,.35);
+
+}
+
+.vision-card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:0 14px 28px rgba(56,189,248,.25);
+
+}
+
+.vision-card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:0 14px 28px rgba(56,189,248,.25);
+}
+
+.vision-card h2{
+
+    color:#38bdf8;
+
+    margin-bottom:20px;
+}
+
+.vision-card p{
+
+    color:#ddd;
+
+    line-height:2;
+
+    max-width:900px;
+
+    margin:auto;
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+.features-hero h1{
+
+font-size:36px;
+
+}
+
+.section-title{
+
+font-size:28px;
+
+}
+
+.roadmap h2{
+
+font-size:28px;
+
+}
+
+.vision-card{
+
+padding:30px;
+
+}
+
 }

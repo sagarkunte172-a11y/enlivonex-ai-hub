@@ -1,95 +1,838 @@
+/* =====================================================
+   ENLIVONEX AI HUB
+   HOME PAGE
+   Part 1
+===================================================== */
+
+/* =====================================================
+   HOME PAGE
+===================================================== */
+
 .home-page{
+
+    width:100%;
+
     color:white;
+
+    overflow-x:hidden;
+
 }
 
-/* ===========================
-   FEATURES SECTION
-=========================== */
+/* =====================================================
+   COMMON SECTION
+===================================================== */
 
-.home-features{
+.why-section,
+.tools-section,
+.progress-section,
+.roadmap-section,
+.vision-section{
 
     padding:100px 8%;
 
+}
+
+/* =====================================================
+   SECTION HEADING
+===================================================== */
+
+.section-heading{
+
     text-align:center;
 
-    background:#101827;
+    max-width:850px;
+
+    margin:0 auto 70px auto;
 
 }
 
-.home-features h2{
+.section-badge{
 
-    font-size:42px;
+    display:inline-block;
 
-    color:#39b7ff;
+    padding:10px 22px;
 
-    margin-bottom:60px;
+    border-radius:50px;
+
+    background:rgba(70,199,255,.10);
+
+    border:1px solid rgba(70,199,255,.25);
+
+    color:#46c7ff;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    letter-spacing:.5px;
+
+    margin-bottom:25px;
+
+    backdrop-filter:blur(16px);
 
 }
 
-.feature-grid{
+.section-heading h2{
+
+    font-size:clamp(36px,5vw,54px);
+
+    line-height:1.2;
+
+    color:#ffffff;
+
+    margin-bottom:25px;
+
+    font-weight:800;
+
+}
+
+.section-heading p{
+
+    color:#cfd8e6;
+
+    font-size:18px;
+
+    line-height:1.9;
+
+}
+
+/* =====================================================
+   WHY ENLIVONEX
+===================================================== */
+
+.why-grid{
 
     display:grid;
 
-    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
 
     gap:30px;
 
 }
 
-.feature-card{
+.why-card{
 
-    background:#1d2638;
+    background:#263248;
 
-    border-radius:18px;
+    border-radius:20px;
 
     padding:35px;
 
-    transition:.35s;
+    transition:.35s ease;
 
-    cursor:pointer;
+    border:1px solid rgba(255,255,255,.05);
 
-    box-shadow:0 10px 30px rgba(0,0,0,.25);
+    box-shadow:0 10px 25px rgba(0,0,0,.30);
 
 }
 
-.feature-card:hover{
+.why-card:hover{
 
     transform:translateY(-10px);
 
-    box-shadow:0 20px 40px rgba(0,0,0,.35);
+    border-color:rgba(70,199,255,.30);
+
+    box-shadow:0 18px 35px rgba(70,199,255,.18);
 
 }
 
-.feature-card h3{
+.why-icon{
 
-    color:#39b7ff;
+    width:75px;
+
+    height:75px;
+
+    border-radius:18px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:34px;
+
+    margin-bottom:28px;
+
+    background:rgba(70,199,255,.12);
+
+    color:#46c7ff;
+
+}
+
+.why-card h3{
+
+    color:#46c7ff;
 
     font-size:24px;
 
     margin-bottom:18px;
 
+    font-weight:700;
+
 }
 
-.feature-card p{
+.why-card p{
 
-    color:#cfd8ea;
+    color:#d7dee8;
+
+    line-height:1.9;
+
+    font-size:16px;
+
+}
+
+/* =====================================================
+   SMOOTH SECTION TRANSITION
+===================================================== */
+
+.why-section{
+
+    position:relative;
+
+}
+
+.why-section::after{
+
+    content:"";
+
+    position:absolute;
+
+    left:50%;
+
+    bottom:-40px;
+
+    transform:translateX(-50%);
+
+    width:120px;
+
+    height:2px;
+
+    background:linear-gradient(
+
+        90deg,
+
+        transparent,
+
+        rgba(70,199,255,.45),
+
+        transparent
+
+    );
+
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width:900px){
+
+    .why-section,
+    .tools-section,
+    .progress-section,
+    .roadmap-section,
+    .vision-section{
+
+        padding:80px 6%;
+
+    }
+
+    .section-heading{
+
+        margin-bottom:55px;
+
+    }
+
+}
+
+@media(max-width:650px){
+
+    .section-heading h2{
+
+        font-size:34px;
+
+    }
+
+    .section-heading p{
+
+        font-size:16px;
+
+    }
+
+    .why-card{
+
+        padding:28px;
+
+    }
+
+    .why-icon{
+
+        width:65px;
+
+        height:65px;
+
+        font-size:30px;
+
+    }
+
+}
+/* =====================================
+   AI TOOLS SHOWCASE
+===================================== */
+
+.home-tools{
+
+    margin-top:90px;
+
+}
+
+.tools-title{
+
+    text-align:center;
+
+    margin-bottom:55px;
+
+}
+
+.tools-title h2{
+
+    font-size:40px;
+
+    color:#46c7ff;
+
+    margin-bottom:18px;
+
+}
+
+.tools-title p{
+
+    max-width:760px;
+
+    margin:auto;
+
+    color:#cfd8e6;
+
+    font-size:17px;
+
+    line-height:1.9;
+
+}
+
+.tools-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+
+    gap:30px;
+
+}
+
+.tool-card{
+
+    position:relative;
+
+    overflow:hidden;
+
+    background:rgba(255,255,255,.05);
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:22px;
+
+    padding:35px;
+
+    transition:.35s ease;
+
+    box-shadow:0 12px 30px rgba(0,0,0,.25);
+
+}
+
+.tool-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:180px;
+
+    height:180px;
+
+    background:rgba(70,199,255,.08);
+
+    border-radius:50%;
+
+    right:-60px;
+
+    top:-60px;
+
+    transition:.4s;
+
+}
+
+.tool-card:hover{
+
+    transform:translateY(-10px);
+
+    border-color:#46c7ff;
+
+    box-shadow:0 20px 45px rgba(70,199,255,.20);
+
+}
+
+.tool-card:hover::before{
+
+    transform:scale(1.25);
+
+}
+
+.tool-icon{
+
+    font-size:48px;
+
+    margin-bottom:18px;
+
+}
+
+.tool-card h3{
+
+    font-size:26px;
+
+    color:#46c7ff;
+
+    margin-bottom:14px;
+
+}
+
+.tool-card p{
+
+    color:#d7dee8;
+
+    line-height:1.8;
+
+    margin-bottom:25px;
+
+}
+
+.tool-footer{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.tool-status{
+
+    padding:7px 14px;
+
+    border-radius:50px;
+
+    font-size:13px;
+
+    font-weight:700;
+
+}
+
+.available{
+
+    background:#1f8f5b33;
+
+    color:#4ade80;
+
+}
+
+.coming{
+
+    background:#2563eb22;
+
+    color:#60a5fa;
+
+}
+
+.future{
+
+    background:#9333ea22;
+
+    color:#d8b4fe;
+
+}
+
+.tool-link{
+
+    color:#46c7ff;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.tool-card:hover .tool-link{
+
+    transform:translateX(6px);
+
+}
+/* =====================================================
+   DEVELOPMENT PROGRESS
+===================================================== */
+
+.progress-section{
+
+    position:relative;
+
+}
+
+.progress-section::after{
+
+    content:"";
+
+    position:absolute;
+
+    left:50%;
+
+    bottom:-40px;
+
+    transform:translateX(-50%);
+
+    width:120px;
+
+    height:2px;
+
+    background:linear-gradient(
+        90deg,
+        transparent,
+        rgba(70,199,255,.45),
+        transparent
+    );
+
+}
+
+.progress-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+
+    gap:30px;
+
+}
+
+.progress-card{
+
+    background:#263248;
+
+    border-radius:20px;
+
+    padding:35px;
+
+    border:1px solid rgba(255,255,255,.05);
+
+    box-shadow:0 10px 25px rgba(0,0,0,.30);
+
+    transition:.35s ease;
+
+}
+
+.progress-card:hover{
+
+    transform:translateY(-10px);
+
+    border-color:rgba(70,199,255,.30);
+
+    box-shadow:0 18px 35px rgba(70,199,255,.18);
+
+}
+
+.progress-card h3{
+
+    color:#46c7ff;
+
+    margin-bottom:22px;
+
+    font-size:24px;
+
+}
+
+.progress-card ul{
+
+    list-style:none;
+
+}
+
+.progress-card li{
+
+    padding:12px 0;
+
+    color:#d7dee8;
+
+    border-bottom:1px solid rgba(255,255,255,.05);
+
+}
+
+.progress-card li:last-child{
+
+    border:none;
+
+}
+
+/* =====================================================
+   ROADMAP
+===================================================== */
+
+.roadmap-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+
+    gap:25px;
+
+}
+
+.roadmap-card{
+
+    background:#263248;
+
+    border-radius:20px;
+
+    padding:30px;
+
+    text-align:center;
+
+    border:1px solid rgba(255,255,255,.05);
+
+    transition:.35s;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.30);
+
+}
+
+.roadmap-card:hover{
+
+    transform:translateY(-10px);
+
+    border-color:rgba(70,199,255,.30);
+
+    box-shadow:0 18px 35px rgba(70,199,255,.18);
+
+}
+
+.roadmap-card h3{
+
+    color:#46c7ff;
+
+    margin-bottom:18px;
+
+    font-size:24px;
+
+}
+
+.roadmap-card p{
+
+    color:#d7dee8;
 
     line-height:1.8;
 
 }
 
-@media(max-width:768px){
+/* =====================================================
+   FINAL CTA / VISION
+===================================================== */
 
-.home-features{
+.vision-card{
 
-padding:70px 6%;
+    margin-top:90px;
+
+    background:#263248;
+
+    border-radius:24px;
+
+    padding:60px;
+
+    text-align:center;
+
+    border:1px solid rgba(255,255,255,.05);
+
+    box-shadow:0 10px 25px rgba(0,0,0,.30);
+
+    transition:.35s;
 
 }
 
-.home-features h2{
+.vision-card:hover{
 
-font-size:34px;
+    transform:translateY(-10px);
+
+    border-color:rgba(70,199,255,.30);
+
+    box-shadow:0 20px 40px rgba(70,199,255,.18);
 
 }
+
+.vision-card h2{
+
+    font-size:44px;
+
+    color:#46c7ff;
+
+    margin-bottom:25px;
+
+}
+
+.vision-card p{
+
+    max-width:850px;
+
+    margin:auto;
+
+    color:#d7dee8;
+
+    line-height:2;
+
+    font-size:18px;
+
+    margin-bottom:40px;
+
+}
+
+.vision-buttons{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:20px;
+
+    flex-wrap:wrap;
+
+}
+
+.vision-primary{
+
+    padding:16px 36px;
+
+    border:none;
+
+    border-radius:14px;
+
+    cursor:pointer;
+
+    font-size:17px;
+
+    font-weight:600;
+
+    color:white;
+
+    background:linear-gradient(
+        135deg,
+        #39b7ff,
+        #0077ff
+    );
+
+    transition:.35s;
+
+    box-shadow:0 10px 25px rgba(0,136,255,.30);
+
+}
+
+.vision-primary:hover{
+
+    transform:translateY(-5px);
+
+    box-shadow:0 18px 35px rgba(0,136,255,.45);
+
+}
+
+.vision-secondary{
+
+    padding:16px 36px;
+
+    border-radius:14px;
+
+    border:2px solid #46c7ff;
+
+    background:transparent;
+
+    color:#46c7ff;
+
+    cursor:pointer;
+
+    font-size:17px;
+
+    font-weight:600;
+
+    transition:.35s;
+
+}
+
+.vision-secondary:hover{
+
+    background:#46c7ff;
+
+    color:white;
+
+    transform:translateY(-5px);
+
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width:900px){
+
+    .vision-card{
+
+        padding:45px;
+
+    }
+
+}
+
+@media(max-width:650px){
+
+    .progress-card,
+    .roadmap-card{
+
+        padding:28px;
+
+    }
+
+    .vision-card{
+
+        padding:35px 28px;
+
+    }
+
+    .vision-card h2{
+
+        font-size:34px;
+
+    }
+
+    .vision-card p{
+
+        font-size:16px;
+
+    }
+
+    .vision-buttons{
+
+        flex-direction:column;
+
+    }
+
+    .vision-primary,
+    .vision-secondary{
+
+        width:100%;
+
+    }
 
 }

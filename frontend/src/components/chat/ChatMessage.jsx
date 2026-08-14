@@ -46,27 +46,17 @@ function ChatMessage({
 
     }
 
+    const isUser = sender === "user";
+
     return (
 
-        <div
-
-            className={
-
-                sender === "user"
-
-                    ? "message user-message"
-
-                    : "message ai-message"
-
-            }
-
-        >
+        <div className={`message ${isUser ? "user-message" : "ai-message"}`}>
 
             {
 
-                sender === "ai" && (
+                !isUser && (
 
-                    <div className="avatar ai-avatar">
+                    <div className="avatar ai-avatar" aria-hidden="true">
 
                         🤖
 
@@ -80,21 +70,29 @@ function ChatMessage({
 
                 {
 
-                    sender === "ai" && model && (
+                    !isUser && model && model.id !== "system" && (
 
                         <div className="model-badge">
 
                             <span className="model-name">
 
-                                🤖 {model.name}
+                                {model.name}
 
                             </span>
 
-                            <span className="model-reason">
+                            {
 
-                                {model.reason}
+                                model.reason && (
 
-                            </span>
+                                    <span className="model-reason">
+
+                                        {model.reason}
+
+                                    </span>
+
+                                )
+
+                            }
 
                         </div>
 
@@ -132,13 +130,15 @@ function ChatMessage({
 
                                         <div className="code-header">
 
-                                            <span>
+                                            <span className="code-lang">
 
                                                 {match[1]}
 
                                             </span>
 
                                             <button
+
+                                                type="button"
 
                                                 className="copy-btn"
 
@@ -150,9 +150,9 @@ function ChatMessage({
 
                                                     copiedCode === code
 
-                                                        ? "✅ Copied"
+                                                        ? "Copied"
 
-                                                        : "📋 Copy"
+                                                        : "Copy"
 
                                                 }
 
@@ -212,7 +212,7 @@ function ChatMessage({
 
                     streaming && (
 
-                        <span className="stream-cursor">
+                        <span className="stream-cursor" aria-hidden="true">
 
                             |
 
@@ -226,9 +226,9 @@ function ChatMessage({
 
             {
 
-                sender === "user" && (
+                isUser && (
 
-                    <div className="avatar user-avatar">
+                    <div className="avatar user-avatar" aria-hidden="true">
 
                         👤
 

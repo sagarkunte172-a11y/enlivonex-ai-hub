@@ -1,15 +1,222 @@
-body{
-margin:0;
-font-family:Arial,Helvetica,sans-serif;
-
--webkit-font-smoothing:antialiased;
--moz-osx-font-smoothing:grayscale;
-}
+/* =====================================
+   ENLIVONEX AI HUB
+   Global Theme
+===================================== */
 
 *{
-box-sizing:border-box;
+
+    margin:0;
+
+    padding:0;
+
+    box-sizing:border-box;
+
 }
 
-code{
-font-family:Consolas,monospace;
+:root{
+
+    --primary:#46c7ff;
+
+    --secondary:#1ea8ff;
+
+    --background:#08111f;
+
+    --surface:#172033;
+
+    --surface-light:#263248;
+
+    --text:#464646;
+
+    --text-secondary:#000000;
+
+    --border:rgba(255,255,255,.08);
+
+    --shadow:0 12px 35px rgba(0,0,0,.35);
+
+    --radius:16px;
+
+}
+
+/* Smooth Scroll */
+
+html{
+
+    scroll-behavior:smooth;
+
+}
+
+/* Body */
+
+body{
+
+    background:
+    radial-gradient(circle at top,#1d2c47 0%,#0d1728 45%,#08111f 100%);
+
+    color:var(--text);
+
+    font-family:
+
+    Inter,
+
+    "Segoe UI",
+
+    Arial,
+
+    Helvetica,
+
+    sans-serif;
+
+    overflow-x:hidden;
+
+    min-height:100vh;
+
+}
+
+/* React Root */
+
+#root{
+
+    min-height:100vh;
+
+}
+
+/* Links */
+
+a{
+
+    color:inherit;
+
+    text-decoration:none;
+
+}
+
+/* Buttons */
+
+button{
+
+    cursor:pointer;
+
+    border:none;
+
+    outline:none;
+
+    transition:.3s ease;
+
+}
+
+/* Inputs */
+
+input,
+textarea{
+
+    outline:none;
+
+}
+
+/* Typography */
+
+h1{
+
+    font-size:clamp(2rem,5vw,3.5rem);
+
+}
+
+h2{
+
+    font-size:clamp(1.5rem,4vw,2.4rem);
+
+}
+
+h3{
+
+    font-size:1.4rem;
+
+}
+
+p{
+
+    color:var(--text-secondary);
+
+    line-height:1.8;
+
+}
+
+/* Lists */
+
+ul{
+
+    list-style:none;
+
+}
+
+/* Horizontal Line */
+
+hr{
+
+    border:none;
+
+    height:1px;
+
+    background:rgba(255,255,255,.08);
+
+}
+
+/* Utility */
+
+.text-center{
+
+    text-align:center;
+
+}
+
+.mt-1{
+
+    margin-top:12px;
+
+}
+
+.mt-2{
+
+    margin-top:24px;
+
+}
+
+.mt-3{
+
+    margin-top:40px;
+
+}
+
+.mb-1{
+
+    margin-bottom:12px;
+
+}
+
+.mb-2{
+
+    margin-bottom:24px;
+
+}
+
+.mb-3{
+
+    margin-bottom:40px;
+
+}
+
+/* Glass Card Utility */
+
+.glass{
+
+    background:rgba(255,255,255,.05);
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:16px;
+
+    box-shadow:0 12px 35px rgba(0,0,0,.28);
+
 }

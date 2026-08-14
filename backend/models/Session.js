@@ -22,7 +22,9 @@ const sessionSchema = new mongoose.Schema(
 
             ref: "User",
 
-            required: true
+            default: null,
+
+            required: false
 
         },
 

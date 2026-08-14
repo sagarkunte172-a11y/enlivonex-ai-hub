@@ -10,23 +10,49 @@ function SessionSidebar({
 
     onSwitchSession,
 
-    onDeleteSession
+    onDeleteSession,
+
+    mobileOpen = false,
+
+    onMobileClose
 
 }) {
 
+    function handleSwitch(sessionId) {
+
+        onSwitchSession(sessionId);
+
+        if (onMobileClose) {
+
+            onMobileClose();
+
+        }
+
+    }
+
     return (
 
-        <div className="session-sidebar">
-
-            {/* ==========================
-                Header
-            ========================== */}
+        <aside className={`session-sidebar ${mobileOpen ? "mobile-open" : ""}`}>
 
             <div className="sidebar-header">
 
-                <h2>💬 Chats</h2>
+                <div className="sidebar-brand">
+
+                    <span className="sidebar-brand-icon">🚀</span>
+
+                    <div>
+
+                        <h2>Enlivonex</h2>
+
+                        <span>AI Workspace</span>
+
+                    </div>
+
+                </div>
 
                 <button
+
+                    type="button"
 
                     className="new-chat-btn"
 
@@ -34,15 +60,19 @@ function SessionSidebar({
 
                 >
 
-                    + New Chat
+                    <span className="new-chat-icon">+</span>
+
+                    New Chat
 
                 </button>
 
             </div>
 
-            {/* ==========================
-                Session List
-            ========================== */}
+            <div className="session-list-label">
+
+                Recent Chats
+
+            </div>
 
             <div className="session-list">
 
@@ -52,7 +82,11 @@ function SessionSidebar({
 
                         <div className="empty-session">
 
-                            No Chats Yet
+                            <div className="empty-session-icon">💬</div>
+
+                            <p>No conversations yet</p>
+
+                            <span>Start a new chat to begin</span>
 
                         </div>
 
@@ -62,11 +96,11 @@ function SessionSidebar({
 
                             <div
 
-                                key={session.id}
+                                key={session._id}
 
                                 className={`session-item ${
 
-                                    session.id === activeSession
+                                    session._id === activeSession
 
                                         ? "active"
 
@@ -74,35 +108,69 @@ function SessionSidebar({
 
                                 }`}
 
-                                onClick={() =>
+                                onClick={() => handleSwitch(session._id)}
 
-                                    onSwitchSession(session.id)
+                                role="button"
 
-                                }
+                                tabIndex={0}
+
+                                onKeyDown={(e) => {
+
+                                    if (e.key === "Enter" || e.key === " ") {
+
+                                        e.preventDefault();
+
+                                        handleSwitch(session._id);
+
+                                    }
+
+                                }}
 
                             >
 
-                                <div className="session-title">
+                                <div className="session-item-content">
 
-                                    💬 {session.title}
+                                    <div className="session-title">
+
+                                        {session.title || "New Chat"}
+
+                                    </div>
+
+                                    {
+
+                                        session.lastMessage && (
+
+                                            <div className="session-preview">
+
+                                                {session.lastMessage}
+
+                                            </div>
+
+                                        )
+
+                                    }
 
                                 </div>
 
                                 <button
 
+                                    type="button"
+
                                     className="delete-session"
+
+                                    aria-label="Delete session"
 
                                     onClick={(e) => {
 
                                         e.stopPropagation();
 
-                                        onDeleteSession(session.id);
+                                        onDeleteSession(session._id);
 
                                     }}
 
                                 >
 
-                                    🗑
+                                    ✕
 
                                 </button>
 
@@ -116,7 +184,7 @@ function SessionSidebar({
 
             </div>
 
-        </div>
+        </aside>
 
     );
 

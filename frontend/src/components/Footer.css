@@ -109,3 +109,16 @@
 }
 
 }
+.footer-section ul li a{
+    color:white;
+    text-decoration:none;
+    transition:0.3s;
+}
+
+.footer-section ul li a:hover{
+    color:#4fa3ff;
+}
+
+.footer-section ul li .active{
+    color:#4fa3ff;
+}

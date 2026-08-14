@@ -1,102 +1,221 @@
-.chat-input-container{
+/* =====================================================
+   CHAT INPUT — Premium AI Composer
+===================================================== */
 
-    display:flex;
+.chat-input-wrapper {
 
-    gap:15px;
+    flex-shrink: 0;
 
-    padding:20px;
+    padding: 16px 28px 20px;
 
-    background:white;
-
-    border-top:1px solid #e5e7eb;
-
-}
-
-.chat-input-container input{
-
-    flex:1;
-
-    padding:16px;
-
-    border:1px solid #d1d5db;
-
-    border-radius:14px;
-
-    outline:none;
-
-    font-size:16px;
-
-    transition:.25s;
+    background: linear-gradient(to top, rgba(11, 18, 32, 0.95) 60%, transparent);
 
 }
 
-.chat-input-container input:focus{
+.chat-input-container {
 
-    border-color:#4f46e5;
+    display: flex;
 
-    box-shadow:0 0 0 4px rgba(79,70,229,.12);
+    align-items: flex-end;
 
-}
+    gap: 12px;
 
-.chat-input-container button{
+    padding: 10px 10px 10px 20px;
 
-    background:#4f46e5;
+    background: rgba(255, 255, 255, 0.04);
 
-    color:white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 
-    border:none;
+    border-radius: 18px;
 
-    padding:16px 26px;
+    backdrop-filter: blur(16px);
 
-    border-radius:14px;
+    transition: all 0.25s ease;
 
-    cursor:pointer;
-
-    font-weight:600;
-
-    transition:.25s;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 
 }
 
-.chat-input-container button:hover{
+.chat-input-container:focus-within {
 
-    background:#4338ca;
+    border-color: rgba(70, 199, 255, 0.45);
 
-    transform:translateY(-2px);
+    box-shadow:
 
-}
-.chat-input-container textarea{
+        0 0 0 3px rgba(70, 199, 255, 0.1),
 
-    flex:1;
-
-    resize:none;
-
-    min-height:56px;
-
-    max-height:160px;
-
-    padding:16px;
-
-    border:1px solid #d1d5db;
-
-    border-radius:14px;
-
-    outline:none;
-
-    font-size:16px;
-
-    font-family:inherit;
-
-    transition:.25s;
-
-    overflow-y:auto;
+        0 4px 24px rgba(0, 0, 0, 0.2);
 
 }
 
-.chat-input-container textarea:focus{
+.chat-input-container.disabled {
 
-    border-color:#4f46e5;
+    opacity: 0.65;
 
-    box-shadow:0 0 0 4px rgba(79,70,229,.12);
+    pointer-events: none;
+
+}
+
+.chat-input-container textarea {
+
+    flex: 1;
+
+    resize: none;
+
+    min-height: 24px;
+
+    max-height: 160px;
+
+    padding: 8px 0;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    color: rgba(255, 255, 255, 0.9);
+
+    font-size: 15px;
+
+    font-family: inherit;
+
+    line-height: 1.5;
+
+    overflow-y: auto;
+
+}
+
+.chat-input-container textarea::placeholder {
+
+    color: rgba(255, 255, 255, 0.35);
+
+}
+
+.chat-input-container textarea::-webkit-scrollbar {
+
+    width: 4px;
+
+}
+
+.chat-input-container textarea::-webkit-scrollbar-thumb {
+
+    background: rgba(70, 199, 255, 0.25);
+
+    border-radius: 20px;
+
+}
+
+/* =====================================================
+   SEND BUTTON
+===================================================== */
+
+.send-btn {
+
+    width: 44px;
+
+    height: 44px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: none;
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    background: linear-gradient(135deg, #46c7ff, #1ea8ff);
+
+    color: #0b1220;
+
+    transition: all 0.25s ease;
+
+    box-shadow: 0 4px 16px rgba(70, 199, 255, 0.25);
+
+}
+
+.send-btn:hover:not(:disabled) {
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 6px 22px rgba(70, 199, 255, 0.35);
+
+}
+
+.send-btn:active:not(:disabled) {
+
+    transform: translateY(0);
+
+}
+
+.send-btn:disabled {
+
+    opacity: 0.35;
+
+    cursor: not-allowed;
+
+    box-shadow: none;
+
+}
+
+/* =====================================================
+   HINT TEXT
+===================================================== */
+
+.chat-input-hint {
+
+    text-align: center;
+
+    font-size: 11px;
+
+    color: rgba(255, 255, 255, 0.25);
+
+    margin: 8px 0 0;
+
+    letter-spacing: 0.3px;
+
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 768px) {
+
+    .chat-input-wrapper {
+
+        padding: 12px 14px 16px;
+
+    }
+
+    .chat-input-container {
+
+        padding: 8px 8px 8px 16px;
+
+        border-radius: 16px;
+
+    }
+
+    .send-btn {
+
+        width: 40px;
+
+        height: 40px;
+
+        border-radius: 10px;
+
+    }
+
+    .chat-input-hint {
+
+        display: none;
+
+    }
 
 }

@@ -1,14 +1,28 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 import "./ChatInput.css";
 
-function ChatInput({ onSend }) {
+function ChatInput({ onSend, disabled = false }) {
 
     const [message, setMessage] = useState("");
 
+    const textareaRef = useRef(null);
+
+    useEffect(() => {
+
+        const el = textareaRef.current;
+
+        if (!el) return;
+
+        el.style.height = "auto";
+
+        el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+
+    }, [message]);
+
     function handleSend() {
 
-        if (!message.trim()) return;
+        if (!message.trim() || disabled) return;
 
         onSend(message);
 
@@ -18,37 +32,93 @@ function ChatInput({ onSend }) {
 
     return (
 
-        <div className="chat-input-container">
+        <div className="chat-input-wrapper">
 
-            <textarea
+            <div className={`chat-input-container ${disabled ? "disabled" : ""}`}>
 
-                placeholder="Ask Enlivonex AI anything..."
+                <textarea
 
-                value={message}
+                    ref={textareaRef}
 
-                onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Ask Enlivonex AI anything..."
 
-                onKeyDown={(e) => {
+                    value={message}
 
-                    if (e.key === "Enter" && !e.shiftKey) {
+                    onChange={(e) => setMessage(e.target.value)}
 
-                        e.preventDefault();
+                    onKeyDown={(e) => {
 
-                        handleSend();
+                        if (e.key === "Enter" && !e.shiftKey) {
 
-                    }
+                            e.preventDefault();
 
-                }}
+                            handleSend();
 
-                rows="1"
+                        }
 
-            />
+                    }}
 
-            <button onClick={handleSend}>
+                    rows="1"
 
-                Send
+                    disabled={disabled}
 
-            </button>
+                />
+
+                <button
+
+                    type="button"
+
+                    onClick={handleSend}
+
+                    disabled={disabled || !message.trim()}
+
+                    aria-label="Send message"
+
+                    className="send-btn"
+
+                >
+
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+
+                        <path
+
+                            d="M22 2L11 13"
+
+                            stroke="currentColor"
+
+                            strokeWidth="2"
+
+                            strokeLinecap="round"
+
+                            strokeLinejoin="round"
+
+                        />
+
+                        <path
+
+                            d="M22 2L15 22L11 13L2 9L22 2Z"
+
+                            stroke="currentColor"
+
+                            strokeWidth="2"
+
+                            strokeLinecap="round"
+
+                            strokeLinejoin="round"
+
+                        />
+
+                    </svg>
+
+                </button>
+
+            </div>
+
+            <p className="chat-input-hint">
+
+                Enter to send · Shift+Enter for new line
+
+            </p>
 
         </div>
 

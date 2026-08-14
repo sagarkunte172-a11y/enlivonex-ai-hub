@@ -1,25 +1,24 @@
 /*
 ==================================
 Session Controller
-Enlivonex AI Hub
+MongoDB Version
 ==================================
 */
 
 const {
 
     createSession,
-    deleteSession,
-    getAllSessions,
-    getSession,
-    getMessages,
-    setActiveSession,
-    getActiveSessionId
-    ,
-    addAIMessage
+    getSessionsByUser,
+    getSessionById,
+    deleteSession
 
-} = require("../memory/sessionManager");
+} = require("../services/sessionService");
 
-const { chooseModel } = require("../services/modelRouter");
+const {
+
+    getMessages
+
+} = require("../services/messageService");
 
 /*
 ==================================
@@ -27,17 +26,41 @@ Get All Sessions
 ==================================
 */
 
-function getSessions(req, res) {
+async function getSessions(req, res) {
 
-    return res.json({
+    try {
 
-        success: true,
+        const sessions = await getSessionsByUser();
 
-        sessions: getAllSessions(),
+        return res.json({
 
-        activeSession: getActiveSessionId()
+            success: true,
 
-    });
+            sessions,
+
+            activeSession:
+
+                sessions.length > 0
+                    ? sessions[0]._id
+                    : null
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.error("Get Sessions Error:", error);
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: "Failed to load sessions."
+
+        });
+
+    }
 
 }
 
@@ -47,28 +70,37 @@ Create New Session
 ==================================
 */
 
-function createNewSession(req, res) {
+async function createNewSession(req, res) {
 
-    const session = createSession();
-
-    // Add an initial AI/system welcome message and attach default model info
     try {
-        const defaultModel = chooseModel("");
-        addAIMessage(session.id, "👋 New chat started.", defaultModel);
+
+        const session = await createSession();
+
+        return res.status(201).json({
+
+            success: true,
+
+            session,
+
+            activeSession: session._id
+
+        });
+
     }
-    catch (err) {
-        console.error("Failed to add initial AI message:", err);
+
+    catch (error) {
+
+        console.error("Create Session Error:", error);
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: "Failed to create session."
+
+        });
+
     }
-
-    return res.json({
-
-        success: true,
-
-        session,
-
-        activeSession: session.id
-
-    });
 
 }
 
@@ -78,45 +110,67 @@ Switch Session
 ==================================
 */
 
-function switchSession(req, res) {
+async function switchSession(req, res) {
 
-    const { sessionId } = req.body;
+    try {
 
-    if (!sessionId) {
+        const { sessionId } = req.body;
 
-        return res.status(400).json({
+        if (!sessionId) {
 
-            success: false,
+            return res.status(400).json({
 
-            message: "Session ID is required."
+                success: false,
+
+                message: "Session ID is required."
+
+            });
+
+        }
+
+        const session = await getSessionById(sessionId);
+
+        if (!session) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "Session not found."
+
+            });
+
+        }
+
+        const messages = await getMessages(sessionId);
+
+        return res.json({
+
+            success: true,
+
+            activeSession: sessionId,
+
+            session,
+
+            messages
 
         });
 
     }
 
-    const success = setActiveSession(sessionId);
+    catch (error) {
 
-    if (!success) {
+        console.error("Switch Session Error:", error);
 
-        return res.status(404).json({
+        return res.status(500).json({
 
             success: false,
 
-            message: "Session not found."
+            message: "Failed to switch session."
 
         });
 
     }
-
-    return res.json({
-
-        success: true,
-
-        activeSession: sessionId,
-
-        messages: getMessages(sessionId)
-
-    });
 
 }
 
@@ -126,33 +180,57 @@ Delete Session
 ==================================
 */
 
-function deleteChatSession(req, res) {
+async function deleteChatSession(req, res) {
 
-    const { id } = req.params;
+    try {
 
-    const success = deleteSession(id);
+        const { id } = req.params;
 
-    if (!success) {
+        const deleted = await deleteSession(id);
 
-        return res.status(404).json({
+        if (!deleted) {
 
-            success: false,
+            return res.status(404).json({
 
-            message: "Session not found."
+                success: false,
+
+                message: "Session not found."
+
+            });
+
+        }
+
+        const sessions = await getSessionsByUser();
+
+        return res.json({
+
+            success: true,
+
+            sessions,
+
+            activeSession:
+
+                sessions.length > 0
+                    ? sessions[0]._id
+                    : null
 
         });
 
     }
 
-    return res.json({
+    catch (error) {
 
-        success: true,
+        console.error("Delete Session Error:", error);
 
-        sessions: getAllSessions(),
+        return res.status(500).json({
 
-        activeSession: getActiveSessionId()
+            success: false,
 
-    });
+            message: "Failed to delete session."
+
+        });
+
+    }
 
 }
 
@@ -162,33 +240,53 @@ Get Single Session
 ==================================
 */
 
-function getSingleSession(req, res) {
+async function getSingleSession(req, res) {
 
-    const { id } = req.params;
+    try {
 
-    const session = getSession(id);
+        const { id } = req.params;
 
-    if (!session) {
+        const session = await getSessionById(id);
 
-        return res.status(404).json({
+        if (!session) {
 
-            success: false,
+            return res.status(404).json({
 
-            message: "Session not found."
+                success: false,
+
+                message: "Session not found."
+
+            });
+
+        }
+
+        const messages = await getMessages(id);
+
+        return res.json({
+
+            success: true,
+
+            session,
+
+            messages
 
         });
 
     }
 
-    return res.json({
+    catch (error) {
 
-        success: true,
+        console.error("Get Session Error:", error);
 
-        session,
+        return res.status(500).json({
 
-        messages: getMessages(id)
+            success: false,
 
-    });
+            message: "Failed to load session."
+
+        });
+
+    }
 
 }
 

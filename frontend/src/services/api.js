@@ -1,6 +1,49 @@
-// Use environment variable when provided, otherwise use relative '/api'
-// during development the CRA dev server can proxy requests to the backend.
-const API_BASE_URL = process.env.REACT_APP_API_URL || "/api";
+/*
+==================================
+API Configuration
+==================================
+*/
+
+const API_BASE_URL =
+    process.env.REACT_APP_API_URL || "/api";
+
+/*
+==================================
+Common Request
+==================================
+*/
+
+async function apiRequest(
+
+    url,
+
+    options = {}
+
+) {
+
+    try {
+
+        const response = await fetch(
+
+            `${API_BASE_URL}${url}`,
+
+            options
+
+        );
+
+        return response;
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        throw error;
+
+    }
+
+}
 
 /*
 ==================================
@@ -8,36 +51,59 @@ Send Message
 ==================================
 */
 
-export async function sendMessage(message, onChunk, sessionId = null) {
+export async function sendMessage(
+
+    message,
+
+    onChunk,
+
+    sessionId = null
+
+) {
 
     try {
 
-        const response = await fetch(`${API_BASE_URL}/chat`, {
+        const response = await apiRequest(
 
-            method: "POST",
+            "/chat",
 
-            headers: {
+            {
 
-                "Content-Type": "application/json"
+                method: "POST",
 
-            },
+                headers: {
 
-            body: JSON.stringify({
-                message,
-                sessionId
-            })
+                    "Content-Type":
 
-        });
+                        "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    message,
+
+                    sessionId
+
+                })
+
+            }
+
+        );
 
         if (!response.ok) {
 
-            throw new Error("Failed to connect.");
+            throw new Error(
+
+                "Failed to connect."
+
+            );
 
         }
 
         /*
         ==================================
-        Read Model Info
+        Model Information
         ==================================
         */
 
@@ -45,54 +111,87 @@ export async function sendMessage(message, onChunk, sessionId = null) {
 
             name:
 
-                response.headers.get("X-Model-Name") ||
+                response.headers.get(
 
-                "Unknown",
+                    "X-Model-Name"
+
+                ) || "Unknown",
 
             id:
 
-                response.headers.get("X-Model-ID") ||
+                response.headers.get(
 
-                "unknown",
+                    "X-Model-ID"
+
+                ) || "unknown",
 
             reason:
 
-                response.headers.get("X-Model-Reason") ||
+                response.headers.get(
 
-                ""
+                    "X-Model-Reason"
+
+                ) || ""
 
         };
 
         /*
         ==================================
-        Stream Response
+        Stream Reader
         ==================================
         */
 
-        const reader = response.body.getReader();
+        const reader =
 
-        const decoder = new TextDecoder();
+            response.body.getReader();
+
+        const decoder =
+
+            new TextDecoder();
 
         let fullResponse = "";
 
         while (true) {
 
-            const { done, value } = await reader.read();
+            const {
+
+                done,
+
+                value
+
+            } = await reader.read();
 
             if (done) break;
 
-            const chunk = decoder.decode(value, {
+            const chunk = decoder.decode(
 
-                stream: true
+                value,
 
-            });
+                {
+
+                    stream: true
+
+                }
+
+            );
 
             fullResponse += chunk;
 
-            if (typeof onChunk === "function") {
+            if (
 
-                // Pass modelInfo as second argument so UI can display model early
-                onChunk(fullResponse, modelInfo);
+                typeof onChunk ===
+
+                "function"
+
+            ) {
+
+                onChunk(
+
+                    fullResponse,
+
+                    modelInfo
+
+                );
 
             }
 
@@ -118,7 +217,9 @@ export async function sendMessage(message, onChunk, sessionId = null) {
 
             success: false,
 
-            aiReply: "❌ Unable to connect.",
+            aiReply:
+
+                "❌ Unable to connect.",
 
             model: {
 
@@ -144,7 +245,33 @@ Get All Sessions
 
 export async function getSessions() {
 
-    const response = await fetch(`${API_BASE_URL}/sessions`);
+    const response = await apiRequest(
+
+        "/sessions"
+
+    );
+
+    return await response.json();
+
+}
+
+/*
+==================================
+Get Single Session
+==================================
+*/
+
+export async function getSession(
+
+    sessionId
+
+) {
+
+    const response = await apiRequest(
+
+        `/session/${sessionId}`
+
+    );
 
     return await response.json();
 
@@ -158,11 +285,17 @@ Create Session
 
 export async function createSession() {
 
-    const response = await fetch(`${API_BASE_URL}/session/new`, {
+    const response = await apiRequest(
 
-        method: "POST"
+        "/session/new",
 
-    });
+        {
+
+            method: "POST"
+
+        }
+
+    );
 
     return await response.json();
 
@@ -174,41 +307,35 @@ Switch Session
 ==================================
 */
 
-export async function switchSession(sessionId) {
+export async function switchSession(
 
-    const response = await fetch(`${API_BASE_URL}/session/switch`, {
+    sessionId
 
-        method: "POST",
+) {
 
-        headers: {
+    const response = await apiRequest(
 
-            "Content-Type": "application/json"
+        "/session/switch",
 
-        },
+        {
 
-        body: JSON.stringify({
+            method: "POST",
 
-            sessionId
+            headers: {
 
-        })
+                "Content-Type":
 
-    });
+                    "application/json"
 
-    return await response.json();
+            },
 
-}
+            body: JSON.stringify({
 
-/*
-==================================
-Get Single Session
-==================================
-*/
+                sessionId
 
-export async function getSession(sessionId) {
+            })
 
-    const response = await fetch(
-
-        `${API_BASE_URL}/session/${sessionId}`
+        }
 
     );
 
@@ -222,11 +349,15 @@ Delete Session
 ==================================
 */
 
-export async function deleteSession(sessionId) {
+export async function deleteSession(
 
-    const response = await fetch(
+    sessionId
 
-        `${API_BASE_URL}/session/${sessionId}`,
+) {
+
+    const response = await apiRequest(
+
+        `/session/${sessionId}`,
 
         {
 

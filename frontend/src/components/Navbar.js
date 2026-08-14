@@ -1,58 +1,113 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import "./Navbar.css";
 
 function Navbar() {
-  return (
-    <nav className="navbar">
 
-      <div className="logo">
-        <span className="logo-icon">🚀</span>
-        <span className="logo-text">ENLIVONEX AI HUB</span>
-      </div>
+    return (
 
-      <ul className="nav-links">
+        <nav className="navbar">
 
-        <li>
-          <NavLink to="/" className={({ isActive }) => isActive ? "active-link" : ""}>
-            Home
-          </NavLink>
-        </li>
+            {/* Logo */}
 
-        <li>
-          <NavLink to="/features" className={({ isActive }) => isActive ? "active-link" : ""}>
-            AI Tools
-          </NavLink>
-        </li>
+            <Link
+                to="/"
+                className="logo"
+            >
 
-        <li>
-          <NavLink to="/about" className={({ isActive }) => isActive ? "active-link" : ""}>
-            Community
-          </NavLink>
-        </li>
+                <span className="logo-icon">
+                    🚀
+                </span>
 
-        <li>
-          <NavLink to="/contact" className={({ isActive }) => isActive ? "active-link" : ""}>
-            About
-          </NavLink>
-        </li>
+                <span className="logo-text">
+                    ENLIVONEX AI HUB
+                </span>
 
-        <li>
-          <NavLink
-            to="/dashboard"
-            className={({ isActive }) =>
-              isActive
-                ? "dashboard-btn dashboard-active"
-                : "dashboard-btn"
-            }
-          >
-            Dashboard →
-          </NavLink>
-        </li>
+            </Link>
 
-      </ul>
+            {/* Navigation */}
 
-    </nav>
-  );
+            <ul className="nav-links">
+
+                <li>
+
+                    <NavLink
+                        to="/"
+                        end
+                        className={({ isActive }) =>
+                            isActive ? "active-link" : ""
+                        }
+                    >
+                        Home
+                    </NavLink>
+
+                </li>
+
+                <li>
+
+                    <NavLink
+                        to="/features"
+                        className={({ isActive }) =>
+                            isActive ? "active-link" : ""
+                        }
+                    >
+                        AI Tools
+                    </NavLink>
+
+                </li>
+
+                <li>
+
+                    <NavLink
+                        to="/about"
+                        className={({ isActive }) =>
+                            isActive ? "active-link" : ""
+                        }
+                    >
+                        About
+                    </NavLink>
+
+                </li>
+
+                <li>
+
+                    <NavLink
+                        to="/contact"
+                        className={({ isActive }) =>
+                            isActive ? "active-link" : ""
+                        }
+                    >
+                        Contact
+                    </NavLink>
+
+                </li>
+
+            </ul>
+
+            {/* Right Side */}
+
+            <div className="navbar-right">
+
+                <NavLink
+                    to="/dashboard"
+                    className={({ isActive }) =>
+
+                        isActive
+                            ? "dashboard-btn dashboard-active"
+                            : "dashboard-btn"
+
+                    }
+                >
+
+                    Dashboard →
+
+                </NavLink>
+
+            </div>
+
+        </nav>
+
+    );
+
 }
 
 export default Navbar;

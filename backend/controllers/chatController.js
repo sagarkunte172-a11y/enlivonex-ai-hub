@@ -1,47 +1,34 @@
 /*
 ==================================
 Chat Controller
-Enlivonex AI Hub
+MongoDB Version
 ==================================
 */
 
 const { askOllama } = require("../services/ollamaService");
+const { chooseModel } = require("../services/modelRouter");
 
 const {
-    addUserMessage,
-    addAIMessage,
-    getActiveSessionId
-} = require("../memory/sessionManager");
+    saveMessage
+} = require("../services/messageService");
 
 const {
-    chooseModel
-} = require("../services/modelRouter");
-
-/*
-==================================
-Chat With AI
-==================================
-*/
+    updateLastMessage
+} = require("../services/sessionService");
 
 async function chatWithAI(req, res) {
 
     try {
 
-        const { message, sessionId: reqSessionId } = req.body;
+        const { message, sessionId } = req.body;
 
-        /*
-        ==================================
-        Validation
-        ==================================
-        */
-
-        if (!message || typeof message !== "string") {
+        if (!message || !sessionId) {
 
             return res.status(400).json({
 
                 success: false,
 
-                message: "A valid message is required."
+                message: "Message and Session ID required."
 
             });
 
@@ -49,54 +36,9 @@ async function chatWithAI(req, res) {
 
         const cleanMessage = message.trim();
 
-        if (!cleanMessage.length) {
-
-            return res.status(400).json({
-
-                success: false,
-
-                message: "Message cannot be empty."
-
-            });
-
-        }
-
-        /*
-        ==================================
-        Active Session
-        ==================================
-        */
-
-        // Prefer sessionId from client, fallback to server active session
-        const sessionId = reqSessionId || getActiveSessionId();
-
-        /*
-        ==================================
-        Select Model
-        ==================================
-        */
-
         const selectedModel = chooseModel(cleanMessage);
 
-        console.log("\n==================================");
-
-        console.log("Session        :", sessionId);
-
-        console.log("Selected Model :", selectedModel.name);
-
-        console.log("Model ID       :", selectedModel.model);
-
-        console.log("Reason         :", selectedModel.reason);
-
-        console.log("==================================\n");
-
-        let completeAIResponse = "";
-
-        /*
-        ==================================
-        Streaming Headers
-        ==================================
-        */
+        let aiReply = "";
 
         res.writeHead(200, {
 
@@ -108,8 +50,6 @@ async function chatWithAI(req, res) {
 
             "Connection": "keep-alive",
 
-            "X-Accel-Buffering": "no",
-
             "X-Model-Name": selectedModel.name,
 
             "X-Model-ID": selectedModel.model,
@@ -118,48 +58,89 @@ async function chatWithAI(req, res) {
 
         });
 
-        /*
-        ==================================
-        Generate AI Response
-        ==================================
-        */
-
-
         await askOllama(
+
             cleanMessage,
+
             (chunk) => {
-                completeAIResponse += chunk;
+
+                aiReply += chunk;
+
                 res.write(chunk);
+
             }
+
         );
 
         /*
         ==================================
-        Save Conversation
+        Save User Message
         ==================================
         */
 
-        // Save user and AI messages with model metadata
-        addUserMessage(sessionId, cleanMessage);
-        addAIMessage(sessionId, completeAIResponse.trim(), selectedModel);
+        await saveMessage(
+
+            sessionId,
+
+            "user",
+
+            cleanMessage
+
+        );
 
         /*
         ==================================
-        End Stream
+        Save AI Message
         ==================================
         */
+
+        await saveMessage(
+
+            sessionId,
+
+            "assistant",
+
+            aiReply,
+
+            {
+
+                name: selectedModel.name,
+
+                id: selectedModel.model,
+
+                reason: selectedModel.reason
+
+            }
+
+        );
+
+        /*
+        ==================================
+        Update Session Preview
+        ==================================
+        */
+
+        await updateLastMessage(
+
+            sessionId,
+
+            cleanMessage,
+
+            selectedModel.model
+
+        );
 
         res.end();
 
     }
 
-    catch (error) {
+    catch (err) {
 
-        console.error("Chat Controller Error:", error);
+        console.error(err);
 
         if (!res.headersSent) {
 
-            return res.status(500).json({
+            res.status(500).json({
 
                 success: false,
 
@@ -169,17 +150,9 @@ async function chatWithAI(req, res) {
 
         }
 
-        res.end();
-
     }
 
 }
-
-/*
-==================================
-Exports
-==================================
-*/
 
 module.exports = {
 
