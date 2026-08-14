@@ -9,57 +9,92 @@ Controllers
 */
 
 const {
-
     chatWithAI
-
 } = require("../controllers/chatController");
 
 const {
+    codeAssistant
+} = require("../controllers/codeAssistantController");
 
+const {
     getSessions,
-
     createNewSession,
-
     switchSession,
-
     deleteChatSession,
-
     getSingleSession
-
 } = require("../controllers/sessionController");
+
 
 /*
 ==================================
-AI Chat
+AI CHAT
 ==================================
 */
 
-router.post("/chat", chatWithAI);
+// Normal AI Chat
+router.post(
+    "/chat",
+    chatWithAI
+);
+
 
 /*
 ==================================
-Session APIs
+CODE ASSISTANT
+==================================
+*/
+
+// Qwen 2.5 Coder 7B
+router.post(
+    "/code-assistant",
+    codeAssistant
+);
+
+
+/*
+==================================
+SESSION APIs
 ==================================
 */
 
 // Get all sessions
-router.get("/sessions", getSessions);
+router.get(
+    "/sessions",
+    getSessions
+);
+
 
 // Create new session
-router.post("/session/new", createNewSession);
+router.post(
+    "/session/new",
+    createNewSession
+);
+
 
 // Switch active session
-router.post("/session/switch", switchSession);
+router.post(
+    "/session/switch",
+    switchSession
+);
+
 
 // Get single session with messages
-router.get("/session/:id", getSingleSession);
+router.get(
+    "/session/:id",
+    getSingleSession
+);
+
 
 // Delete session
-router.delete("/session/:id", deleteChatSession);
+router.delete(
+    "/session/:id",
+    deleteChatSession
+);
+
 
 /*
 ==================================
-Exports
+EXPORT ROUTER
 ==================================
 */
 

@@ -28,9 +28,9 @@ const MODELS = {
 
     CODE: {
 
-        name: "Gemma 3 4B",
+        name: "Qwen 2.5 Coder 7B",
 
-        model: "gemma3:4b"
+        model: "qwen2.5-coder:7b"
 
     },
 
@@ -42,7 +42,7 @@ const MODELS = {
 
     REASONING: {
 
-        name: "DeepSeek R1",
+        name: "DeepSeek R1 7B",
 
         model: "deepseek-r1:7b"
 

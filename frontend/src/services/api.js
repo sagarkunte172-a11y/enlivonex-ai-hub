@@ -369,4 +369,127 @@ export async function deleteSession(
 
     return await response.json();
 
+    
+}
+/*
+==================================
+Code Assistant
+==================================
+*/
+
+export async function sendCodeAssistant(
+    prompt,
+    onChunk
+) {
+
+    try {
+
+        const response = await apiRequest(
+            "/code-assistant",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    prompt
+                })
+            }
+        );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Code Assistant connection failed."
+            );
+
+        }
+
+        const reader =
+            response.body.getReader();
+
+        const decoder =
+            new TextDecoder();
+
+        let fullResponse = "";
+
+        while (true) {
+
+            const {
+                done,
+                value
+            } = await reader.read();
+
+            if (done) break;
+
+            const chunk =
+                decoder.decode(
+                    value,
+                    {
+                        stream: true
+                    }
+                );
+
+            fullResponse += chunk;
+
+            if (
+                typeof onChunk === "function"
+            ) {
+
+                onChunk(
+                    fullResponse
+                );
+
+            }
+
+        }
+
+        return {
+
+            success: true,
+
+            answer: fullResponse,
+
+            model: {
+                name:
+                    response.headers.get(
+                        "X-Model-Name"
+                    ) || "Qwen 2.5 Coder 7B",
+
+                id:
+                    response.headers.get(
+                        "X-Model-ID"
+                    ) || "qwen2.5-coder:7b"
+            }
+
+        };
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Code Assistant Error:",
+            error
+        );
+
+        return {
+
+            success: false,
+
+            answer:
+                "❌ Unable to connect to Qwen 2.5 Coder 7B.",
+
+            model: {
+                name: "Unknown",
+                id: "unknown"
+            }
+
+        };
+
+    }
+
 }
