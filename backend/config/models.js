@@ -1,53 +1,19 @@
-/*
-==================================
-Enlivonex AI Models
-==================================
-*/
-
 const MODELS = {
-
-    /*
-    ==================================
-    General Chat Model
-    ==================================
-    */
-
-    CHAT: {
-
-        name: "Qwen 2.5 3B",
-
-        model: "qwen2.5:3b"
-
-    },
-
-    /*
-    ==================================
-    Coding Model
-    ==================================
-    */
+    CHAT: [
+        {
+            name: "Qwen 2.5 3B",
+            model: "qwen2.5:3b"
+        },
+        {
+            name: "Gemma 3 4B",
+            model: "gemma3:4b"
+        }
+    ],
 
     CODE: {
-
         name: "Qwen 2.5 Coder 7B",
-
         model: "qwen2.5-coder:7b"
-
-    },
-
-    /*
-    ==================================
-    Reasoning Model
-    ==================================
-    */
-
-    REASONING: {
-
-        name: "DeepSeek R1 7B",
-
-        model: "deepseek-r1:7b"
-
     }
-
 };
 
 module.exports = MODELS;

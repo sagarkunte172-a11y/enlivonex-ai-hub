@@ -1,12 +1,10 @@
-/*
-==================================
-Chat Controller
-MongoDB Version
-==================================
-*/
+const {
+    chooseModel
+} = require("../services/modelRouter");
 
-const { askOllama } = require("../services/ollamaService");
-const { chooseModel } = require("../services/modelRouter");
+const {
+    askOllama
+} = require("../services/ollamaService");
 
 const {
     saveMessage
@@ -16,146 +14,106 @@ const {
     updateLastMessage
 } = require("../services/sessionService");
 
+const ALLOWED = new Set([
+    "auto",
+    "qwen2.5:3b",
+    "gemma3:4b"
+]);
+
 async function chatWithAI(req, res) {
-
     try {
+        const {
+            message,
+            sessionId,
+            model = "auto"
+        } = req.body;
 
-        const { message, sessionId } = req.body;
-
-        if (!message || !sessionId) {
-
+        if (!message?.trim() || !sessionId) {
             return res.status(400).json({
-
                 success: false,
-
                 message: "Message and Session ID required."
-
             });
+        }
 
+        if (!ALLOWED.has(model)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid chat model."
+            });
         }
 
         const cleanMessage = message.trim();
-
-        const selectedModel = chooseModel(cleanMessage);
+        const selected = chooseModel(
+            cleanMessage,
+            model
+        );
 
         let aiReply = "";
 
         res.writeHead(200, {
-
-            "Content-Type": "text/plain; charset=utf-8",
-
+            "Content-Type":
+                "text/plain; charset=utf-8",
             "Transfer-Encoding": "chunked",
-
             "Cache-Control": "no-cache",
-
             "Connection": "keep-alive",
-
-            "X-Model-Name": selectedModel.name,
-
-            "X-Model-ID": selectedModel.model,
-
-            "X-Model-Reason": selectedModel.reason
-
+            "X-Model-Name": selected.name,
+            "X-Model-ID": selected.model,
+            "X-Model-Reason":
+                String(selected.reason)
+                    .replace(/[^\x20-\x7E]/g, "")
         });
 
         await askOllama(
-
             cleanMessage,
-
             (chunk) => {
-
                 aiReply += chunk;
-
                 res.write(chunk);
-
-            }
-
+            },
+            selected.model
         );
 
-        /*
-        ==================================
-        Save User Message
-        ==================================
-        */
-
         await saveMessage(
-
             sessionId,
-
             "user",
-
             cleanMessage
-
         );
-
-        /*
-        ==================================
-        Save AI Message
-        ==================================
-        */
 
         await saveMessage(
-
             sessionId,
-
             "assistant",
-
             aiReply,
-
             {
-
-                name: selectedModel.name,
-
-                id: selectedModel.model,
-
-                reason: selectedModel.reason
-
+                name: selected.name,
+                id: selected.model,
+                reason: selected.reason
             }
-
         );
-
-        /*
-        ==================================
-        Update Session Preview
-        ==================================
-        */
 
         await updateLastMessage(
-
             sessionId,
-
             cleanMessage,
-
-            selectedModel.model
-
+            selected.model
         );
 
         res.end();
-
-    }
-
-    catch (err) {
-
-        console.error(err);
+    } catch (error) {
+        console.error(
+            "Chat Controller Error:",
+            error
+        );
 
         if (!res.headersSent) {
-
-            res.status(500).json({
-
+            return res.status(500).json({
                 success: false,
-
-                message: "Internal Server Error"
-
+                message:
+                    "Unable to connect to Enlivonex AI."
             });
-
         }
 
+        res.end();
     }
-
 }
 
 module.exports = {
-
     chatWithAI
-
 };

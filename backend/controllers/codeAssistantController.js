@@ -1,48 +1,117 @@
-const {
-    askCodeAssistant,
-    CODE_MODEL
-} = require("../services/codeAssistantService");
+/*
+==================================
+Enlivonex Code Assistant Controller
+==================================
+*/
 
-async function codeAssistant(req, res) {
+const {
+    askCodeAssistant
+} = require(
+    "../services/codeAssistantService"
+);
+
+
+/*
+==================================
+CODE ASSISTANT
+==================================
+*/
+
+async function codeAssistant(
+    req,
+    res
+) {
 
     try {
 
-        const { prompt } = req.body;
+        const {
+            prompt
+        } = req.body;
 
-        if (!prompt || !prompt.trim()) {
+
+        /*
+        ==================================
+        VALIDATION
+        ==================================
+        */
+
+        if (
+            typeof prompt !== "string" ||
+            !prompt.trim()
+        ) {
 
             return res.status(400).json({
 
                 success: false,
-                message: "Code Assistant prompt is required."
+
+                message:
+                    "Code Assistant prompt is required."
 
             });
 
         }
 
-        const cleanPrompt = prompt.trim();
 
-        res.writeHead(200, {
+        const cleanPrompt =
+            prompt.trim();
 
-            "Content-Type":
-                "text/plain; charset=utf-8",
 
-            "Transfer-Encoding":
-                "chunked",
+        /*
+        ==================================
+        STREAMING RESPONSE
+        ==================================
 
-            "Cache-Control":
-                "no-cache",
+        Do NOT manually choose the model
+        here.
 
-            "Connection":
-                "keep-alive",
+        codeAssistantService.js is the
+        single source of truth for the
+        Code Assistant model.
+        ==================================
+        */
 
-            "X-Model-Name":
-                "Qwen 2.5 Coder 7B",
+        res.writeHead(
+            200,
+            {
 
-            "X-Model-ID":
-                CODE_MODEL
+                "Content-Type":
+                    "text/plain; charset=utf-8",
 
-        });
+                "Transfer-Encoding":
+                    "chunked",
+
+                "Cache-Control":
+                    "no-cache, no-transform",
+
+                "Connection":
+                    "keep-alive",
+
+                /*
+                Safe static headers.
+
+                Avoid undefined values and
+                avoid dynamic reason strings
+                inside HTTP headers.
+                */
+
+                "X-Model-Name":
+                    "Qwen 2.5 Coder 7B",
+
+                "X-Model-ID":
+                    "qwen2.5-coder:7b",
+
+                "X-Model-Reason":
+                    "Code Assistant"
+
+            }
+        );
+
+
+        /*
+        ==================================
+        ASK CODE ASSISTANT
+        ==================================
+        */
 
         await askCodeAssistant(
 
@@ -50,42 +119,97 @@ async function codeAssistant(req, res) {
 
             (chunk) => {
 
-                res.write(chunk);
+                if (
+                    !res.writableEnded &&
+                    typeof chunk === "string" &&
+                    chunk.length > 0
+                ) {
+
+                    res.write(chunk);
+
+                }
 
             }
 
         );
 
-        res.end();
+
+        /*
+        ==================================
+        END RESPONSE
+        ==================================
+        */
+
+        if (
+            !res.writableEnded
+        ) {
+
+            res.end();
+
+        }
 
     }
 
     catch (error) {
 
         console.error(
-            "Code Assistant Error:",
-            error
+            "❌ Code Assistant Controller Error:",
+            error.message
         );
 
-        if (!res.headersSent) {
+
+        /*
+        ==================================
+        ERROR BEFORE RESPONSE STARTED
+        ==================================
+        */
+
+        if (
+            !res.headersSent
+        ) {
 
             return res.status(500).json({
 
                 success: false,
 
                 message:
-                    "Code Assistant failed."
+                    "Code Assistant failed.",
+
+                error:
+                    error.message
 
             });
 
         }
 
-        res.end();
+
+        /*
+        ==================================
+        STREAM ALREADY STARTED
+        ==================================
+        */
+
+        if (
+            !res.writableEnded
+        ) {
+
+            res.end();
+
+        }
 
     }
 
 }
 
+
+/*
+==================================
+EXPORT
+==================================
+*/
+
 module.exports = {
+
     codeAssistant
+
 };

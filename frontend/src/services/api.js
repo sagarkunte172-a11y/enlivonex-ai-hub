@@ -1,495 +1,228 @@
-/*
-==================================
-API Configuration
-==================================
-*/
-
 const API_BASE_URL =
     process.env.REACT_APP_API_URL || "/api";
 
-/*
-==================================
-Common Request
-==================================
-*/
-
-async function apiRequest(
-
-    url,
-
-    options = {}
-
-) {
-
-    try {
-
-        const response = await fetch(
-
-            `${API_BASE_URL}${url}`,
-
-            options
-
-        );
-
-        return response;
-
+export const CHAT_MODELS = {
+    AUTO: {
+        id: "auto",
+        name: "Automatic"
+    },
+    QWEN: {
+        id: "qwen2.5:3b",
+        name: "Qwen 2.5 3B"
+    },
+    GEMMA: {
+        id: "gemma3:4b",
+        name: "Gemma 3 4B"
     }
+};
 
-    catch (error) {
-
-        console.error(error);
-
-        throw error;
-
-    }
-
+async function apiRequest(url, options = {}) {
+    return fetch(`${API_BASE_URL}${url}`, options);
 }
-
-/*
-==================================
-Send Message
-==================================
-*/
 
 export async function sendMessage(
-
     message,
-
     onChunk,
-
-    sessionId = null
-
+    sessionId,
+    selectedModel = "auto",
+    signal
 ) {
-
-    try {
-
-        const response = await apiRequest(
-
-            "/chat",
-
-            {
-
-                method: "POST",
-
-                headers: {
-
-                    "Content-Type":
-
-                        "application/json"
-
-                },
-
-                body: JSON.stringify({
-
-                    message,
-
-                    sessionId
-
-                })
-
-            }
-
-        );
-
-        if (!response.ok) {
-
-            throw new Error(
-
-                "Failed to connect."
-
-            );
-
-        }
-
-        /*
-        ==================================
-        Model Information
-        ==================================
-        */
-
-        const modelInfo = {
-
-            name:
-
-                response.headers.get(
-
-                    "X-Model-Name"
-
-                ) || "Unknown",
-
-            id:
-
-                response.headers.get(
-
-                    "X-Model-ID"
-
-                ) || "unknown",
-
-            reason:
-
-                response.headers.get(
-
-                    "X-Model-Reason"
-
-                ) || ""
-
-        };
-
-        /*
-        ==================================
-        Stream Reader
-        ==================================
-        */
-
-        const reader =
-
-            response.body.getReader();
-
-        const decoder =
-
-            new TextDecoder();
-
-        let fullResponse = "";
-
-        while (true) {
-
-            const {
-
-                done,
-
-                value
-
-            } = await reader.read();
-
-            if (done) break;
-
-            const chunk = decoder.decode(
-
-                value,
-
-                {
-
-                    stream: true
-
-                }
-
-            );
-
-            fullResponse += chunk;
-
-            if (
-
-                typeof onChunk ===
-
-                "function"
-
-            ) {
-
-                onChunk(
-
-                    fullResponse,
-
-                    modelInfo
-
-                );
-
-            }
-
-        }
-
-        return {
-
-            success: true,
-
-            aiReply: fullResponse,
-
-            model: modelInfo
-
-        };
-
+    const allowed = Object.values(CHAT_MODELS).map(m => m.id);
+    const model = allowed.includes(selectedModel)
+        ? selectedModel
+        : "auto";
+
+    const response = await apiRequest("/chat", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            message,
+            sessionId,
+            model
+        }),
+        signal
+    });
+
+    if (!response.ok) {
+        throw new Error(`Chat API Error: ${response.status}`);
     }
 
-    catch (error) {
-
-        console.error(error);
-
-        return {
-
-            success: false,
-
-            aiReply:
-
-                "❌ Unable to connect.",
-
-            model: {
-
-                name: "Unknown",
-
-                id: "unknown",
-
-                reason: ""
-
-            }
-
-        };
-
+    if (!response.body) {
+        throw new Error("Chat response stream unavailable.");
     }
 
+    const modelInfo = {
+        name: response.headers.get("X-Model-Name") || "Unknown",
+        id: response.headers.get("X-Model-ID") || "unknown",
+        reason: response.headers.get("X-Model-Reason") || ""
+    };
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let answer = "";
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        answer += chunk;
+
+        if (typeof onChunk === "function") {
+            onChunk(answer, modelInfo);
+        }
+    }
+
+    return {
+        success: true,
+        answer,
+        model: modelInfo
+    };
 }
-
-/*
-==================================
-Get All Sessions
-==================================
-*/
 
 export async function getSessions() {
-
-    const response = await apiRequest(
-
-        "/sessions"
-
-    );
-
-    return await response.json();
-
-}
-
-/*
-==================================
-Get Single Session
-==================================
-*/
-
-export async function getSession(
-
-    sessionId
-
-) {
-
-    const response = await apiRequest(
-
-        `/session/${sessionId}`
-
-    );
-
-    return await response.json();
-
-}
-
-/*
-==================================
-Create Session
-==================================
-*/
-
-export async function createSession() {
-
-    const response = await apiRequest(
-
-        "/session/new",
-
-        {
-
-            method: "POST"
-
-        }
-
-    );
-
-    return await response.json();
-
-}
-
-/*
-==================================
-Switch Session
-==================================
-*/
-
-export async function switchSession(
-
-    sessionId
-
-) {
-
-    const response = await apiRequest(
-
-        "/session/switch",
-
-        {
-
-            method: "POST",
-
-            headers: {
-
-                "Content-Type":
-
-                    "application/json"
-
-            },
-
-            body: JSON.stringify({
-
-                sessionId
-
-            })
-
-        }
-
-    );
-
-    return await response.json();
-
-}
-
-/*
-==================================
-Delete Session
-==================================
-*/
-
-export async function deleteSession(
-
-    sessionId
-
-) {
-
-    const response = await apiRequest(
-
-        `/session/${sessionId}`,
-
-        {
-
-            method: "DELETE"
-
-        }
-
-    );
-
-    return await response.json();
-
-    
-}
-/*
-==================================
-Code Assistant
-==================================
-*/
-
-export async function sendCodeAssistant(
-    prompt,
-    onChunk
-) {
-
     try {
-
-        const response = await apiRequest(
-            "/code-assistant",
-            {
-                method: "POST",
-
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body: JSON.stringify({
-                    prompt
-                })
-            }
-        );
+        const response = await apiRequest("/sessions");
 
         if (!response.ok) {
-
-            throw new Error(
-                "Code Assistant connection failed."
-            );
-
+            throw new Error(`Sessions Error: ${response.status}`);
         }
 
-        const reader =
-            response.body.getReader();
+        return await response.json();
+    } catch (error) {
+        console.error("Get Sessions Error:", error);
+        return {
+            success: false,
+            sessions: [],
+            activeSession: null
+        };
+    }
+}
 
-        const decoder =
-            new TextDecoder();
+export async function createSession() {
+    try {
+        const response = await apiRequest("/session/new", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
 
-        let fullResponse = "";
+        if (!response.ok) {
+            throw new Error(`Create Session Error: ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Create Session Error:", error);
+        return {
+            success: false
+        };
+    }
+}
+
+export async function switchSession(sessionId) {
+    try {
+        const response = await apiRequest("/session/switch", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ sessionId })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Switch Session Error: ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Switch Session Error:", error);
+        return {
+            success: false,
+            messages: []
+        };
+    }
+}
+
+export async function deleteSession(sessionId) {
+    try {
+        const response = await apiRequest(`/session/${sessionId}`, {
+            method: "DELETE"
+        });
+
+        if (!response.ok) {
+            throw new Error(`Delete Session Error: ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Delete Session Error:", error);
+        return {
+            success: false
+        };
+    }
+}
+
+export async function sendCodeAssistant(prompt, onChunk) {
+    try {
+        const response = await apiRequest("/code-assistant", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ prompt })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Code Assistant Error: ${response.status}`);
+        }
+
+        if (!response.body) {
+            throw new Error("Code Assistant stream unavailable.");
+        }
+
+        const model = {
+            name:
+                response.headers.get("X-Model-Name") ||
+                "Qwen 2.5 Coder 7B",
+            id:
+                response.headers.get("X-Model-ID") ||
+                "qwen2.5-coder:7b"
+        };
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let answer = "";
 
         while (true) {
-
-            const {
-                done,
-                value
-            } = await reader.read();
-
+            const { done, value } = await reader.read();
             if (done) break;
 
-            const chunk =
-                decoder.decode(
-                    value,
-                    {
-                        stream: true
-                    }
-                );
+            answer += decoder.decode(value, { stream: true });
 
-            fullResponse += chunk;
-
-            if (
-                typeof onChunk === "function"
-            ) {
-
-                onChunk(
-                    fullResponse
-                );
-
+            if (typeof onChunk === "function") {
+                onChunk(answer, model);
             }
-
         }
 
         return {
-
             success: true,
-
-            answer: fullResponse,
-
-            model: {
-                name:
-                    response.headers.get(
-                        "X-Model-Name"
-                    ) || "Qwen 2.5 Coder 7B",
-
-                id:
-                    response.headers.get(
-                        "X-Model-ID"
-                    ) || "qwen2.5-coder:7b"
-            }
-
+            answer,
+            model
         };
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Code Assistant Error:",
-            error
-        );
+    } catch (error) {
+        console.error("Code Assistant Error:", error);
 
         return {
-
             success: false,
-
-            answer:
-                "❌ Unable to connect to Qwen 2.5 Coder 7B.",
-
+            answer: "❌ Unable to connect to Code Assistant.",
             model: {
-                name: "Unknown",
-                id: "unknown"
+                name: "Qwen 2.5 Coder 7B",
+                id: "qwen2.5-coder:7b"
             }
-
         };
-
     }
-
 }

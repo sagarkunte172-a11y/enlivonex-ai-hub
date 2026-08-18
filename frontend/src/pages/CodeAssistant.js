@@ -1,6 +1,9 @@
 import { useState } from "react";
 import "./CodeAssistant.css";
-import { sendCodeAssistant } from "../services/api";
+
+import {
+    sendCodeAssistant
+} from "../services/api";
 
 function CodeAssistant() {
 
@@ -8,7 +11,8 @@ function CodeAssistant() {
     const [instruction, setInstruction] = useState("");
     const [response, setResponse] = useState("");
     const [loading, setLoading] = useState(false);
-    const [model, setModel] = useState("Qwen 2.5 Coder 7B");
+
+    const MODEL_NAME = "Qwen 2.5 Coder 7B";
 
     async function handleGenerate() {
 
@@ -21,10 +25,12 @@ function CodeAssistant() {
 
         const prompt = `
 User Instruction:
-${instruction || "Analyze the provided code and suggest improvements."}
+${instruction.trim() ||
+    "Analyze the provided code and identify errors or improvements."}
 
 Code:
-${code}
+${code.trim() ||
+    "No code was provided. Answer the coding request directly."}
         `.trim();
 
         const result = await sendCodeAssistant(
@@ -35,24 +41,27 @@ ${code}
         );
 
         if (result.success) {
-            setModel(
-                result.model?.name ||
-                "Qwen 2.5 Coder 7B"
+
+            setResponse(
+                result.answer || ""
             );
 
-            setResponse(result.answer);
-        }
-        else {
+        } else {
+
             setResponse(
                 result.answer ||
                 "❌ Unable to generate a response."
             );
+
         }
 
         setLoading(false);
     }
 
     function clearAssistant() {
+
+        if (loading) return;
+
         setCode("");
         setInstruction("");
         setResponse("");
@@ -62,47 +71,53 @@ ${code}
 
         <div className="code-page">
 
-            {/* Header */}
+            {/* HEADER */}
 
-            <div className="code-header">
+            <header className="code-header">
 
-                <div>
+                <div className="code-title">
 
                     <h1>💻 Code Assistant</h1>
 
                     <p>
-                        Generate, debug, explain and optimize
-                        your code with AI.
+                        Generate, debug, explain and
+                        optimize your code with AI.
                     </p>
 
                 </div>
 
                 <div className="model-badge">
 
-                    <span className="status-dot"></span>
+                    <span
+                        className={
+                            loading
+                                ? "status-dot loading"
+                                : "status-dot"
+                        }
+                    />
 
-                    {model}
+                    <span>
+                        {MODEL_NAME}
+                    </span>
 
                 </div>
 
-            </div>
+            </header>
 
 
-            {/* Workspace */}
+            {/* WORKSPACE */}
 
             <div className="code-workspace">
 
-                {/* Left side */}
+                {/* CODE */}
 
-                <div className="code-panel">
+                <section className="code-panel">
 
                     <div className="panel-header">
 
                         <h2>Your Code</h2>
 
-                        <span>
-                            Code Input
-                        </span>
+                        <span>Code Input</span>
 
                     </div>
 
@@ -112,26 +127,27 @@ ${code}
                         onChange={(e) =>
                             setCode(e.target.value)
                         }
-                        placeholder={
-                            "Paste your code here...\n\nExample:\n\ndef add(a, b):\n    return a + b"
-                        }
+                        placeholder={`Paste your code here...
+
+Example:
+
+def add(a, b):
+    return a + b`}
                         spellCheck="false"
                     />
 
-                </div>
+                </section>
 
 
-                {/* Right side */}
+                {/* INSTRUCTION */}
 
-                <div className="instruction-panel">
+                <section className="instruction-panel">
 
                     <div className="panel-header">
 
                         <h2>Instruction</h2>
 
-                        <span>
-                            What should AI do?
-                        </span>
+                        <span>What should AI do?</span>
 
                     </div>
 
@@ -141,9 +157,13 @@ ${code}
                         onChange={(e) =>
                             setInstruction(e.target.value)
                         }
-                        placeholder={
-                            "Example:\nDebug this code and explain the error.\n\nor\n\nOptimize this code for better performance."
-                        }
+                        placeholder={`Example:
+
+Debug this code and explain the error.
+
+or
+
+Optimize this code for better performance.`}
                     />
 
                     <div className="action-buttons">
@@ -153,12 +173,9 @@ ${code}
                             onClick={handleGenerate}
                             disabled={loading}
                         >
-
                             {loading
-                                ? "⏳ Generating..."
-                                : "⚡ Generate Solution"
-                            }
-
+                                ? "⏳ Qwen is working..."
+                                : "⚡ Generate Solution"}
                         </button>
 
                         <button
@@ -171,14 +188,14 @@ ${code}
 
                     </div>
 
-                </div>
+                </section>
 
             </div>
 
 
-            {/* AI Response */}
+            {/* RESPONSE */}
 
-            <div className="response-panel">
+            <section className="response-panel">
 
                 <div className="response-header">
 
@@ -188,21 +205,22 @@ ${code}
 
                         <span>
                             {loading
-                                ? "Qwen is generating..."
-                                : "Ready"
-                            }
+                                ? `${MODEL_NAME} is generating...`
+                                : "Ready"}
                         </span>
 
                     </div>
 
                     {loading && (
+
                         <div className="typing-indicator">
 
-                            <span></span>
-                            <span></span>
-                            <span></span>
+                            <span />
+                            <span />
+                            <span />
 
                         </div>
+
                     )}
 
                 </div>
@@ -212,9 +230,7 @@ ${code}
 
                     {response ? (
 
-                        <pre>
-                            {response}
-                        </pre>
+                        <pre>{response}</pre>
 
                     ) : (
 
@@ -240,10 +256,9 @@ ${code}
 
                 </div>
 
-            </div>
+            </section>
 
         </div>
-
     );
 }
 

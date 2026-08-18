@@ -4,15 +4,10 @@ require("dotenv").config();
 
 const connectDB = require("./config/db");
 
-/*
-=====================================================
-ROUTES
-=====================================================
-*/
-
 const chatRoutes = require("./routes/chatRoutes");
 const sessionRoutes = require("./routes/sessionRoutes");
 const contactRoutes = require("./routes/contactRoutes");
+const codeAssistantRoutes = require("./routes/codeAssistantRoutes");
 
 const app = express();
 
@@ -20,7 +15,7 @@ const PORT = process.env.PORT || 5000;
 
 /*
 =====================================================
-CONNECT MONGODB
+DATABASE
 =====================================================
 */
 
@@ -28,7 +23,7 @@ connectDB();
 
 /*
 =====================================================
-MIDDLEWARE
+CORS
 =====================================================
 */
 
@@ -54,6 +49,12 @@ app.use(
     })
 );
 
+/*
+=====================================================
+BODY PARSER
+=====================================================
+*/
+
 app.use(
     express.json({
         limit: "2mb"
@@ -69,6 +70,20 @@ app.use(
 
 /*
 =====================================================
+REQUEST LOGGER
+=====================================================
+*/
+
+app.use((req, res, next) => {
+    console.log(
+        `[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`
+    );
+
+    next();
+});
+
+/*
+=====================================================
 HEALTH CHECK
 =====================================================
 */
@@ -76,32 +91,87 @@ HEALTH CHECK
 app.get("/", (req, res) => {
     res.status(200).json({
         success: true,
-        message: "🚀 Enlivonex AI Backend is Running"
+        service: "Enlivonex AI Backend",
+        status: "running"
     });
 });
 
 /*
 =====================================================
-API ROUTES
+API HEALTH CHECK
 =====================================================
 */
 
+app.get("/api/health", (req, res) => {
+    res.status(200).json({
+        success: true,
+        service: "Enlivonex AI Hub",
+        status: "online",
+        ollama: "local",
+        timestamp: new Date().toISOString()
+    });
+});
+
 /*
+=====================================================
 AI CHAT
-Existing AI Chat route.
-DO NOT CHANGE ITS INTERNAL LOGIC.
+=====================================================
+
+/api/chat
+/api/sessions
+/api/session/*
+=====================================================
 */
-app.use("/api", chatRoutes);
+
+app.use(
+    "/api",
+    chatRoutes
+);
 
 /*
+=====================================================
 SESSION MANAGEMENT
+=====================================================
 */
-app.use("/api", sessionRoutes);
+
+app.use(
+    "/api",
+    sessionRoutes
+);
 
 /*
-CONTACT FORM
+=====================================================
+CONTACT
+=====================================================
 */
-app.use("/api", contactRoutes);
+
+app.use(
+    "/api",
+    contactRoutes
+);
+
+/*
+=====================================================
+CODE ASSISTANT
+=====================================================
+
+IMPORTANT:
+
+This route is completely separate from normal AI chat.
+
+Normal chat:
+    Gemma 3 4B
+    Qwen 2.5 3B
+
+Code Assistant:
+    ONLY Qwen 2.5 Coder 7B
+=====================================================
+*/
+
+app.use(
+    "/api",
+    codeAssistantRoutes
+);
 
 /*
 =====================================================
@@ -110,9 +180,14 @@ app.use("/api", contactRoutes);
 */
 
 app.use((req, res) => {
+    if (res.headersSent) {
+        return;
+    }
+
     res.status(404).json({
         success: false,
-        message: "API Route Not Found"
+        message: "API Route Not Found",
+        path: req.originalUrl
     });
 });
 
@@ -122,14 +197,23 @@ GLOBAL ERROR HANDLER
 =====================================================
 */
 
-app.use((err, req, res, next) => {
-    console.error("Server Error:", err);
+app.use(
+    (err, req, res, next) => {
+        console.error(
+            "Server Error:",
+            err
+        );
 
-    res.status(500).json({
-        success: false,
-        message: "Unexpected Server Error"
-    });
-});
+        if (res.headersSent) {
+            return next(err);
+        }
+
+        res.status(500).json({
+            success: false,
+            message: "Unexpected Server Error"
+        });
+    }
+);
 
 /*
 =====================================================
@@ -137,8 +221,20 @@ START SERVER
 =====================================================
 */
 
-app.listen(PORT, "0.0.0.0", () => {
-    console.log(
-        `🚀 Enlivonex AI Backend running on port ${PORT}`
-    );
-});
+app.listen(
+    PORT,
+    "0.0.0.0",
+    () => {
+        console.log("");
+        console.log("======================================");
+        console.log("🚀 Enlivonex AI Backend");
+        console.log("======================================");
+        console.log(`📡 Port       : ${PORT}`);
+        console.log("🤖 AI         : Ollama Local");
+        console.log("💬 Chat       : /api/chat");
+        console.log("💻 Coding     : /api/code-assistant");
+        console.log("❤️  Health     : /api/health");
+        console.log("======================================");
+        console.log("");
+    }
+);

@@ -1,53 +1,71 @@
+/*
+==================================
+Chat Routes
+==================================
+*/
+
 const express = require("express");
 
-const router = express.Router();
+const router =
+    express.Router();
+
 
 /*
 ==================================
-Controllers
+CHAT CONTROLLER
 ==================================
 */
 
 const {
     chatWithAI
-} = require("../controllers/chatController");
+} = require(
+    "../controllers/chatController"
+);
+
+
+/*
+==================================
+SESSION CONTROLLER
+==================================
+*/
 
 const {
-    codeAssistant
-} = require("../controllers/codeAssistantController");
 
-const {
     getSessions,
+
     createNewSession,
+
     switchSession,
+
     deleteChatSession,
+
     getSingleSession
-} = require("../controllers/sessionController");
+
+} = require(
+    "../controllers/sessionController"
+);
 
 
 /*
 ==================================
 AI CHAT
 ==================================
+
+POST /api/chat
+
+Supported models:
+
+- automatic
+- gemma3:4b
+- qwen2.5:3b
+
+Qwen 2.5 Coder 7B is NOT allowed
+through this route.
 */
 
-// Normal AI Chat
 router.post(
     "/chat",
     chatWithAI
-);
-
-
-/*
-==================================
-CODE ASSISTANT
-==================================
-*/
-
-// Qwen 2.5 Coder 7B
-router.post(
-    "/code-assistant",
-    codeAssistant
 );
 
 
@@ -57,35 +75,30 @@ SESSION APIs
 ==================================
 */
 
-// Get all sessions
 router.get(
     "/sessions",
     getSessions
 );
 
 
-// Create new session
 router.post(
     "/session/new",
     createNewSession
 );
 
 
-// Switch active session
 router.post(
     "/session/switch",
     switchSession
 );
 
 
-// Get single session with messages
 router.get(
     "/session/:id",
     getSingleSession
 );
 
 
-// Delete session
 router.delete(
     "/session/:id",
     deleteChatSession
@@ -94,7 +107,7 @@ router.delete(
 
 /*
 ==================================
-EXPORT ROUTER
+EXPORT
 ==================================
 */
 

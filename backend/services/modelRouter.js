@@ -1,151 +1,75 @@
-/*
-==================================
-Model Router
-Enlivonex AI Hub
-==================================
-*/
-
 const MODELS = require("../config/models");
 
-/*
-==================================
-Coding Keywords
-==================================
-*/
+const SIMPLE = [
+    "hi", "hello", "hey", "thanks", "thank you",
+    "what is", "who is", "where is", "when is",
+    "define", "meaning", "translate", "summarize"
+];
 
-const codingKeywords = [
-
-    "code",
-    "coding",
-    "program",
-    "programming",
-    "javascript",
-    "java",
-    "python",
-    "cpp",
-    "c++",
-    "c#",
-    "html",
-    "css",
-    "react",
-    "node",
-    "express",
-    "mongodb",
-    "sql",
-    "database",
-    "api",
-    "bug",
-    "error",
-    "debug",
+const COMPLEX = [
+    "explain in detail",
+    "deep dive",
+    "architecture",
+    "system design",
+    "compare",
+    "analyze",
+    "analysis",
+    "why does",
+    "how does",
+    "quantum",
+    "machine learning",
+    "artificial intelligence",
+    "neural network",
     "algorithm",
-    "function",
-    "class"
-
+    "derivation",
+    "proof",
+    "complex",
+    "detailed"
 ];
 
-/*
-==================================
-Reasoning Keywords
-==================================
-*/
+const getChatModel = (id) =>
+    MODELS.CHAT.find((m) => m.model === id);
 
-const reasoningKeywords = [
+function chooseModel(prompt, requestedModel = "auto") {
+    const text = String(prompt || "").trim().toLowerCase();
 
-    "reason",
-    "reasoning",
-    "logic",
-    "logical",
-    "riddle",
-    "puzzle",
-    "iq",
-    "brain teaser",
-    "step by step",
-    "think",
-    "why",
-    "analyze"
+    if (requestedModel !== "auto") {
+        const manual = getChatModel(requestedModel);
 
-];
-
-/*
-==================================
-Choose Model
-==================================
-*/
-
-function chooseModel(prompt) {
-
-    const text = prompt.toLowerCase();
-
-    /*
-    ============================
-    Coding
-    ============================
-    */
-
-    if (
-
-        codingKeywords.some(
-
-            keyword => text.includes(keyword)
-
-        )
-
-    ) {
-
-        return {
-
-            ...MODELS.CODE,
-
-            reason: "Coding"
-
-        };
-
+        if (manual) {
+            return {
+                ...manual,
+                reason: "User Selected"
+            };
+        }
     }
 
-    /*
-    ============================
-    Reasoning
-    ============================
-    */
+    const complex =
+        COMPLEX.some((word) => text.includes(word)) ||
+        text.length > 350 ||
+        (text.includes("?") && text.length > 180);
 
-    if (
-
-        reasoningKeywords.some(
-
-            keyword => text.includes(keyword)
-
-        )
-
-    ) {
-
+    if (complex) {
         return {
-
-            ...MODELS.REASONING,
-
-            reason: "Reasoning"
-
+            ...getChatModel("gemma3:4b"),
+            reason: "Automatic: Complex question"
         };
-
     }
-
-    /*
-    ============================
-    Default Chat
-    ============================
-    */
 
     return {
-
-        ...MODELS.CHAT,
-
-        reason: "General Chat"
-
+        ...getChatModel("qwen2.5:3b"),
+        reason: "Automatic: Simple/normal question"
     };
+}
 
+function chooseCodeModel() {
+    return {
+        ...MODELS.CODE,
+        reason: "Code Assistant"
+    };
 }
 
 module.exports = {
-
-    chooseModel
-
+    chooseModel,
+    chooseCodeModel
 };
