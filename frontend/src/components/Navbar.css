@@ -176,6 +176,57 @@
     display:flex;
     align-items:center;
 
+    gap:14px;
+
+}
+
+.auth-nav-link,
+.profile-nav-btn{
+
+    color:#d8e8ff;
+
+    font-weight:700;
+
+    text-decoration:none;
+
+    transition:.3s;
+
+}
+
+.auth-nav-link:hover,
+.profile-nav-btn:hover,
+.profile-nav-active{
+
+    color:#46c7ff;
+
+}
+
+.auth-register-btn{
+
+    padding:11px 18px;
+
+    border:1px solid rgba(70,199,255,.45);
+
+    border-radius:10px;
+
+    color:#071421;
+
+    background:#46c7ff;
+
+    font-weight:800;
+
+    text-decoration:none;
+
+    transition:.3s;
+
+}
+
+.auth-register-btn:hover{
+
+    background:#7bd9ff;
+
+    transform:translateY(-2px);
+
 }
 
 

@@ -30,6 +30,53 @@ const sessionSchema = new mongoose.Schema(
 
         /*
         ==================================
+        Workspace Reference
+        ==================================
+        */
+
+        workspaceId: {
+
+            type: mongoose.Schema.Types.ObjectId,
+
+            ref: "Workspace",
+
+            default: null,
+
+            required: false
+
+        },
+
+        projectId: {
+
+            type: mongoose.Schema.Types.ObjectId,
+
+            ref: "Project",
+
+            default: null,
+
+            required: false
+
+        },
+
+        category: {
+
+            type: String,
+
+            enum: [
+                "general",
+                "coding",
+                "design",
+                "research",
+                "planning",
+                "debugging"
+            ],
+
+            default: "general"
+
+        },
+
+        /*
+        ==================================
         Session Title
         ==================================
         */

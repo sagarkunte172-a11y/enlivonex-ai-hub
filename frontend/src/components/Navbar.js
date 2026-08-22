@@ -3,6 +3,10 @@ import "./Navbar.css";
 
 function Navbar() {
 
+    const isAuthenticated = Boolean(
+        localStorage.getItem("auth_token")
+    );
+
     return (
 
         <nav className="navbar">
@@ -86,6 +90,41 @@ function Navbar() {
             {/* Right Side */}
 
             <div className="navbar-right">
+
+                {isAuthenticated ? (
+
+                    <NavLink
+                        to="/profile"
+                        className={({ isActive }) =>
+                            isActive
+                                ? "profile-nav-btn profile-nav-active"
+                                : "profile-nav-btn"
+                        }
+                    >
+                        My Profile
+                    </NavLink>
+
+                ) : (
+
+                    <>
+
+                        <NavLink
+                            to="/login"
+                            className="auth-nav-link"
+                        >
+                            Login
+                        </NavLink>
+
+                        <NavLink
+                            to="/register"
+                            className="auth-register-btn"
+                        >
+                            Register
+                        </NavLink>
+
+                    </>
+
+                )}
 
                 <NavLink
                     to="/dashboard"

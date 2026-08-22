@@ -37,6 +37,7 @@ import ScriptGenerator from "./pages/ScriptGenerator";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
+import WorkspaceDashboard from "./pages/WorkspaceDashboard";
 
 /*
 ==================================
@@ -57,7 +58,8 @@ function AppContent() {
     const hideLayout = [
 
         "/login",
-        "/register"
+        "/register",
+        "/workspace"
 
     ].includes(location.pathname);
 
@@ -136,6 +138,16 @@ function AppContent() {
                         path="/profile"
 
                         element={<Profile />}
+
+                    />
+
+                    {/* Workspace */}
+
+                    <Route
+
+                        path="/workspace"
+
+                        element={<WorkspaceDashboard />}
 
                     />
 

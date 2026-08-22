@@ -36,6 +36,14 @@ function Dashboard() {
               🤖 AI Chat
             </Link>
 
+            <Link to="/workspace">
+              👥 Team Workspace
+            </Link>
+
+            <Link to="/profile">
+              👤 My Profile
+            </Link>
+
             <Link to="/code">
               💻 Code Assistant
             </Link>
@@ -119,6 +127,13 @@ function Dashboard() {
             </p>
 
             <div className="quick-actions">
+
+              <Link
+                to="/workspace"
+                className="action-btn"
+              >
+                👥 Open Workspace
+              </Link>
 
               <Link
                 to="/chat"

@@ -4,14 +4,19 @@ require("dotenv").config();
 
 const connectDB = require("./config/db");
 
+const authRoutes = require("./routes/authRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const sessionRoutes = require("./routes/sessionRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const codeAssistantRoutes = require("./routes/codeAssistantRoutes");
+const workspaceRoutes = require("./routes/workspaceRoutes");
+const projectRoutes = require("./routes/projectRoutes");
 
 const app = express();
 
-const PORT = process.env.PORT || 5000;
+const PORT =
+    process.env.PORT || 5000;
+
 
 /*
 =====================================================
@@ -21,6 +26,7 @@ DATABASE
 
 connectDB();
 
+
 /*
 =====================================================
 CORS
@@ -29,6 +35,7 @@ CORS
 
 app.use(
     cors({
+
         origin: "*",
 
         methods: [
@@ -46,8 +53,10 @@ app.use(
             "X-Model-ID",
             "X-Model-Reason"
         ]
+
     })
 );
+
 
 /*
 =====================================================
@@ -57,16 +66,23 @@ BODY PARSER
 
 app.use(
     express.json({
+
         limit: "2mb"
+
     })
 );
 
+
 app.use(
     express.urlencoded({
+
         extended: true,
+
         limit: "2mb"
+
     })
 );
+
 
 /*
 =====================================================
@@ -74,13 +90,18 @@ REQUEST LOGGER
 =====================================================
 */
 
-app.use((req, res, next) => {
-    console.log(
-        `[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`
-    );
+app.use(
+    (req, res, next) => {
 
-    next();
-});
+        console.log(
+            `[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`
+        );
+
+        next();
+
+    }
+);
+
 
 /*
 =====================================================
@@ -88,13 +109,25 @@ HEALTH CHECK
 =====================================================
 */
 
-app.get("/", (req, res) => {
-    res.status(200).json({
-        success: true,
-        service: "Enlivonex AI Backend",
-        status: "running"
-    });
-});
+app.get(
+    "/",
+    (req, res) => {
+
+        res.status(200).json({
+
+            success: true,
+
+            service:
+                "Enlivonex AI Backend",
+
+            status:
+                "running"
+
+        });
+
+    }
+);
+
 
 /*
 =====================================================
@@ -102,15 +135,50 @@ API HEALTH CHECK
 =====================================================
 */
 
-app.get("/api/health", (req, res) => {
-    res.status(200).json({
-        success: true,
-        service: "Enlivonex AI Hub",
-        status: "online",
-        ollama: "local",
-        timestamp: new Date().toISOString()
-    });
-});
+app.get(
+    "/api/health",
+    (req, res) => {
+
+        res.status(200).json({
+
+            success: true,
+
+            service:
+                "Enlivonex AI Hub",
+
+            status:
+                "online",
+
+            ollama:
+                "local",
+
+            timestamp:
+                new Date().toISOString()
+
+        });
+
+    }
+);
+
+
+/*
+=====================================================
+AUTHENTICATION
+=====================================================
+
+POST /api/auth/register
+POST /api/auth/login
+
+These routes intentionally remain public because
+they create/establish authentication.
+=====================================================
+*/
+
+app.use(
+    "/api/auth",
+    authRoutes
+);
+
 
 /*
 =====================================================
@@ -128,6 +196,7 @@ app.use(
     chatRoutes
 );
 
+
 /*
 =====================================================
 SESSION MANAGEMENT
@@ -139,6 +208,7 @@ app.use(
     sessionRoutes
 );
 
+
 /*
 =====================================================
 CONTACT
@@ -149,6 +219,24 @@ app.use(
     "/api",
     contactRoutes
 );
+
+
+/*
+=====================================================
+WORKSPACE
+=====================================================
+*/
+
+app.use(
+    "/api",
+    workspaceRoutes
+);
+
+app.use(
+    "/api",
+    projectRoutes
+);
+
 
 /*
 =====================================================
@@ -173,23 +261,37 @@ app.use(
     codeAssistantRoutes
 );
 
+
 /*
 =====================================================
 404 HANDLER
 =====================================================
 */
 
-app.use((req, res) => {
-    if (res.headersSent) {
-        return;
-    }
+app.use(
+    (req, res) => {
 
-    res.status(404).json({
-        success: false,
-        message: "API Route Not Found",
-        path: req.originalUrl
-    });
-});
+        if (res.headersSent) {
+
+            return;
+
+        }
+
+        res.status(404).json({
+
+            success: false,
+
+            message:
+                "API Route Not Found",
+
+            path:
+                req.originalUrl
+
+        });
+
+    }
+);
+
 
 /*
 =====================================================
@@ -199,21 +301,32 @@ GLOBAL ERROR HANDLER
 
 app.use(
     (err, req, res, next) => {
+
         console.error(
             "Server Error:",
             err
         );
 
+
         if (res.headersSent) {
+
             return next(err);
+
         }
 
+
         res.status(500).json({
+
             success: false,
-            message: "Unexpected Server Error"
+
+            message:
+                "Unexpected Server Error"
+
         });
+
     }
 );
+
 
 /*
 =====================================================
@@ -225,16 +338,50 @@ app.listen(
     PORT,
     "0.0.0.0",
     () => {
+
         console.log("");
-        console.log("======================================");
-        console.log("🚀 Enlivonex AI Backend");
-        console.log("======================================");
-        console.log(`📡 Port       : ${PORT}`);
-        console.log("🤖 AI         : Ollama Local");
-        console.log("💬 Chat       : /api/chat");
-        console.log("💻 Coding     : /api/code-assistant");
-        console.log("❤️  Health     : /api/health");
-        console.log("======================================");
+
+        console.log(
+            "======================================"
+        );
+
+        console.log(
+            "🚀 Enlivonex AI Backend"
+        );
+
+        console.log(
+            "======================================"
+        );
+
+        console.log(
+            `📡 Port       : ${PORT}`
+        );
+
+        console.log(
+            "🤖 AI         : Ollama Local"
+        );
+
+        console.log(
+            "💬 Chat       : /api/chat"
+        );
+
+        console.log(
+            "💻 Coding     : /api/code-assistant"
+        );
+
+        console.log(
+            "🔐 Auth       : /api/auth"
+        );
+
+        console.log(
+            "❤️  Health     : /api/health"
+        );
+
+        console.log(
+            "======================================"
+        );
+
         console.log("");
+
     }
 );

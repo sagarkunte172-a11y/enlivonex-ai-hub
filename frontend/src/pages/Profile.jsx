@@ -1,6 +1,10 @@
 import "./Profile.css";
+import { Link } from "react-router-dom";
+import { getStoredUser } from "../services/authApi";
 
 function Profile() {
+  const user = getStoredUser();
+
   return (
     <div className="profile-page">
 
@@ -12,9 +16,9 @@ function Profile() {
 
         </div>
 
-        <h2>Sagar Kunte</h2>
+        <h2>{user?.username || "Enlivonex User"}</h2>
 
-        <p>Founder • Enlivonex AI Hub</p>
+        <p>Member • Enlivonex AI Hub</p>
 
         <div className="profile-info">
 
@@ -22,7 +26,7 @@ function Profile() {
 
             <h4>Email</h4>
 
-            <p>sagar@example.com</p>
+            <p>{user?.email || "Not available"}</p>
 
           </div>
 
@@ -52,11 +56,10 @@ function Profile() {
 
         </div>
 
-        <button className="edit-btn">
-
-          Edit Profile
-
-        </button>
+        <div className="profile-actions">
+          <Link className="edit-btn" to="/dashboard">Open Dashboard</Link>
+          <Link className="edit-btn" to="/workspace">Open Workspace</Link>
+        </div>
 
       </div>
 

@@ -6,8 +6,18 @@ Chat Routes
 
 const express = require("express");
 
-const router =
-    express.Router();
+const router = express.Router();
+
+
+/*
+==================================
+AUTHENTICATION MIDDLEWARE
+==================================
+*/
+
+const {
+    optionalAuth
+} = require("../controllers/middleware/authMiddleware");
 
 
 /*
@@ -18,32 +28,7 @@ CHAT CONTROLLER
 
 const {
     chatWithAI
-} = require(
-    "../controllers/chatController"
-);
-
-
-/*
-==================================
-SESSION CONTROLLER
-==================================
-*/
-
-const {
-
-    getSessions,
-
-    createNewSession,
-
-    switchSession,
-
-    deleteChatSession,
-
-    getSingleSession
-
-} = require(
-    "../controllers/sessionController"
-);
+} = require("../controllers/chatController");
 
 
 /*
@@ -53,55 +38,25 @@ AI CHAT
 
 POST /api/chat
 
+Authentication:
+- JWT required
+- Identity comes from req.user.id
+
 Supported models:
 
-- automatic
+- auto
 - gemma3:4b
 - qwen2.5:3b
 
 Qwen 2.5 Coder 7B is NOT allowed
 through this route.
+==================================
 */
 
 router.post(
     "/chat",
+    optionalAuth,
     chatWithAI
-);
-
-
-/*
-==================================
-SESSION APIs
-==================================
-*/
-
-router.get(
-    "/sessions",
-    getSessions
-);
-
-
-router.post(
-    "/session/new",
-    createNewSession
-);
-
-
-router.post(
-    "/session/switch",
-    switchSession
-);
-
-
-router.get(
-    "/session/:id",
-    getSingleSession
-);
-
-
-router.delete(
-    "/session/:id",
-    deleteChatSession
 );
 
 
