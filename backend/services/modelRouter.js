@@ -62,10 +62,20 @@ function chooseModel(prompt, requestedModel = "auto") {
     };
 }
 
-function chooseCodeModel() {
+function chooseCodeModel(requestedModel) {
+    const availableModels = Array.isArray(MODELS.CODE)
+        ? MODELS.CODE
+        : [MODELS.CODE];
+
+    const selected = availableModels.find(
+        (model) => model.model === requestedModel
+    ) || availableModels[0];
+
     return {
-        ...MODELS.CODE,
-        reason: "Code Assistant"
+        ...selected,
+        reason: requestedModel === selected.model
+            ? "User Selected"
+            : "Code Assistant Default"
     };
 }
 

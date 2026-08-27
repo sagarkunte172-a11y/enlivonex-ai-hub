@@ -14,6 +14,12 @@ const {
     "../controllers/codeAssistantController"
 );
 
+const {
+    requireAuth
+} = require(
+    "../controllers/middleware/authMiddleware"
+);
+
 
 const router =
     express.Router();
@@ -35,6 +41,7 @@ normal AI Chat page.
 
 router.post(
     "/code-assistant",
+    requireAuth,
     codeAssistant
 );
 

@@ -4,433 +4,348 @@ const Session = require("../models/Session");
 const Workspace = require("../models/Workspace");
 const WorkspaceMember = require("../models/WorkspaceMember");
 const Share = require("../models/Share");
-const Project = require("../models/Project");
 
+let Project = null;
 
-/*
-==================================
-ObjectId Validator
-==================================
-*/
-
-function isValidId(id) {
-
-    return Boolean(
-        id &&
-        mongoose.Types.ObjectId.isValid(id)
-    );
-
+try {
+    Project = require("../models/Project");
+} catch (error) {
+    Project = null;
 }
 
 
 /*
 ==================================
-Access Validator
-==================================
-
-Determines whether an authenticated
-user can access a session.
-
-Personal session:
-    Only session owner.
-
-Workspace session:
-    Any active workspace member.
-
-Authentication identity must come
-from the server-side authenticated
-request and NOT from client data.
+HELPERS
 ==================================
 */
 
-async function canAccessSession(
-    userId,
-    sessionId
-) {
+function isValidId(id) {
+    return mongoose.Types.ObjectId.isValid(id);
+}
 
-    if (userId !== null && !isValidId(userId)) {
 
-        return {
-            allowed: false,
-            status: 401,
-            message:
-                "Unauthorized: Invalid user identity."
-        };
+/*
+==================================
+SESSION ACCESS
+==================================
 
-    }
+Returns:
 
+{
+    allowed: true,
+    session
+}
+
+OR
+
+{
+    allowed: false,
+    status,
+    message
+}
+==================================
+*/
+
+async function canAccessSession(userId, sessionId) {
 
     if (!isValidId(sessionId)) {
-
         return {
             allowed: false,
             status: 400,
-            message:
-                "Validation Error: Invalid session ID."
+            message: "Validation Error: Invalid session ID."
         };
-
     }
 
+    /*
+    ----------------------------------
+    Anonymous personal session
+    ----------------------------------
 
-    const session =
-        await Session.findOne({
+    Anonymous sessions are allowed only
+    when the caller also has no identity.
+    ----------------------------------
+    */
 
-            _id: sessionId,
-
-            isDeleted: false
-
-        });
-
+    const session = await Session.findOne({
+        _id: sessionId,
+        isDeleted: false
+    }).lean();
 
     if (!session) {
-
         return {
             allowed: false,
             status: 404,
-            message:
-                "Session not found."
+            message: "Not Found: Session does not exist."
         };
-
     }
 
 
     /*
     ==================================
-    Personal Session
+    PERSONAL SESSION
     ==================================
     */
 
-    if (!session.workspaceId) {
+    if (
+        session.workspaceId === null ||
+        session.workspaceId === undefined
+    ) {
+
+        /*
+        Anonymous personal session
+        */
+
+        if (!session.userId) {
+
+            if (userId === null || userId === undefined) {
+
+                return {
+                    allowed: true,
+                    session
+                };
+
+            }
+
+            return {
+                allowed: false,
+                status: 403,
+                message:
+                    "Forbidden: This personal session belongs to an anonymous user."
+            };
+        }
+
+
+        /*
+        Authenticated personal session
+        */
+
+        if (!userId || !isValidId(userId)) {
+
+            return {
+                allowed: false,
+                status: 403,
+                message:
+                    "Forbidden: Authentication required to access this session."
+            };
+
+        }
+
 
         if (
-            (session.userId || userId) &&
-            (!session.userId || !userId ||
-                session.userId.toString() !==
-                    userId.toString())
+            session.userId.toString() !==
+            userId.toString()
         ) {
 
             return {
                 allowed: false,
                 status: 403,
                 message:
-                    "Forbidden: Personal session access denied."
+                    "Forbidden: You do not have access to this session."
             };
 
         }
 
 
         return {
-
             allowed: true,
-
             session
+        };
+    }
 
+
+    /*
+    ==================================
+    WORKSPACE SESSION
+    ==================================
+    */
+
+    if (!userId || !isValidId(userId)) {
+
+        return {
+            allowed: false,
+            status: 403,
+            message:
+                "Forbidden: Authentication required for workspace sessions."
+        };
+
+    }
+
+
+    if (!isValidId(session.workspaceId)) {
+
+        return {
+            allowed: false,
+            status: 403,
+            message:
+                "Forbidden: Invalid workspace associated with this session."
         };
 
     }
 
 
     /*
-    ==================================
-    Workspace Session
-    ==================================
+    ----------------------------------
+    Verify workspace
+    ----------------------------------
     */
 
-    const workspace =
-        await Workspace.findOne({
-
-            _id:
-                session.workspaceId,
-
-            isActive: true
-
-        });
-
+    const workspace = await Workspace.findOne({
+        _id: session.workspaceId,
+        isActive: true
+    }).lean();
 
     if (!workspace) {
 
         return {
-
             allowed: false,
-
             status: 404,
-
             message:
-                "Workspace not found or inactive."
-
+                "Not Found: Workspace does not exist or is inactive."
         };
 
     }
 
 
-    const member =
-        await WorkspaceMember.findOne({
+    /*
+    ----------------------------------
+    Verify active membership
+    ----------------------------------
+    */
 
-            workspaceId:
-                session.workspaceId,
-
-            userId,
-
-            status:
-                "active"
-
-        });
-
+    const member = await WorkspaceMember.findOne({
+        workspaceId: session.workspaceId,
+        userId,
+        status: "active"
+    }).lean();
 
     if (!member) {
 
         return {
-
             allowed: false,
-
             status: 403,
-
             message:
-                "Forbidden: Not an active workspace member."
-
+                "Forbidden: You are not an active member of this workspace."
         };
 
     }
+
+
+    /*
+    ----------------------------------
+    Owner / admin access
+    ----------------------------------
+    */
 
     const isOwner =
         session.userId &&
         session.userId.toString() === userId.toString();
 
-    const hasElevatedAccess =
+    const isAdmin =
         member.role === "owner" ||
         member.role === "admin";
 
-    if (!isOwner && !hasElevatedAccess) {
 
-        const share =
-            await Share.findOne({
-                workspaceId: session.workspaceId,
-                resourceType: "session",
-                resourceId: session._id,
-                sharedWith: userId,
-                isActive: true
-            });
+    if (isOwner || isAdmin) {
 
-        if (!share) {
+        return {
+            allowed: true,
+            session
+        };
 
-            return {
-                allowed: false,
-                status: 403,
-                message:
-                    "Forbidden: Workspace session access has not been shared with this member."
-            };
-        }
+    }
+
+
+    /*
+    ----------------------------------
+    Explicit session share
+    ----------------------------------
+    */
+
+    const share = await Share.findOne({
+        workspaceId: session.workspaceId,
+        resourceType: "session",
+        resourceId: session._id,
+        sharedWith: userId,
+        isActive: true
+    }).lean();
+
+
+    if (!share) {
+
+        return {
+            allowed: false,
+            status: 403,
+            message:
+                "Forbidden: This workspace session has not been shared with you."
+        };
+
     }
 
 
     return {
-
         allowed: true,
-
         session
-
     };
-
 }
 
 
 /*
 ==================================
-Create Session
+CREATE SESSION
 ==================================
 */
 
 async function createSession(
-
     userId,
-
     title = "New Chat",
-
     workspaceId = null,
-
     options = {}
-
 ) {
 
-    try {
+    /*
+    ----------------------------------
+    Validate user
+    ----------------------------------
+    */
 
-        /*
-        ==================================
-        User Validation
-        ==================================
-        */
+    if (
+        userId !== null &&
+        userId !== undefined &&
+        !isValidId(userId)
+    ) {
 
-        if (userId !== null && !isValidId(userId)) {
+        throw new Error(
+            "Validation Error: Invalid user ID."
+        );
 
-            throw new Error(
-                "Validation Error: Invalid user ID."
-            );
-
-        }
-
-
-        /*
-        ==================================
-        Session Data
-        ==================================
-        */
-
-        const sessionData = {
-
-            userId,
-
-            title:
-                title?.trim() || "New Chat"
-
-        };
+    }
 
 
-        /*
-        ==================================
-        Personal Session
-        ==================================
-        */
+    const sessionData = {
 
-        if (!workspaceId) {
+        userId:
+            userId ?? null,
 
-            return await Session.create(
-                sessionData
-            );
+        title:
+            title?.trim() || "New Chat"
 
-        }
-
-        if (
-            options.projectId &&
-            !isValidId(options.projectId)
-        ) {
-
-            throw new Error(
-                "Validation Error: Invalid project ID."
-            );
-        }
-
-        if (
-            options.category &&
-            ![
-                "general",
-                "coding",
-                "design",
-                "research",
-                "planning",
-                "debugging"
-            ].includes(options.category)
-        ) {
-
-            throw new Error(
-                "Validation Error: Invalid session category."
-            );
-        }
+    };
 
 
-        /*
-        ==================================
-        Workspace ID Validation
-        ==================================
-        */
+    /*
+    ==================================
+    PERSONAL SESSION
+    ==================================
+    */
 
-        if (!isValidId(workspaceId)) {
+    if (
+        workspaceId === null ||
+        workspaceId === undefined ||
+        workspaceId === ""
+    ) {
 
-            throw new Error(
-                "Validation Error: Invalid workspace ID."
-            );
-
-        }
-
-
-        /*
-        ==================================
-        Workspace Validation
-        ==================================
-        */
-
-        const workspace =
-            await Workspace.findOne({
-
-                _id:
-                    workspaceId,
-
-                isActive:
-                    true
-
-            });
-
-
-        if (!workspace) {
-
-            throw new Error(
-                "Not Found: Workspace does not exist or is inactive."
-            );
-
-        }
-
-
-        /*
-        ==================================
-        Membership Validation
-        ==================================
-        */
-
-        const member =
-            await WorkspaceMember.findOne({
-
-                workspaceId,
-
-                userId,
-
-                status:
-                    "active"
-
-            });
-
-
-        if (!member) {
-
-            throw new Error(
-                "Forbidden: User is not an active workspace member."
-            );
-
-        }
-
-
-        /*
-        ==================================
-        Create Workspace Session
-        ==================================
-        */
-
-        sessionData.workspaceId =
-            workspaceId;
-
-        if (options.projectId) {
-
-            const project =
-                await Project.findOne({
-                    _id: options.projectId,
-                    workspaceId,
-                    status: "active"
-                });
-
-            if (!project) {
-
-                throw new Error(
-                    "Forbidden: Project does not belong to this workspace."
-                );
-            }
-
-            sessionData.projectId =
-                options.projectId;
-        }
-
-        if (options.category) {
-            sessionData.category =
-                options.category;
-        }
-
+        sessionData.workspaceId = null;
 
         return await Session.create(
             sessionData
@@ -438,141 +353,216 @@ async function createSession(
 
     }
 
-    catch (error) {
 
-        throw error;
+    /*
+    ==================================
+    WORKSPACE SESSION
+    ==================================
+    */
+
+    if (!isValidId(workspaceId)) {
+
+        throw new Error(
+            "Validation Error: Invalid workspace ID."
+        );
 
     }
 
-}
+
+    if (!userId) {
+
+        throw new Error(
+            "Forbidden: Authentication required for workspace sessions."
+        );
+
+    }
 
 
-/*
-==================================
-Get Sessions By User
-==================================
+    /*
+    ----------------------------------
+    Validate workspace
+    ----------------------------------
+    */
 
-Personal sessions:
-    userId + workspaceId null
+    const workspace =
+        await Workspace.findOne({
+            _id: workspaceId,
+            isActive: true
+        });
 
-Workspace sessions:
-    userId ownership is NOT enough,
-    therefore workspace sessions are
-    retrieved separately through
-    getWorkspaceSessions().
-==================================
-*/
+    if (!workspace) {
 
-async function getSessionsByUser(
+        throw new Error(
+            "Not Found: Workspace does not exist or is inactive."
+        );
 
-    userId,
+    }
 
-    workspaceId = null
 
-) {
+    /*
+    ----------------------------------
+    Validate membership
+    ----------------------------------
+    */
 
-    try {
+    const member =
+        await WorkspaceMember.findOne({
+            workspaceId,
+            userId,
+            status: "active"
+        });
 
-        if (userId !== null && !isValidId(userId)) {
+    if (!member) {
+
+        throw new Error(
+            "Forbidden: User is not an active workspace member."
+        );
+
+    }
+
+
+    /*
+    ----------------------------------
+    Validate category
+    ----------------------------------
+    */
+
+    const allowedCategories = [
+        "general",
+        "coding",
+        "design",
+        "research",
+        "planning",
+        "debugging"
+    ];
+
+    if (
+        options.category &&
+        !allowedCategories.includes(
+            options.category
+        )
+    ) {
+
+        throw new Error(
+            "Validation Error: Invalid session category."
+        );
+
+    }
+
+
+    /*
+    ----------------------------------
+    Validate project
+    ----------------------------------
+    */
+
+    if (options.projectId) {
+
+        if (!Project) {
 
             throw new Error(
-                "Validation Error: Invalid user ID."
+                "Validation Error: Project support is not available."
             );
 
         }
 
 
-        const filter = {
+        if (!isValidId(options.projectId)) {
 
-            isDeleted:
-                false,
-
-            userId
-
-        };
-
-
-        /*
-        ==================================
-        Personal Sessions
-        ==================================
-        */
-
-        if (
-            workspaceId === null ||
-            workspaceId === undefined
-        ) {
-
-            filter.workspaceId =
-                null;
+            throw new Error(
+                "Validation Error: Invalid project ID."
+            );
 
         }
 
 
-        /*
-        ==================================
-        Specific Workspace
-        ==================================
-        */
+        const project =
+            await Project.findOne({
+                _id: options.projectId,
+                workspaceId,
+                status: "active"
+            });
 
-        else {
+        if (!project) {
 
-            if (!isValidId(workspaceId)) {
-
-                throw new Error(
-                    "Validation Error: Invalid workspace ID."
-                );
-
-            }
-
-            filter.workspaceId =
-                workspaceId;
+            throw new Error(
+                "Forbidden: Project does not belong to this workspace."
+            );
 
         }
 
 
-        return await Session.find(
-            filter
-        )
-            .sort({
+        sessionData.projectId =
+            options.projectId;
+    }
 
-                updatedAt:
-                    -1
 
-            })
-            .lean();
+    /*
+    ----------------------------------
+    Workspace metadata
+    ----------------------------------
+    */
+
+    sessionData.workspaceId =
+        workspaceId;
+
+
+    if (options.category) {
+
+        sessionData.category =
+            options.category;
 
     }
 
-    catch (error) {
 
-        throw error;
-
-    }
-
+    return await Session.create(
+        sessionData
+    );
 }
 
 
 /*
 ==================================
-Get Workspace Sessions
-==================================
-
-Returns sessions belonging to an
-active workspace that the user is
-currently a member of.
+GET PERSONAL SESSIONS
 ==================================
 */
 
-async function getWorkspaceSessions(
-
+async function getSessionsByUser(
     userId,
-
-    workspaceId
-
+    workspaceId = null
 ) {
 
-    try {
+    /*
+    Personal sessions only
+    */
+
+    if (
+        workspaceId === null ||
+        workspaceId === undefined
+    ) {
+
+        /*
+        Anonymous user
+        */
+
+        if (userId === null || userId === undefined) {
+
+            return await Session.find({
+                userId: null,
+                workspaceId: null,
+                isDeleted: false
+            })
+                .sort({
+                    updatedAt: -1
+                })
+                .lean();
+
+        }
+
+
+        /*
+        Authenticated user
+        */
 
         if (!isValidId(userId)) {
 
@@ -583,106 +573,163 @@ async function getWorkspaceSessions(
         }
 
 
-        if (!isValidId(workspaceId)) {
-
-            throw new Error(
-                "Validation Error: Invalid workspace ID."
-            );
-
-        }
-
-
-        /*
-        ==================================
-        Workspace Validation
-        ==================================
-        */
-
-        const workspace =
-            await Workspace.findOne({
-
-                _id:
-                    workspaceId,
-
-                isActive:
-                    true
-
-            });
-
-
-        if (!workspace) {
-
-            throw new Error(
-                "Not Found: Workspace does not exist or is inactive."
-            );
-
-        }
-
-
-        /*
-        ==================================
-        Membership Validation
-        ==================================
-        */
-
-        const member =
-            await WorkspaceMember.findOne({
-
-                workspaceId,
-
-                userId,
-
-                status:
-                    "active"
-
-            });
-
-
-        if (!member) {
-
-            throw new Error(
-                "Forbidden: Not an active workspace member."
-            );
-
-        }
-
-
-        /*
-        ==================================
-        Fetch Sessions
-        ==================================
-        */
-
         return await Session.find({
 
-            workspaceId,
+            userId,
 
-            isDeleted:
-                false
+            workspaceId: null,
+
+            isDeleted: false
 
         })
             .sort({
-
-                updatedAt:
-                    -1
-
+                updatedAt: -1
             })
             .lean();
+    }
+
+
+    /*
+    ==================================
+    SPECIFIC WORKSPACE SESSIONS
+    ==================================
+    */
+
+    if (!isValidId(userId)) {
+
+        throw new Error(
+            "Validation Error: Invalid user ID."
+        );
 
     }
 
-    catch (error) {
 
-        throw error;
+    if (!isValidId(workspaceId)) {
+
+        throw new Error(
+            "Validation Error: Invalid workspace ID."
+        );
 
     }
 
+
+    return await Session.find({
+
+        userId,
+
+        workspaceId,
+
+        isDeleted: false
+
+    })
+        .sort({
+            updatedAt: -1
+        })
+        .lean();
 }
 
 
 /*
 ==================================
-Get Session By ID
+GET WORKSPACE SESSIONS
+==================================
+*/
+
+async function getWorkspaceSessions(
+    userId,
+    workspaceId
+) {
+
+    if (!isValidId(userId)) {
+
+        throw new Error(
+            "Validation Error: Invalid user ID."
+        );
+
+    }
+
+
+    if (!isValidId(workspaceId)) {
+
+        throw new Error(
+            "Validation Error: Invalid workspace ID."
+        );
+
+    }
+
+
+    /*
+    ----------------------------------
+    Workspace validation
+    ----------------------------------
+    */
+
+    const workspace =
+        await Workspace.findOne({
+            _id: workspaceId,
+            isActive: true
+        });
+
+    if (!workspace) {
+
+        throw new Error(
+            "Not Found: Workspace does not exist or is inactive."
+        );
+
+    }
+
+
+    /*
+    ----------------------------------
+    Membership validation
+    ----------------------------------
+    */
+
+    const member =
+        await WorkspaceMember.findOne({
+            workspaceId,
+            userId,
+            status: "active"
+        });
+
+    if (!member) {
+
+        throw new Error(
+            "Forbidden: Not an active workspace member."
+        );
+
+    }
+
+
+    /*
+    ----------------------------------
+    Fetch sessions
+    ----------------------------------
+    */
+
+    return await Session.find({
+
+        workspaceId,
+
+        isDeleted: false
+
+    })
+        .sort({
+            updatedAt: -1
+        })
+        .lean();
+}
+
+
+/*
+==================================
+GET SESSION BY ID
+==================================
+
+This remains a low-level lookup.
+
+Controllers that need authorization
+must use canAccessSession().
 ==================================
 */
 
@@ -690,516 +737,314 @@ async function getSessionById(
     sessionId
 ) {
 
-    try {
+    if (!isValidId(sessionId)) {
 
-        if (!isValidId(sessionId)) {
-
-            throw new Error(
-                "Validation Error: Invalid session ID."
-            );
-
-        }
-
-
-        return await Session.findOne({
-
-            _id:
-                sessionId,
-
-            isDeleted:
-                false
-
-        });
+        throw new Error(
+            "Validation Error: Invalid session ID."
+        );
 
     }
 
-    catch (error) {
 
-        throw error;
+    return await Session.findOne({
 
-    }
+        _id: sessionId,
 
+        isDeleted: false
+
+    }).lean();
 }
 
 
 /*
 ==================================
-Rename Session
-==================================
-
-NOTE:
-Authorization must be checked by
-the controller/service caller before
-calling this mutation.
+RENAME SESSION
 ==================================
 */
 
 async function renameSession(
-
     sessionId,
-
     title
-
 ) {
 
-    try {
+    if (!isValidId(sessionId)) {
 
-        if (!isValidId(sessionId)) {
-
-            throw new Error(
-                "Validation Error: Invalid session ID."
-            );
-
-        }
-
-
-        if (!title?.trim()) {
-
-            throw new Error(
-                "Validation Error: Session title is required."
-            );
-
-        }
-
-
-        return await Session.findOneAndUpdate(
-
-            {
-
-                _id:
-                    sessionId,
-
-                isDeleted:
-                    false
-
-            },
-
-            {
-
-                title:
-                    title.trim(),
-
-                updatedAt:
-                    new Date()
-
-            },
-
-            {
-
-                new:
-                    true
-
-            }
-
+        throw new Error(
+            "Validation Error: Invalid session ID."
         );
 
     }
 
-    catch (error) {
 
-        throw error;
+    if (!title?.trim()) {
+
+        throw new Error(
+            "Validation Error: Session title is required."
+        );
 
     }
 
+
+    return await Session.findOneAndUpdate(
+
+        {
+            _id: sessionId,
+            isDeleted: false
+        },
+
+        {
+            title: title.trim(),
+            updatedAt: new Date()
+        },
+
+        {
+            new: true
+        }
+
+    );
 }
 
 
 /*
 ==================================
-Update Last Message
+UPDATE LAST MESSAGE
 ==================================
 */
 
 async function updateLastMessage(
-
     sessionId,
-
     lastMessage,
-
     lastModel
-
 ) {
 
-    try {
+    if (!isValidId(sessionId)) {
 
-        if (!isValidId(sessionId)) {
-
-            throw new Error(
-                "Validation Error: Invalid session ID."
-            );
-
-        }
-
-
-        return await Session.findOneAndUpdate(
-
-            {
-
-                _id:
-                    sessionId,
-
-                isDeleted:
-                    false
-
-            },
-
-            {
-
-                lastMessage,
-
-                lastModel,
-
-                updatedAt:
-                    new Date()
-
-            },
-
-            {
-
-                new:
-                    true
-
-            }
-
+        throw new Error(
+            "Validation Error: Invalid session ID."
         );
 
     }
 
-    catch (error) {
 
-        throw error;
+    return await Session.findOneAndUpdate(
 
-    }
+        {
+            _id: sessionId,
+            isDeleted: false
+        },
 
+        {
+            lastMessage,
+            lastModel,
+            updatedAt: new Date()
+        },
+
+        {
+            new: true
+        }
+
+    );
 }
 
 
 /*
 ==================================
-Touch Session
+TOUCH SESSION
 ==================================
 */
 
 async function touchSession(
-
     sessionId
-
 ) {
 
-    try {
+    if (!isValidId(sessionId)) {
 
-        if (!isValidId(sessionId)) {
-
-            throw new Error(
-                "Validation Error: Invalid session ID."
-            );
-
-        }
-
-
-        return await Session.findOneAndUpdate(
-
-            {
-
-                _id:
-                    sessionId,
-
-                isDeleted:
-                    false
-
-            },
-
-            {
-
-                updatedAt:
-                    new Date()
-
-            },
-
-            {
-
-                new:
-                    true
-
-            }
-
+        throw new Error(
+            "Validation Error: Invalid session ID."
         );
 
     }
 
-    catch (error) {
 
-        throw error;
+    return await Session.findOneAndUpdate(
 
-    }
+        {
+            _id: sessionId,
+            isDeleted: false
+        },
 
+        {
+            updatedAt: new Date()
+        },
+
+        {
+            new: true
+        }
+
+    );
 }
 
 
 /*
 ==================================
-Pin Session
+PIN SESSION
 ==================================
 */
 
 async function pinSession(
-
     sessionId,
-
     isPinned
-
 ) {
 
-    try {
+    if (!isValidId(sessionId)) {
 
-        if (!isValidId(sessionId)) {
-
-            throw new Error(
-                "Validation Error: Invalid session ID."
-            );
-
-        }
-
-
-        return await Session.findOneAndUpdate(
-
-            {
-
-                _id:
-                    sessionId,
-
-                isDeleted:
-                    false
-
-            },
-
-            {
-
-                isPinned:
-                    Boolean(isPinned),
-
-                updatedAt:
-                    new Date()
-
-            },
-
-            {
-
-                new:
-                    true
-
-            }
-
+        throw new Error(
+            "Validation Error: Invalid session ID."
         );
 
     }
 
-    catch (error) {
 
-        throw error;
+    return await Session.findOneAndUpdate(
 
-    }
+        {
+            _id: sessionId,
+            isDeleted: false
+        },
 
+        {
+            isPinned: Boolean(isPinned),
+            updatedAt: new Date()
+        },
+
+        {
+            new: true
+        }
+
+    );
 }
 
 
 /*
 ==================================
-Archive Session
+ARCHIVE SESSION
 ==================================
 */
 
 async function archiveSession(
-
     sessionId,
-
     isArchived
-
 ) {
 
-    try {
+    if (!isValidId(sessionId)) {
 
-        if (!isValidId(sessionId)) {
-
-            throw new Error(
-                "Validation Error: Invalid session ID."
-            );
-
-        }
-
-
-        return await Session.findOneAndUpdate(
-
-            {
-
-                _id:
-                    sessionId,
-
-                isDeleted:
-                    false
-
-            },
-
-            {
-
-                isArchived:
-                    Boolean(isArchived),
-
-                updatedAt:
-                    new Date()
-
-            },
-
-            {
-
-                new:
-                    true
-
-            }
-
+        throw new Error(
+            "Validation Error: Invalid session ID."
         );
 
     }
 
-    catch (error) {
 
-        throw error;
+    return await Session.findOneAndUpdate(
 
-    }
+        {
+            _id: sessionId,
+            isDeleted: false
+        },
 
+        {
+            isArchived: Boolean(isArchived),
+            updatedAt: new Date()
+        },
+
+        {
+            new: true
+        }
+
+    );
 }
 
 
 /*
 ==================================
-Soft Delete Session
+DELETE SESSION
 ==================================
 */
 
 async function deleteSession(
-
     sessionId
-
 ) {
 
-    try {
+    if (!isValidId(sessionId)) {
 
-        if (!isValidId(sessionId)) {
-
-            throw new Error(
-                "Validation Error: Invalid session ID."
-            );
-
-        }
-
-
-        return await Session.findOneAndUpdate(
-
-            {
-
-                _id:
-                    sessionId,
-
-                isDeleted:
-                    false
-
-            },
-
-            {
-
-                isDeleted:
-                    true,
-
-                updatedAt:
-                    new Date()
-
-            },
-
-            {
-
-                new:
-                    true
-
-            }
-
+        throw new Error(
+            "Validation Error: Invalid session ID."
         );
 
     }
 
-    catch (error) {
 
-        throw error;
+    return await Session.findOneAndUpdate(
 
-    }
+        {
+            _id: sessionId,
+            isDeleted: false
+        },
 
+        {
+            isDeleted: true,
+            updatedAt: new Date()
+        },
+
+        {
+            new: true
+        }
+
+    );
 }
 
 
 /*
 ==================================
-Restore Session
+RESTORE SESSION
 ==================================
 */
 
 async function restoreSession(
-
     sessionId
-
 ) {
 
-    try {
+    if (!isValidId(sessionId)) {
 
-        if (!isValidId(sessionId)) {
-
-            throw new Error(
-                "Validation Error: Invalid session ID."
-            );
-
-        }
-
-
-        return await Session.findOneAndUpdate(
-
-            {
-
-                _id:
-                    sessionId
-
-            },
-
-            {
-
-                isDeleted:
-                    false,
-
-                updatedAt:
-                    new Date()
-
-            },
-
-            {
-
-                new:
-                    true
-
-            }
-
+        throw new Error(
+            "Validation Error: Invalid session ID."
         );
 
     }
 
-    catch (error) {
 
-        throw error;
+    return await Session.findOneAndUpdate(
 
-    }
+        {
+            _id: sessionId
+        },
 
+        {
+            isDeleted: false,
+            updatedAt: new Date()
+        },
+
+        {
+            new: true
+        }
+
+    );
 }
 
 
 /*
 ==================================
-Exports
+EXPORTS
 ==================================
 */
 

@@ -1,20 +1,28 @@
+/*
+==================================
+SESSION ROUTES
+==================================
+*/
+
 const express = require("express");
 
 const router = express.Router();
 
+
 /*
 ==================================
-Authentication Middleware
+AUTHENTICATION MIDDLEWARE
 ==================================
 */
 
 const {
-    optionalAuth
+    requireAuth
 } = require("../controllers/middleware/authMiddleware");
+
 
 /*
 ==================================
-Session Controller
+SESSION CONTROLLER
 ==================================
 */
 
@@ -26,95 +34,136 @@ const {
     getSingleSession
 } = require("../controllers/sessionController");
 
+
 /*
 ==================================
-Get All Sessions
+GET ALL PERSONAL SESSIONS
 ==================================
 
 GET /api/sessions
 
-Requires authentication.
-Identity is taken from req.user.id.
+Authentication:
+- JWT required
+- User identity comes from req.user.id
+
+Returns only sessions belonging
+to the authenticated user.
+
+Workspace sessions should be handled
+through workspace-specific endpoints.
 ==================================
 */
 
 router.get(
     "/sessions",
-    optionalAuth,
+    requireAuth,
     getSessions
 );
 
+
 /*
 ==================================
-Create New Session
+CREATE NEW PERSONAL SESSION
 ==================================
 
-POST /api/sessions/new
+POST /api/session/new
 
-Requires authentication.
+Authentication:
+- JWT required
+- User identity comes from req.user.id
+
+Creates a personal session for
+the authenticated user.
 ==================================
 */
 
 router.post(
     "/session/new",
-    optionalAuth,
+    requireAuth,
     createNewSession
 );
 
+
 /*
 ==================================
-Switch Active Session
+SWITCH SESSION
 ==================================
 
-POST /api/sessions/switch
+POST /api/session/switch
 
-Requires authentication.
+Authentication:
+- JWT required
+
+The controller/service verifies
+that the authenticated user has
+access to the requested session.
 ==================================
 */
 
 router.post(
     "/session/switch",
-    optionalAuth,
+    requireAuth,
     switchSession
 );
 
+
 /*
 ==================================
-Get Single Session
+GET SINGLE SESSION
 ==================================
 
-GET /api/sessions/:id
+GET /api/session/:id
 
-Requires authentication.
+Authentication:
+- JWT required
+
+The authenticated user can only
+access a session they are allowed
+to access.
+
+Personal sessions:
+    Only their owner.
+
+Workspace sessions:
+    Controlled by workspace
+    membership / role / sharing
+    rules.
 ==================================
 */
 
 router.get(
     "/session/:id",
-    optionalAuth,
+    requireAuth,
     getSingleSession
 );
 
+
 /*
 ==================================
-Delete Session
+DELETE SESSION
 ==================================
 
-DELETE /api/sessions/:id
+DELETE /api/session/:id
 
-Requires authentication.
+Authentication:
+- JWT required
+
+The controller must verify that
+the authenticated user has permission
+to delete the requested session.
 ==================================
 */
 
 router.delete(
     "/session/:id",
-    optionalAuth,
+    requireAuth,
     deleteChatSession
 );
 
+
 /*
 ==================================
-Exports
+EXPORT
 ==================================
 */
 

@@ -108,7 +108,7 @@ GET WORKSPACE DETAILS
 GET /api/workspaces/:workspaceId
 
 Authentication is required.
-The controller must verify that the
+The controller verifies that the
 authenticated user is an active
 workspace member.
 ==================================
@@ -131,12 +131,22 @@ POST /api/workspaces/:workspaceId/members
 Requester:
     req.user.id
 
-Target member:
-    req.body.userId
+Target member can be identified
+using:
+
+- userId
+- identifier
+- email
+- username
+- nickname
+
+The controller/service resolves
+the identifier to the stable
+User._id.
 
 Only authenticated workspace
-admins/owners should be allowed
-by the service layer.
+admins/owners are allowed by
+the service layer.
 ==================================
 */
 
@@ -144,6 +154,12 @@ router.post(
     "/workspaces/:workspaceId/members",
     requireAuth,
     workspaceController.addMember
+);
+
+router.get(
+    "/workspaces/:workspaceId/users",
+    requireAuth,
+    workspaceController.searchWorkspaceUsers
 );
 
 
@@ -213,6 +229,35 @@ router.post(
 
 /*
 ==================================
+DELETE WORKSPACE
+==================================
+
+DELETE /api/workspaces/:workspaceId
+
+Requester identity:
+    req.user.id
+
+Only the workspace owner can
+successfully delete the workspace.
+
+The controller/service will ensure
+that only workspace-scoped data is
+removed.
+
+Solo Chat / Solo Code Assistant
+data is NOT affected.
+==================================
+*/
+
+router.delete(
+    "/workspaces/:workspaceId",
+    requireAuth,
+    workspaceController.deleteWorkspace
+);
+
+
+/*
+==================================
 CREATE WORKSPACE SESSION
 ==================================
 
@@ -237,8 +282,8 @@ GET /api/workspaces/:workspaceId/sessions
 Requester identity:
     req.user.id
 
-The controller/service must verify
-active workspace membership.
+The controller/service verifies
+workspace admin/owner access.
 ==================================
 */
 
@@ -277,6 +322,8 @@ GET WORKSPACE USAGE
 ==================================
 
 GET /api/workspaces/:workspaceId/usage
+
+Owner-only usage summary.
 ==================================
 */
 

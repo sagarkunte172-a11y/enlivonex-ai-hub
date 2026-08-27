@@ -2,25 +2,42 @@ const SYSTEM_PROMPT =
     require("../config/system prompt");
 
 const {
-    getActiveSessionId,
-    getMessages
-} = require("../memory/sessionManager");
+    buildMemoryContext
+} = require("./memoryService");
+
+/*==================================
+OLLAMA
+==================================*/
 
 const OLLAMA_URL =
     "http://127.0.0.1:11434/api/chat";
+
+/*==================================
+ALLOWED MODELS
+==================================*/
 
 const ALLOWED = new Set([
     "qwen2.5:3b",
     "gemma3:4b"
 ]);
 
+/*==================================
+ASK OLLAMA
+==================================*/
+
 async function askOllama(
     userPrompt,
     onChunk,
-    model
+    model,
+    sessionId
 ) {
-    if (!userPrompt?.trim()) {
-        throw new Error("Prompt cannot be empty.");
+    if (
+        typeof userPrompt !== "string" ||
+        !userPrompt.trim()
+    ) {
+        throw new Error(
+            "Prompt cannot be empty."
+        );
     }
 
     if (!ALLOWED.has(model)) {
@@ -29,41 +46,97 @@ async function askOllama(
         );
     }
 
-    const sessionId = getActiveSessionId();
+    if (!sessionId) {
+        throw new Error(
+            "Session ID is required."
+        );
+    }
+
+    /*==================================
+    BUILD MONGODB MEMORY
+    ==================================*/
+
+    const memory =
+        await buildMemoryContext(
+            sessionId,
+            userPrompt.trim()
+        );
+
+    /*==================================
+    BUILD OLLAMA CONTEXT
+    ==================================*/
 
     const messages = [
         {
             role: "system",
-            content: SYSTEM_PROMPT
+            content:
+                SYSTEM_PROMPT
         },
-        ...(getMessages(sessionId) || []),
+
+        ...memory.messages,
+
         {
             role: "user",
-            content: userPrompt.trim()
+            content:
+                userPrompt.trim()
         }
     ];
 
-    const response = await fetch(OLLAMA_URL, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            model,
-            messages,
-            stream: true,
-            options: {
-                temperature:
-                    model === "gemma3:4b"
-                        ? 0.6
-                        : 0.7,
-                top_p: 0.9,
-                top_k: 40,
-                repeat_penalty: 1.1,
-                num_predict: 1024
+    /*==================================
+    MEMORY DEBUG
+    ==================================*/
+
+    console.log(
+        `[Memory] Session=${sessionId} | ` +
+        `Working=${memory.messages.length} | ` +
+        `Recall=${memory.recalled} | ` +
+        `Recalled=${memory.recalledMessages}`
+    );
+
+    /*==================================
+    OLLAMA REQUEST
+    ==================================*/
+
+    const response =
+        await fetch(
+            OLLAMA_URL,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    model,
+
+                    messages,
+
+                    stream: true,
+
+                    options: {
+                        temperature:
+                            model ===
+                            "gemma3:4b"
+                                ? 0.6
+                                : 0.7,
+
+                        top_p: 0.9,
+
+                        top_k: 40,
+
+                        repeat_penalty: 1.1,
+
+                        num_predict: 1024
+                    }
+                })
             }
-        })
-    });
+        );
+
+    /*==================================
+    HTTP ERROR
+    ==================================*/
 
     if (!response.ok) {
         throw new Error(
@@ -71,45 +144,146 @@ async function askOllama(
         );
     }
 
+    /*==================================
+    STREAM VALIDATION
+    ==================================*/
+
     if (!response.body) {
-        throw new Error("Ollama stream unavailable.");
+        throw new Error(
+            "Ollama stream unavailable."
+        );
     }
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
+    /*==================================
+    STREAM READER
+    ==================================*/
+
+    const reader =
+        response.body.getReader();
+
+    const decoder =
+        new TextDecoder();
 
     let answer = "";
 
-    while (true) {
-        const { done, value } =
-            await reader.read();
+    let bufferedData = "";
 
-        if (done) break;
+    /*==================================
+    PROCESS STREAM
+    ==================================*/
+
+    while (true) {
+        const {
+            done,
+            value
+        } = await reader.read();
+
+        if (done) {
+            break;
+        }
 
         const chunk =
-            decoder.decode(value, {
-                stream: true
-            });
+            decoder.decode(
+                value,
+                {
+                    stream: true
+                }
+            );
 
-        for (const line of chunk.split("\n")) {
-            if (!line.trim()) continue;
+        if (!chunk) {
+            continue;
+        }
+
+        bufferedData += chunk;
+
+        const lines =
+            bufferedData.split("\n");
+
+        bufferedData =
+            lines.pop() || "";
+
+        for (
+            const line of lines
+        ) {
+            if (!line.trim()) {
+                continue;
+            }
 
             try {
-                const json = JSON.parse(line);
-                const token = json.message?.content;
+                const json =
+                    JSON.parse(line);
 
-                if (!token) continue;
+                const token =
+                    json.message?.content;
+
+                if (!token) {
+                    continue;
+                }
 
                 answer += token;
 
-                if (typeof onChunk === "function") {
+                if (
+                    typeof onChunk ===
+                    "function"
+                ) {
                     onChunk(token);
                 }
-            } catch {
-                // Ignore incomplete JSON lines.
+            }
+            catch (error) {
+                /*
+                Ignore malformed JSON
+                fragments.
+                */
             }
         }
     }
+
+    /*==================================
+    FLUSH DECODER
+    ==================================*/
+
+    const finalChunk =
+        decoder.decode();
+
+    if (finalChunk) {
+        bufferedData += finalChunk;
+    }
+
+    /*==================================
+    PROCESS FINAL BUFFER
+    ==================================*/
+
+    if (bufferedData.trim()) {
+        try {
+            const json =
+                JSON.parse(
+                    bufferedData.trim()
+                );
+
+            const token =
+                json.message?.content;
+
+            if (token) {
+                answer += token;
+
+                if (
+                    typeof onChunk ===
+                    "function"
+                ) {
+                    onChunk(token);
+                }
+            }
+        }
+        catch (error) {
+            /*
+            Ignore incomplete final JSON.
+            */
+        }
+    }
+
+    /*==================================
+    EMPTY RESPONSE
+    ==================================*/
 
     if (!answer.trim()) {
         throw new Error(
@@ -119,6 +293,10 @@ async function askOllama(
 
     return answer.trim();
 }
+
+/*==================================
+EXPORT
+==================================*/
 
 module.exports = {
     askOllama

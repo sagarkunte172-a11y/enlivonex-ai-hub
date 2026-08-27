@@ -88,11 +88,17 @@ export function getWorkspaceUsage(workspaceId) {
     return workspaceRequest(`/workspaces/${workspaceId}/usage`);
 }
 
-export function addWorkspaceMember(workspaceId, userId, alias, role) {
+export function addWorkspaceMember(workspaceId, identifier, alias, role) {
     return workspaceRequest(`/workspaces/${workspaceId}/members`, {
         method: "POST",
-        body: JSON.stringify({ userId, alias, role })
+        body: JSON.stringify({ identifier, alias, role })
     });
+}
+
+export function searchWorkspaceUsers(workspaceId, query) {
+    return workspaceRequest(
+        `/workspaces/${workspaceId}/users?query=${encodeURIComponent(query)}`
+    );
 }
 
 export function removeWorkspaceMember(workspaceId, userId) {
@@ -111,6 +117,12 @@ export function changeWorkspaceRole(workspaceId, userId, role) {
 export function leaveWorkspace(workspaceId) {
     return workspaceRequest(`/workspaces/${workspaceId}/leave`, {
         method: "POST"
+    });
+}
+
+export function deleteWorkspace(workspaceId) {
+    return workspaceRequest(`/workspaces/${workspaceId}`, {
+        method: "DELETE"
     });
 }
 

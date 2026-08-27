@@ -1,6 +1,43 @@
+/* ==================================
+   Enlivonex AI Hub API Client
+================================== */
+
+/* ==================================
+   API BASE URL
+
+   IMPORTANT:
+   Do NOT hardcode a Wi-Fi/LAN IP here.
+
+   The frontend uses the same hostname
+   through which the browser opened the
+   React application.
+
+   Examples:
+
+   Frontend:
+   http://localhost:3000
+   API:
+   http://localhost:5000/api
+
+   Frontend:
+   http://192.168.1.29:3000
+   API:
+   http://192.168.1.29:5000/api
+
+   Frontend:
+   http://192.168.43.204:3000
+   API:
+   http://192.168.43.204:5000/api
+================================== */
+
 const API_BASE_URL =
     process.env.REACT_APP_API_URL ||
     `${window.location.protocol}//${window.location.hostname}:5000/api`;
+
+
+/* ==================================
+   CHAT MODELS
+================================== */
 
 export const CHAT_MODELS = {
     AUTO: {
@@ -20,11 +57,165 @@ export const CHAT_MODELS = {
 };
 
 
-async function apiRequest(url, options = {}) {
-    return fetch(
-        `${API_BASE_URL}${url}`,
-        options
+/* ==================================
+   CODE ASSISTANT MODELS
+================================== */
+
+export const CODE_ASSISTANT_MODELS = {
+    QWEN_7B: {
+        id: "qwen2.5-coder:7b",
+        name: "Qwen 2.5 Coder 7B"
+    },
+
+    QWEN_14B: {
+        id: "qwen2.5-coder:14b-instruct",
+        name: "Qwen 2.5 Coder 14B"
+    }
+};
+
+
+/* ==================================
+   AUTH TOKEN
+================================== */
+
+function getAuthToken() {
+    return (
+        localStorage.getItem("auth_token") ||
+        localStorage.getItem("workspace_token") ||
+        null
     );
+}
+
+
+/* ==================================
+   API ERROR
+================================== */
+
+export class ApiError extends Error {
+    constructor(
+        message,
+        status = 0,
+        data = null
+    ) {
+        super(message);
+
+        this.name = "ApiError";
+        this.status = status;
+        this.data = data;
+    }
+}
+
+
+/* ==================================
+   RESPONSE ERROR PARSER
+================================== */
+
+async function parseErrorResponse(response) {
+    let data = null;
+
+    try {
+        data = await response.json();
+    } catch {
+        data = null;
+    }
+
+    const message =
+        data?.message ||
+        data?.error ||
+        `Request failed with status ${response.status}`;
+
+    return new ApiError(
+        message,
+        response.status,
+        data
+    );
+}
+
+
+/* ==================================
+   API REQUEST
+================================== */
+
+async function apiRequest(
+    url,
+    options = {}
+) {
+    const headers = {
+        ...(options.headers || {})
+    };
+
+
+    /* ==================================
+       JWT AUTHENTICATION
+    ================================== */
+
+    const token = getAuthToken();
+
+    if (token) {
+        headers.Authorization =
+            `Bearer ${token}`;
+    }
+
+
+    /* ==================================
+       JSON CONTENT TYPE
+    ================================== */
+
+    if (
+        options.body &&
+        typeof options.body === "string" &&
+        !headers["Content-Type"]
+    ) {
+        headers["Content-Type"] =
+            "application/json";
+    }
+
+
+    /* ==================================
+       FETCH REQUEST
+    ================================== */
+
+    let response;
+
+    try {
+        response = await fetch(
+            `${API_BASE_URL}${url}`,
+            {
+                ...options,
+                headers
+            }
+        );
+    } catch (error) {
+        throw new ApiError(
+            "Unable to connect to Enlivonex AI backend.",
+            0,
+            null
+        );
+    }
+
+
+    /* ==================================
+       AUTH FAILURE
+    ================================== */
+
+    if (response.status === 401) {
+        throw await parseErrorResponse(
+            response
+        );
+    }
+
+
+    /* ==================================
+       OTHER API ERRORS
+    ================================== */
+
+    if (!response.ok) {
+        throw await parseErrorResponse(
+            response
+        );
+    }
+
+    return response;
 }
 
 
@@ -39,47 +230,70 @@ export async function sendMessage(
     selectedModel = "auto",
     signal
 ) {
-    const allowed =
-        Object.values(CHAT_MODELS).map(
-            model => model.id
+    if (
+        typeof message !== "string" ||
+        !message.trim()
+    ) {
+        throw new ApiError(
+            "Message cannot be empty.",
+            400
         );
+    }
+
+
+    const allowedModels =
+        Object.values(CHAT_MODELS)
+            .map((chatModel) => chatModel.id);
+
 
     const model =
-        allowed.includes(selectedModel)
+        allowedModels.includes(
+            selectedModel
+        )
             ? selectedModel
             : "auto";
 
-    const response = await apiRequest(
-        "/chat",
-        {
-            method: "POST",
 
-            headers: {
-                "Content-Type":
-                    "application/json"
-            },
-
-            body: JSON.stringify({
-                message,
-                sessionId,
-                model
-            }),
-
-            signal
-        }
-    );
-
-    if (!response.ok) {
-        throw new Error(
-            `Chat API Error: ${response.status}`
+    if (!sessionId) {
+        throw new ApiError(
+            "Session ID is required.",
+            400
         );
     }
+
+
+    const response =
+        await apiRequest(
+            "/chat",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    message:
+                        message.trim(),
+
+                    sessionId,
+
+                    model
+                }),
+
+                signal
+            }
+        );
+
 
     if (!response.body) {
-        throw new Error(
-            "Chat response stream unavailable."
+        throw new ApiError(
+            "Chat response stream unavailable.",
+            response.status
         );
     }
+
 
     const modelInfo = {
         name:
@@ -98,6 +312,7 @@ export async function sendMessage(
             ) || ""
     };
 
+
     const reader =
         response.body.getReader();
 
@@ -106,37 +321,80 @@ export async function sendMessage(
 
     let answer = "";
 
-    while (true) {
 
-        const {
-            done,
-            value
-        } = await reader.read();
+    try {
+        while (true) {
+            const {
+                done,
+                value
+            } = await reader.read();
 
-        if (done) {
-            break;
+
+            if (done) {
+                break;
+            }
+
+
+            const chunk =
+                decoder.decode(
+                    value,
+                    {
+                        stream: true
+                    }
+                );
+
+
+            if (!chunk) {
+                continue;
+            }
+
+
+            answer += chunk;
+
+
+            if (
+                typeof onChunk ===
+                "function"
+            ) {
+                onChunk(
+                    answer,
+                    modelInfo
+                );
+            }
         }
 
-        const chunk =
-            decoder.decode(
-                value,
-                {
-                    stream: true
-                }
-            );
 
-        answer += chunk;
+        /* ==================================
+           FLUSH TEXT DECODER
+        ================================== */
 
-        if (
-            typeof onChunk ===
-            "function"
-        ) {
-            onChunk(
-                answer,
-                modelInfo
-            );
+        const finalChunk =
+            decoder.decode();
+
+
+        if (finalChunk) {
+            answer += finalChunk;
+
+
+            if (
+                typeof onChunk ===
+                "function"
+            ) {
+                onChunk(
+                    answer,
+                    modelInfo
+                );
+            }
+        }
+
+    } finally {
+        try {
+            reader.releaseLock();
+        } catch {
+            // Reader already released.
         }
     }
+
 
     return {
         success: true,
@@ -147,160 +405,105 @@ export async function sendMessage(
 
 
 /* ==================================
-   SESSIONS
+   GET PERSONAL SESSIONS
 ================================== */
 
 export async function getSessions() {
-
-    try {
-
-        const response =
-            await apiRequest(
-                "/sessions"
-            );
-
-        if (!response.ok) {
-            throw new Error(
-                `Sessions Error: ${response.status}`
-            );
-        }
-
-        return await response.json();
-
-    } catch (error) {
-
-        console.error(
-            "Get Sessions Error:",
-            error
+    const response =
+        await apiRequest(
+            "/sessions"
         );
 
-        return {
-            success: false,
-            sessions: [],
-            activeSession: null
-        };
-    }
+    return await response.json();
 }
 
+
+/* ==================================
+   CREATE PERSONAL SESSION
+================================== */
 
 export async function createSession() {
+    const response =
+        await apiRequest(
+            "/session/new",
+            {
+                method: "POST",
 
-    try {
-
-        const response =
-            await apiRequest(
-                "/session/new",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    }
+                headers: {
+                    "Content-Type":
+                        "application/json"
                 }
-            );
-
-        if (!response.ok) {
-            throw new Error(
-                `Create Session Error: ${response.status}`
-            );
-        }
-
-        return await response.json();
-
-    } catch (error) {
-
-        console.error(
-            "Create Session Error:",
-            error
+            }
         );
 
-        return {
-            success: false
-        };
-    }
+    return await response.json();
 }
 
+
+/* ==================================
+   SWITCH SESSION
+================================== */
 
 export async function switchSession(
     sessionId
 ) {
+    if (!sessionId) {
+        throw new ApiError(
+            "Session ID is required.",
+            400
+        );
+    }
 
-    try {
 
-        const response =
-            await apiRequest(
-                "/session/switch",
-                {
-                    method: "POST",
+    const response =
+        await apiRequest(
+            "/session/switch",
+            {
+                method: "POST",
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
 
-                    body: JSON.stringify({
-                        sessionId
-                    })
-                }
-            );
-
-        if (!response.ok) {
-            throw new Error(
-                `Switch Session Error: ${response.status}`
-            );
-        }
-
-        return await response.json();
-
-    } catch (error) {
-
-        console.error(
-            "Switch Session Error:",
-            error
+                body: JSON.stringify({
+                    sessionId
+                })
+            }
         );
 
-        return {
-            success: false,
-            messages: []
-        };
-    }
+
+    return await response.json();
 }
 
+
+/* ==================================
+   DELETE SESSION
+================================== */
 
 export async function deleteSession(
     sessionId
 ) {
+    if (!sessionId) {
+        throw new ApiError(
+            "Session ID is required.",
+            400
+        );
+    }
 
-    try {
 
-        const response =
-            await apiRequest(
-                `/session/${sessionId}`,
-                {
-                    method: "DELETE"
-                }
-            );
-
-        if (!response.ok) {
-            throw new Error(
-                `Delete Session Error: ${response.status}`
-            );
-        }
-
-        return await response.json();
-
-    } catch (error) {
-
-        console.error(
-            "Delete Session Error:",
-            error
+    const response =
+        await apiRequest(
+            `/session/${encodeURIComponent(
+                sessionId
+            )}`,
+            {
+                method: "DELETE"
+            }
         );
 
-        return {
-            success: false
-        };
-    }
+
+    return await response.json();
 }
 
 
@@ -310,74 +513,128 @@ export async function deleteSession(
 
 export async function sendCodeAssistant(
     prompt,
-    onChunk
+    onChunk,
+    selectedModel = "qwen2.5-coder:7b",
+    sessionId = null,
+    signal
 ) {
+    if (
+        typeof prompt !== "string" ||
+        !prompt.trim()
+    ) {
+        throw new ApiError(
+            "Code Assistant prompt cannot be empty.",
+            400
+        );
+    }
+
+
+    /* ==================================
+       VALIDATE CODE ASSISTANT MODEL
+    ================================== */
+
+    const allowedModels =
+        Object.values(CODE_ASSISTANT_MODELS)
+            .map((codeModel) => codeModel.id);
+
+
+    const model =
+        allowedModels.includes(
+            selectedModel
+        )
+            ? selectedModel
+            : CODE_ASSISTANT_MODELS.QWEN_7B.id;
+
+
+    /* ==================================
+       CODE ASSISTANT REQUEST
+    ================================== */
+
+    const response =
+        await apiRequest(
+            "/code-assistant",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    prompt:
+                        prompt.trim(),
+
+                    model,
+
+                    sessionId
+                }),
+
+                signal
+            }
+        );
+
+
+    if (!response.body) {
+        throw new ApiError(
+            "Code Assistant stream unavailable.",
+            response.status
+        );
+    }
+
+
+    /* ==================================
+       MODEL INFORMATION
+
+       IMPORTANT:
+       Do NOT call this variable `model`
+       because `model` is already the
+       selected model above.
+    ================================== */
+
+    const modelInfo = {
+        name:
+            response.headers.get(
+                "X-Model-Name"
+            ) ||
+            (
+                model ===
+                CODE_ASSISTANT_MODELS.QWEN_14B.id
+                    ? "Qwen 2.5 Coder 14B"
+                    : "Qwen 2.5 Coder 7B"
+            ),
+
+        id:
+            response.headers.get(
+                "X-Model-ID"
+            ) ||
+            model
+    };
+
+
+    const reader =
+        response.body.getReader();
+
+    const decoder =
+        new TextDecoder();
+
+    let answer = "";
+
 
     try {
-
-        const response =
-            await apiRequest(
-                "/code-assistant",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        prompt
-                    })
-                }
-            );
-
-        if (!response.ok) {
-            throw new Error(
-                `Code Assistant Error: ${response.status}`
-            );
-        }
-
-        if (!response.body) {
-            throw new Error(
-                "Code Assistant stream unavailable."
-            );
-        }
-
-        const model = {
-            name:
-                response.headers.get(
-                    "X-Model-Name"
-                ) ||
-                "Qwen 2.5 Coder 7B",
-
-            id:
-                response.headers.get(
-                    "X-Model-ID"
-                ) ||
-                "qwen2.5-coder:7b"
-        };
-
-        const reader =
-            response.body.getReader();
-
-        const decoder =
-            new TextDecoder();
-
-        let answer = "";
-
         while (true) {
-
             const {
                 done,
                 value
             } = await reader.read();
 
+
             if (done) {
                 break;
             }
 
-            answer +=
+
+            const chunk =
                 decoder.decode(
                     value,
                     {
@@ -385,43 +642,62 @@ export async function sendCodeAssistant(
                     }
                 );
 
+
+            if (!chunk) {
+                continue;
+            }
+
+
+            answer += chunk;
+
+
             if (
                 typeof onChunk ===
                 "function"
             ) {
                 onChunk(
                     answer,
-                    model
+                    modelInfo
                 );
             }
         }
 
-        return {
-            success: true,
-            answer,
-            model
-        };
 
-    } catch (error) {
+        /* ==================================
+           FLUSH TEXT DECODER
+        ================================== */
 
-        console.error(
-            "Code Assistant Error:",
-            error
-        );
+        const finalChunk =
+            decoder.decode();
 
-        return {
-            success: false,
 
-            answer:
-                "❌ Unable to connect to Code Assistant.",
+        if (finalChunk) {
+            answer += finalChunk;
 
-            model: {
-                name:
-                    "Qwen 2.5 Coder 7B",
 
-                id:
-                    "qwen2.5-coder:7b"
+            if (
+                typeof onChunk ===
+                "function"
+            ) {
+                onChunk(
+                    answer,
+                    modelInfo
+                );
             }
-        };
+        }
+
+    } finally {
+        try {
+            reader.releaseLock();
+        } catch {
+            // Reader already released.
+        }
     }
+
+
+    return {
+        success: true,
+        answer,
+        model: modelInfo
+    };
 }

@@ -382,3 +382,11 @@
         width: 100%;
     }
 }
+
+.model-badge select {
+    border: 0;
+    outline: 0;
+    color: inherit;
+    background: transparent;
+    font: inherit;
+}

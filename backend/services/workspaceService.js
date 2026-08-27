@@ -12,6 +12,11 @@ const Workspace = require("../models/Workspace");
 const WorkspaceMember = require("../models/WorkspaceMember");
 const User = require("../models/User");
 
+const Project = require("../models/Project");
+const Session = require("../models/Session");
+const Share = require("../models/Share");
+const Usage = require("../models/Usage");
+
 
 /*
 ==================================
@@ -273,6 +278,162 @@ async function requireWorkspaceOwner(
 
 /*
 ==================================
+RESOLVE USER IDENTIFIER
+==================================
+
+Supported lookup methods:
+
+1. MongoDB userId
+2. Email
+3. Username / nickname
+
+The actual WorkspaceMember relation
+continues to use the stable MongoDB
+User._id.
+
+Important:
+
+Do NOT store email or username as
+the membership reference because
+they can change later.
+==================================
+*/
+
+async function resolveUserIdentifier(
+    identifier
+) {
+
+    if (
+        typeof identifier !== "string" ||
+        !identifier.trim()
+    ) {
+
+        throw new Error(
+            "Validation Error: User identifier is required."
+        );
+    }
+
+    const cleanIdentifier =
+        identifier.trim();
+
+    /*
+    ----------------------------------
+    MongoDB User ID
+    ----------------------------------
+    */
+
+    if (
+        isValidObjectId(
+            cleanIdentifier
+        )
+    ) {
+
+        const user =
+            await User.findById(
+                cleanIdentifier
+            )
+                .select(
+                    "_id username email"
+                );
+
+        if (user) {
+
+            return user;
+        }
+    }
+
+    /*
+    ----------------------------------
+    Email lookup
+    ----------------------------------
+    */
+
+    if (
+        cleanIdentifier.includes("@")
+    ) {
+
+        const user =
+            await User.findOne({
+                email:
+                    cleanIdentifier.toLowerCase()
+            })
+                .select(
+                    "_id username email"
+                );
+
+        if (user) {
+
+            return user;
+        }
+    }
+
+    /*
+    ----------------------------------
+    Username / nickname lookup
+    ----------------------------------
+    */
+
+    const user =
+        await User.findOne({
+            username:
+                cleanIdentifier
+        })
+            .select(
+                "_id username email"
+            );
+
+    if (user) {
+
+        return user;
+    }
+
+    throw new Error(
+        "Not Found: No user found with the provided Enl ID, email, username, or user ID."
+    );
+}
+
+async function searchWorkspaceUsers(workspaceId, requesterId, query) {
+    await requireWorkspaceAdmin(workspaceId, requesterId);
+
+    const cleanQuery = typeof query === "string" ? query.trim() : "";
+
+    if (cleanQuery.length < 2) {
+        throw new Error("Validation Error: Enter at least two characters to search users.");
+    }
+
+    const escapedQuery = cleanQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const matcher = new RegExp(escapedQuery, "i");
+
+    const users = await User.find({
+        $or: [
+            { username: matcher },
+            { email: matcher }
+        ]
+    })
+        .select("_id username email")
+        .sort({ username: 1 })
+        .limit(10)
+        .lean();
+
+    const activeMemberships = await WorkspaceMember.find({
+        workspaceId,
+        status: ACTIVE_STATUS
+    })
+        .select("userId")
+        .lean();
+
+    const activeUserIds = new Set(
+        activeMemberships.map((member) => normalizeId(member.userId))
+    );
+
+    return users.filter(
+        (user) => !activeUserIds.has(normalizeId(user._id))
+    );
+}
+
+
+/*
+==================================
 CREATE WORKSPACE
 ==================================
 
@@ -403,7 +564,8 @@ async function createWorkspace({
 
                             role: "owner",
 
-                            status: ACTIVE_STATUS
+                            status:
+                                ACTIVE_STATUS
                         }
                     ],
                     {
@@ -440,18 +602,29 @@ async function createWorkspace({
                 createdWorkspace =
                     await Workspace.create({
                         name: cleanName,
-                        description: cleanDescription,
+                        description:
+                            cleanDescription,
                         ownerId,
                         inviteCode,
                         isActive: true
                     });
 
                 await WorkspaceMember.create({
-                    workspaceId: createdWorkspace._id,
-                    userId: ownerId,
-                    alias: owner.username || "Owner",
-                    role: "owner",
-                    status: ACTIVE_STATUS
+                    workspaceId:
+                        createdWorkspace._id,
+
+                    userId:
+                        ownerId,
+
+                    alias:
+                        owner.username ||
+                        "Owner",
+
+                    role:
+                        "owner",
+
+                    status:
+                        ACTIVE_STATUS
                 });
 
                 return createdWorkspace;
@@ -463,7 +636,8 @@ async function createWorkspace({
                 if (createdWorkspace?._id) {
 
                     await Workspace.deleteOne({
-                        _id: createdWorkspace._id
+                        _id:
+                            createdWorkspace._id
                     });
                 }
 
@@ -517,7 +691,8 @@ async function joinWorkspace({
 
     const workspace =
         await Workspace.findOne({
-            inviteCode: inviteCode.trim().toUpperCase(),
+            inviteCode:
+                inviteCode.trim().toUpperCase(),
             isActive: true
         });
 
@@ -541,11 +716,15 @@ async function joinWorkspace({
 
     let member =
         await WorkspaceMember.findOne({
-            workspaceId: workspace._id,
+            workspaceId:
+                workspace._id,
             userId
         });
 
-    if (member?.status === ACTIVE_STATUS) {
+    if (
+        member?.status ===
+        ACTIVE_STATUS
+    ) {
 
         throw new Error(
             "Conflict: User is already an active member."
@@ -553,15 +732,21 @@ async function joinWorkspace({
     }
 
     const cleanAlias =
-        typeof alias === "string" && alias.trim()
+        typeof alias === "string" &&
+        alias.trim()
             ? alias.trim()
             : user.username || "";
 
     if (member) {
 
-        member.alias = cleanAlias;
-        member.role = "member";
-        member.status = ACTIVE_STATUS;
+        member.alias =
+            cleanAlias;
+
+        member.role =
+            "member";
+
+        member.status =
+            ACTIVE_STATUS;
 
         await member.save();
 
@@ -569,11 +754,19 @@ async function joinWorkspace({
     }
 
     return WorkspaceMember.create({
-        workspaceId: workspace._id,
+        workspaceId:
+            workspace._id,
+
         userId,
-        alias: cleanAlias,
-        role: "member",
-        status: ACTIVE_STATUS
+
+        alias:
+            cleanAlias,
+
+        role:
+            "member",
+
+        status:
+            ACTIVE_STATUS
     });
 }
 
@@ -601,10 +794,13 @@ async function getUserWorkspaces(
     const memberships =
         await WorkspaceMember.find({
             userId,
-            status: ACTIVE_STATUS
+            status:
+                ACTIVE_STATUS
         })
             .populate({
-                path: "workspaceId",
+                path:
+                    "workspaceId",
+
                 select:
                     "name description inviteCode isActive ownerId createdAt updatedAt"
             })
@@ -633,7 +829,6 @@ async function getUserWorkspaces(
 
                 status:
                     membership.status
-
             })
         );
 }
@@ -665,7 +860,9 @@ async function getWorkspaceDetails(
             }
         })
             .populate({
-                path: "userId",
+                path:
+                    "userId",
+
                 select:
                     "_id username email"
             })
@@ -708,10 +905,8 @@ async function getWorkspaceDetails(
 
                     joinedAt:
                         member.createdAt
-
                 })
             )
-
     };
 }
 
@@ -725,7 +920,7 @@ Requester:
     authenticated user
 
 Target:
-    userId
+    userId / email / username
 
 Only owner/admin can add.
 
@@ -735,6 +930,9 @@ Important:
 - admin can add member
 - admin cannot create another admin
 - owner role cannot be assigned here
+
+The membership database relation
+always stores the resolved User._id.
 ==================================
 */
 
@@ -743,17 +941,14 @@ async function addMember(
     requesterId,
     {
         userId,
+        email,
+        username,
+        nickname,
+        identifier,
         alias,
         role
     }
 ) {
-
-    if (!isValidObjectId(userId)) {
-
-        throw new Error(
-            "Validation Error: Invalid target user ID format."
-        );
-    }
 
     const requester =
         await requireWorkspaceAdmin(
@@ -782,8 +977,9 @@ async function addMember(
     }
 
     /*
-    Admin cannot create another admin.
-    Only owner can assign admin.
+    ----------------------------------
+    Admin cannot create another admin
+    ----------------------------------
     */
 
     if (
@@ -798,25 +994,39 @@ async function addMember(
 
     /*
     ----------------------------------
-    Verify target user
+    Resolve target user
     ----------------------------------
     */
 
-    const user =
-        await User.findById(userId)
-            .select("_id username email");
+    const targetIdentifier =
+        identifier ||
+        userId ||
+        email ||
+        username ||
+        nickname;
 
-    if (!user) {
+    if (
+        typeof targetIdentifier !==
+            "string" ||
+        !targetIdentifier.trim()
+    ) {
 
         throw new Error(
-            "Not Found: User to add does not exist."
+            "Validation Error: User ID, email, username, or nickname is required."
         );
     }
 
+    const user =
+        await resolveUserIdentifier(
+            targetIdentifier
+        );
+
+    const resolvedUserId =
+        user._id;
+
     /*
     ----------------------------------
-    Prevent owner from being
-    re-added as normal member
+    Prevent owner from being re-added
     ----------------------------------
     */
 
@@ -833,8 +1043,12 @@ async function addMember(
     }
 
     if (
-        normalizeId(workspace.ownerId) ===
-        normalizeId(userId)
+        normalizeId(
+            workspace.ownerId
+        ) ===
+        normalizeId(
+            resolvedUserId
+        )
     ) {
 
         throw new Error(
@@ -851,7 +1065,8 @@ async function addMember(
     let member =
         await WorkspaceMember.findOne({
             workspaceId,
-            userId
+            userId:
+                resolvedUserId
         });
 
     if (member) {
@@ -902,7 +1117,8 @@ async function addMember(
 
             workspaceId,
 
-            userId,
+            userId:
+                resolvedUserId,
 
             alias:
                 typeof alias === "string" &&
@@ -918,7 +1134,6 @@ async function addMember(
 
             status:
                 ACTIVE_STATUS
-
         });
 
     return member;
@@ -961,7 +1176,8 @@ async function removeMember(
     const member =
         await WorkspaceMember.findOne({
             workspaceId,
-            userId: targetUserId
+            userId:
+                targetUserId
         });
 
     if (!member) {
@@ -971,7 +1187,10 @@ async function removeMember(
         );
     }
 
-    if (member.status === "removed") {
+    if (
+        member.status ===
+        "removed"
+    ) {
 
         throw new Error(
             "Conflict: User is already removed from the workspace."
@@ -982,7 +1201,10 @@ async function removeMember(
     Owner can never be removed.
     */
 
-    if (member.role === "owner") {
+    if (
+        member.role ===
+        "owner"
+    ) {
 
         throw new Error(
             "Forbidden: Cannot remove the workspace owner."
@@ -1056,7 +1278,11 @@ async function changeRole(
         );
     }
 
-    if (!MEMBER_ROLES.includes(newRole)) {
+    if (
+        !MEMBER_ROLES.includes(
+            newRole
+        )
+    ) {
 
         throw new Error(
             "Validation Error: Invalid role."
@@ -1071,7 +1297,8 @@ async function changeRole(
     const member =
         await WorkspaceMember.findOne({
             workspaceId,
-            userId: targetUserId
+            userId:
+                targetUserId
         });
 
     if (!member) {
@@ -1081,7 +1308,10 @@ async function changeRole(
         );
     }
 
-    if (member.status !== ACTIVE_STATUS) {
+    if (
+        member.status !==
+        ACTIVE_STATUS
+    ) {
 
         throw new Error(
             "Conflict: Cannot change role of an inactive member."
@@ -1094,7 +1324,10 @@ async function changeRole(
     ----------------------------------
     */
 
-    if (member.role === "owner") {
+    if (
+        member.role ===
+        "owner"
+    ) {
 
         throw new Error(
             "Forbidden: Workspace owner cannot lose ownership through this endpoint."
@@ -1151,7 +1384,10 @@ async function leaveWorkspace(
             userId
         );
 
-    if (member.role === "owner") {
+    if (
+        member.role ===
+        "owner"
+    ) {
 
         throw new Error(
             "Forbidden: Workspace owner cannot leave while they are the owner."
@@ -1164,6 +1400,297 @@ async function leaveWorkspace(
     await member.save();
 
     return member;
+}
+
+
+/*
+==================================
+DELETE WORKSPACE
+==================================
+
+Only the workspace owner can delete.
+
+This removes ONLY workspace-scoped
+data.
+
+Personal/solo sessions are NOT
+affected because they have no
+matching workspaceId.
+
+Workspace-owned records removed:
+
+1. Projects
+2. Sessions
+3. Shares
+4. Usage records
+5. Workspace memberships
+6. Workspace
+==================================
+*/
+
+async function deleteWorkspace(
+    workspaceId,
+    requesterId
+) {
+
+    if (!isValidObjectId(workspaceId)) {
+
+        throw new Error(
+            "Validation Error: Invalid workspace ID format."
+        );
+    }
+
+    if (!isValidObjectId(requesterId)) {
+
+        throw new Error(
+            "Validation Error: Invalid requester ID format."
+        );
+    }
+
+    /*
+    ----------------------------------
+    Owner authorization
+    ----------------------------------
+    */
+
+    await requireWorkspaceOwner(
+        workspaceId,
+        requesterId
+    );
+
+    /*
+    ----------------------------------
+    Confirm workspace
+    ----------------------------------
+    */
+
+    const workspace =
+        await Workspace.findOne({
+            _id:
+                workspaceId,
+            isActive:
+                true
+        });
+
+    if (!workspace) {
+
+        throw new Error(
+            "Not Found: Workspace not found or inactive."
+        );
+    }
+
+    /*
+    ----------------------------------
+    Transaction
+    ----------------------------------
+    */
+
+    const session =
+        await mongoose.startSession();
+
+    try {
+
+        let deletionResult = null;
+
+        await session.withTransaction(
+            async () => {
+
+                const projectsResult =
+                    await Project.deleteMany(
+                        {
+                            workspaceId
+                        },
+                        {
+                            session
+                        }
+                    );
+
+                const sessionsResult =
+                    await Session.deleteMany(
+                        {
+                            workspaceId
+                        },
+                        {
+                            session
+                        }
+                    );
+
+                const sharesResult =
+                    await Share.deleteMany(
+                        {
+                            workspaceId
+                        },
+                        {
+                            session
+                        }
+                    );
+
+                const usageResult =
+                    await Usage.deleteMany(
+                        {
+                            workspaceId
+                        },
+                        {
+                            session
+                        }
+                    );
+
+                const membershipsResult =
+                    await WorkspaceMember.deleteMany(
+                        {
+                            workspaceId
+                        },
+                        {
+                            session
+                        }
+                    );
+
+                const workspaceResult =
+                    await Workspace.deleteOne(
+                        {
+                            _id:
+                                workspaceId
+                        },
+                        {
+                            session
+                        }
+                    );
+
+                if (
+                    workspaceResult.deletedCount !==
+                    1
+                ) {
+
+                    throw new Error(
+                        "Conflict: Workspace could not be deleted."
+                    );
+                }
+
+                deletionResult = {
+
+                    projectsDeleted:
+                        projectsResult.deletedCount,
+
+                    sessionsDeleted:
+                        sessionsResult.deletedCount,
+
+                    sharesDeleted:
+                        sharesResult.deletedCount,
+
+                    usageDeleted:
+                        usageResult.deletedCount,
+
+                    membershipsDeleted:
+                        membershipsResult.deletedCount,
+
+                    workspaceDeleted:
+                        workspaceResult.deletedCount
+                };
+            }
+        );
+
+        return deletionResult;
+    }
+
+    catch (error) {
+
+        const transactionUnsupported =
+            error?.code === 20 ||
+            error?.codeName ===
+                "IllegalOperation" ||
+            error?.originalError?.code ===
+                20 ||
+            error?.originalError?.codeName ===
+                "IllegalOperation" ||
+            error?.message?.includes(
+                "Transaction numbers are only allowed"
+            );
+
+        /*
+        ----------------------------------
+        MongoDB standalone fallback
+        ----------------------------------
+
+        This fallback is used only when
+        MongoDB transactions are unavailable.
+
+        Deletion order removes dependent
+        records before the workspace.
+        ----------------------------------
+        */
+
+        if (transactionUnsupported) {
+
+            await Project.deleteMany({
+                workspaceId
+            });
+
+            await Session.deleteMany({
+                workspaceId
+            });
+
+            await Share.deleteMany({
+                workspaceId
+            });
+
+            await Usage.deleteMany({
+                workspaceId
+            });
+
+            await WorkspaceMember.deleteMany({
+                workspaceId
+            });
+
+            const result =
+                await Workspace.deleteOne({
+                    _id:
+                        workspaceId
+                });
+
+            if (
+                result.deletedCount !==
+                1
+            ) {
+
+                throw new Error(
+                    "Conflict: Workspace could not be deleted."
+                );
+            }
+
+            return {
+
+                projectsDeleted:
+                    "completed",
+
+                sessionsDeleted:
+                    "completed",
+
+                sharesDeleted:
+                    "completed",
+
+                usageDeleted:
+                    "completed",
+
+                membershipsDeleted:
+                    "completed",
+
+                workspaceDeleted:
+                    1
+            };
+        }
+
+        console.error(
+            "Delete Workspace Service Error:",
+            error
+        );
+
+        throw error;
+    }
+
+    finally {
+
+        await session.endSession();
+    }
 }
 
 
@@ -1191,6 +1718,12 @@ module.exports = {
 
     leaveWorkspace,
 
+    deleteWorkspace,
+
+    searchWorkspaceUsers,
+
+    resolveUserIdentifier,
+
     requireWorkspaceMember,
 
     requireWorkspaceAdmin,
@@ -1202,5 +1735,4 @@ module.exports = {
     getActiveMember,
 
     isValidObjectId
-
 };

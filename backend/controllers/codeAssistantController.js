@@ -10,6 +10,23 @@ const {
     "../services/codeAssistantService"
 );
 
+const {
+    chooseCodeModel
+} = require("../services/modelRouter");
+
+const {
+    canAccessSession,
+    updateLastMessage
+} = require("../services/sessionService");
+
+const {
+    saveMessage
+} = require("../services/messageService");
+
+const {
+    recordWorkspaceUsage
+} = require("../services/usageService");
+
 
 /*
 ==================================
@@ -25,8 +42,14 @@ async function codeAssistant(
     try {
 
         const {
-            prompt
-        } = req.body;
+            prompt,
+            model,
+            sessionId
+        } = req.body || {};
+
+        const userId = req.user?.id
+            ? String(req.user.id)
+            : null;
 
 
         /*
@@ -54,6 +77,38 @@ async function codeAssistant(
 
         const cleanPrompt =
             prompt.trim();
+
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized: Authentication required."
+            });
+        }
+
+        let access = null;
+
+        if (sessionId !== undefined && sessionId !== null) {
+            if (typeof sessionId !== "string" || !sessionId.trim()) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Validation Error: Invalid session ID."
+                });
+            }
+
+            access = await canAccessSession(
+                userId,
+                sessionId.trim()
+            );
+
+            if (!access?.allowed) {
+                return res.status(access?.status || 403).json({
+                    success: false,
+                    message: access?.message || "Forbidden: You cannot access this session."
+                });
+            }
+        }
+
+        const selectedModel = chooseCodeModel(model);
 
 
         /*
@@ -95,13 +150,13 @@ async function codeAssistant(
                 */
 
                 "X-Model-Name":
-                    "Qwen 2.5 Coder 7B",
+                    selectedModel.name,
 
                 "X-Model-ID":
-                    "qwen2.5-coder:7b",
+                    selectedModel.model,
 
                 "X-Model-Reason":
-                    "Code Assistant"
+                    selectedModel.reason || "Code Assistant"
 
             }
         );
@@ -113,9 +168,11 @@ async function codeAssistant(
         ==================================
         */
 
-        await askCodeAssistant(
+        const result = await askCodeAssistant(
 
             cleanPrompt,
+
+            selectedModel,
 
             (chunk) => {
 
@@ -132,6 +189,40 @@ async function codeAssistant(
             }
 
         );
+
+        if (access?.session) {
+            const activeSessionId = access.session._id.toString();
+
+            try {
+                await saveMessage(activeSessionId, "user", cleanPrompt);
+                await saveMessage(activeSessionId, "assistant", result.answer, {
+                    name: selectedModel.name,
+                    id: selectedModel.model,
+                    reason: selectedModel.reason || "Code Assistant"
+                });
+                await updateLastMessage(
+                    activeSessionId,
+                    cleanPrompt,
+                    selectedModel.model
+                );
+
+                if (access.session.workspaceId) {
+                    await recordWorkspaceUsage({
+                        workspaceId: access.session.workspaceId,
+                        userId,
+                        sessionId: activeSessionId,
+                        model: selectedModel.model,
+                        input: cleanPrompt,
+                        output: result.answer
+                    });
+                }
+            } catch (persistenceError) {
+                console.error(
+                    "Code Assistant Persistence Error:",
+                    persistenceError.message
+                );
+            }
+        }
 
 
         /*

@@ -11,8 +11,11 @@ function CodeAssistant() {
     const [instruction, setInstruction] = useState("");
     const [response, setResponse] = useState("");
     const [loading, setLoading] = useState(false);
+    const [model, setModel] = useState("qwen2.5-coder:7b");
 
-    const MODEL_NAME = "Qwen 2.5 Coder 7B";
+    const MODEL_NAME = model === "qwen2.5-coder:14b-instruct"
+        ? "Qwen 2.5 Coder 14B"
+        : "Qwen 2.5 Coder 7B";
 
     async function handleGenerate() {
 
@@ -33,29 +36,23 @@ ${code.trim() ||
     "No code was provided. Answer the coding request directly."}
         `.trim();
 
-        const result = await sendCodeAssistant(
-            prompt,
-            (liveResponse) => {
-                setResponse(liveResponse);
-            }
-        );
-
-        if (result.success) {
+        try {
+            const result = await sendCodeAssistant(
+                prompt,
+                (liveResponse) => {
+                    setResponse(liveResponse);
+                },
+                model
+            );
 
             setResponse(
                 result.answer || ""
             );
-
-        } else {
-
-            setResponse(
-                result.answer ||
-                "❌ Unable to generate a response."
-            );
-
+        } catch (error) {
+            setResponse(`❌ ${error.message || "Unable to generate a response."}`);
+        } finally {
+            setLoading(false);
         }
-
-        setLoading(false);
     }
 
     function clearAssistant() {
@@ -96,9 +93,10 @@ ${code.trim() ||
                         }
                     />
 
-                    <span>
-                        {MODEL_NAME}
-                    </span>
+                    <select value={model} onChange={(event) => setModel(event.target.value)} disabled={loading} aria-label="Code Assistant model">
+                        <option value="qwen2.5-coder:7b">Qwen 2.5 Coder 7B</option>
+                        <option value="qwen2.5-coder:14b-instruct">Qwen 2.5 Coder 14B</option>
+                    </select>
 
                 </div>
 

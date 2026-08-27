@@ -76,6 +76,7 @@ ASK CODE ASSISTANT
 
 async function askCodeAssistant(
     userPrompt,
+    selectedModel,
     onChunk = null
 ) {
 
@@ -108,8 +109,12 @@ async function askCodeAssistant(
         ==================================
         */
 
-        const selectedModel =
-            chooseCodeModel();
+        if (typeof selectedModel === "function") {
+            onChunk = selectedModel;
+            selectedModel = chooseCodeModel();
+        }
+
+        selectedModel = selectedModel || chooseCodeModel();
 
 
         /*
@@ -135,15 +140,14 @@ async function askCodeAssistant(
         SECURITY CHECK
         ==================================
 
-        Only Qwen 2.5 Coder 7B is allowed
-        inside the Code Assistant.
+        Only configured Code Assistant models are allowed.
         ==================================
         */
 
-        if (
-            selectedModel.model !==
-            "qwen2.5-coder:7b"
-        ) {
+        if (![
+            "qwen2.5-coder:7b",
+            "qwen2.5-coder:14b-instruct"
+        ].includes(selectedModel.model)) {
 
             throw new Error(
                 `Invalid Code Assistant model: ${selectedModel.model}`

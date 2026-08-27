@@ -1,14 +1,11 @@
+
 const jwt = require("jsonwebtoken");
 
-
-/*
-==================================
+/*==================================
 JWT SECRET
-==================================
-*/
+==================================*/
 
 function getJwtSecret() {
-
     const secret = process.env.JWT_SECRET;
 
     if (!secret) {
@@ -16,159 +13,99 @@ function getJwtSecret() {
     }
 
     return secret;
-
 }
 
 
-/*
-==================================
-AUTHENTICATION MIDDLEWARE
-==================================
+/*==================================
+EXTRACT BEARER TOKEN
+==================================*/
 
-Authentication source:
+function extractBearerToken(req) {
+    const authHeader = req.headers.authorization;
 
-    Authorization: Bearer <JWT>
+    if (
+        !authHeader ||
+        typeof authHeader !== "string"
+    ) {
+        return null;
+    }
 
-Trusted identity:
+    if (!authHeader.startsWith("Bearer ")) {
+        return null;
+    }
 
-    req.user.id
+    const token = authHeader
+        .substring(7)
+        .trim();
 
-IMPORTANT:
+    return token || null;
+}
 
-The client MUST NOT be trusted for
-user identity.
 
-Do NOT use:
-
-    req.body.userId
-    req.body.requesterId
-    req.query.userId
-    req.query.requesterId
-
-Identity must always come from
-the verified JWT.
-==================================
-*/
+/*==================================
+REQUIRE AUTHENTICATION
+==================================*/
 
 function requireAuth(req, res, next) {
-
     try {
 
-        /*
-        ==================================
-        AUTHORIZATION HEADER
-        ==================================
-        */
-
-        const authHeader =
-            req.headers.authorization;
-
-        if (
-            !authHeader ||
-            !authHeader.startsWith("Bearer ")
-        ) {
-
-            return res.status(401).json({
-
-                success: false,
-
-                message:
-                    "Unauthorized: Authentication token required"
-
-            });
-
-        }
-
-
-        /*
-        ==================================
+        /*==================================
         EXTRACT TOKEN
-        ==================================
-        */
+        ==================================*/
 
-        const token =
-            authHeader.substring(7).trim();
+        const token = extractBearerToken(req);
 
         if (!token) {
-
             return res.status(401).json({
-
                 success: false,
-
                 message:
                     "Unauthorized: Authentication token required"
-
             });
-
         }
 
 
-        /*
-        ==================================
+        /*==================================
         VERIFY JWT
-        ==================================
-        */
+        ==================================*/
 
-        const decoded =
-            jwt.verify(
-                token,
-                getJwtSecret()
-            );
+        const decoded = jwt.verify(
+            token,
+            getJwtSecret()
+        );
 
 
-        /*
-        ==================================
-        VALIDATE JWT PAYLOAD
-        ==================================
-        */
+        /*==================================
+        VALIDATE PAYLOAD
+        ==================================*/
 
         if (
             !decoded ||
             !decoded.id
         ) {
-
             return res.status(401).json({
-
                 success: false,
-
                 message:
                     "Unauthorized: Invalid authentication token"
-
             });
-
         }
 
 
-        /*
-        ==================================
+        /*==================================
         TRUSTED USER IDENTITY
-        ==================================
-
-        The identity below comes ONLY from
-        the cryptographically verified JWT.
-
-        Client-provided IDs are ignored.
-        ==================================
-        */
+        ==================================*/
 
         req.user = {
-
-            id: decoded.id
-
+            id: String(decoded.id)
         };
 
 
-        /*
-        ==================================
-        CONTINUE REQUEST
-        ==================================
-        */
+        /*==================================
+        CONTINUE
+        ==================================*/
 
-        next();
+        return next();
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Authentication Error:",
@@ -176,121 +113,124 @@ function requireAuth(req, res, next) {
         );
 
 
-        /*
-        ==================================
-        EXPIRED TOKEN
-        ==================================
-        */
-
-        if (
-            error.name ===
-            "TokenExpiredError"
-        ) {
-
-            return res.status(401).json({
-
-                success: false,
-
-                message:
-                    "Unauthorized: Authentication token expired"
-
-            });
-
-        }
-
-
-        /*
-        ==================================
-        INVALID TOKEN
-        ==================================
-        */
-
-        if (
-            error.name ===
-            "JsonWebTokenError"
-        ) {
-
-            return res.status(401).json({
-
-                success: false,
-
-                message:
-                    "Unauthorized: Invalid authentication token"
-
-            });
-
-        }
-
-
-        /*
-        ==================================
-        AUTHENTICATION CONFIGURATION /
-        ==================================
-        */
+        /*==================================
+        JWT SECRET CONFIGURATION ERROR
+        ==================================*/
 
         if (
             error.message ===
             "JWT_SECRET is not configured."
         ) {
-
             return res.status(500).json({
-
                 success: false,
-
                 message:
                     "Authentication service configuration error"
-
             });
-
         }
 
 
-        /*
-        ==================================
+        /*==================================
+        EXPIRED TOKEN
+        ==================================*/
+
+        if (
+            error.name ===
+            "TokenExpiredError"
+        ) {
+            return res.status(401).json({
+                success: false,
+                message:
+                    "Unauthorized: Authentication token expired"
+            });
+        }
+
+
+        /*==================================
+        INVALID TOKEN
+        ==================================*/
+
+        if (
+            error.name ===
+            "JsonWebTokenError"
+        ) {
+            return res.status(401).json({
+                success: false,
+                message:
+                    "Unauthorized: Invalid authentication token"
+            });
+        }
+
+
+        /*==================================
         UNEXPECTED AUTH ERROR
-        ==================================
-        */
+        ==================================*/
 
         return res.status(500).json({
-
             success: false,
-
             message:
                 "Authentication service error"
-
         });
-
     }
-
 }
+
+
+/*==================================
+OPTIONAL AUTHENTICATION
+==================================
+
+Authenticated user:
+    req.user.id = verified JWT user ID
+
+Guest user:
+    req.user.id = null
+
+Important:
+If a token exists, it MUST be valid.
+An invalid token is never silently
+converted into guest access.
+==================================*/
 
 function optionalAuth(req, res, next) {
 
-    if (!req.headers.authorization) {
+    const authHeader =
+        req.headers.authorization;
+
+
+    /*==================================
+    NO AUTH HEADER → GUEST
+    ==================================*/
+
+    if (!authHeader) {
 
         req.user = {
             id: null
         };
 
         return next();
-
     }
 
-    return requireAuth(req, res, next);
 
+    /*==================================
+    AUTH HEADER EXISTS
+    ==================================
+
+    If a token is supplied, requireAuth
+    verifies it.
+    ==================================*/
+
+    return requireAuth(
+        req,
+        res,
+        next
+    );
 }
 
 
-/*
-==================================
-EXPORT
-==================================
-*/
+/*==================================
+EXPORTS
+==================================*/
 
 module.exports = {
-
     requireAuth,
-
     optionalAuth
-
 };

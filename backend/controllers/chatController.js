@@ -19,12 +19,9 @@ const {
     recordWorkspaceUsage
 } = require("../services/usageService");
 
-
-/*
-==================================
-Allowed Chat Models
-==================================
-*/
+/*==================================
+ALLOWED CHAT MODELS
+==================================*/
 
 const ALLOWED = new Set([
     "auto",
@@ -32,22 +29,67 @@ const ALLOWED = new Set([
     "gemma3:4b"
 ]);
 
+/*==================================
+SAFE MODEL REASON
+==================================*/
 
-/*
-==================================
-Chat With AI
-==================================
-*/
+function sanitizeReason(
+    reason
+) {
+    if (
+        reason === null ||
+        reason === undefined
+    ) {
+        return "";
+    }
 
-async function chatWithAI(req, res) {
+    return String(reason)
+        .replace(
+            /[^\x20-\x7E]/g,
+            ""
+        )
+        .trim();
+}
+
+/*==================================
+SAFE RESPONSE ERROR
+==================================*/
+
+function sendError(
+    res,
+    status,
+    message
+) {
+    if (res.headersSent) {
+        return false;
+    }
+
+    return res.status(status).json({
+        success: false,
+        message
+    });
+}
+
+/*==================================
+CHAT WITH AI
+==================================*/
+
+async function chatWithAI(
+    req,
+    res
+) {
+    let streamStarted = false;
+
+    let clientDisconnected =
+        false;
+
+    let handleDisconnect =
+        null;
 
     try {
-
-        /*
-        ==================================
-        Request Data
-        ==================================
-        */
+        /*==================================
+        REQUEST DATA
+        ==================================*/
 
         const {
             message,
@@ -55,270 +97,375 @@ async function chatWithAI(req, res) {
             model = "auto"
         } = req.body || {};
 
-
-        /*
-        ==================================
-        Input Validation
-        ==================================
-        */
+        /*==================================
+        INPUT VALIDATION
+        ==================================*/
 
         if (
-            !message?.trim() ||
-            !sessionId
+            typeof message !== "string" ||
+            !message.trim()
         ) {
-
-            return res.status(400).json({
-
-                success: false,
-
-                message:
-                    "Message and Session ID required."
-
-            });
-
+            return sendError(
+                res,
+                400,
+                "Message is required."
+            );
         }
 
-
-        /*
-        ==================================
-        Trusted User Identity
-        ==================================
-
-        IMPORTANT:
-
-        userId is NEVER taken from req.body.
-
-        The authentication middleware has
-        already verified the JWT and placed
-        the trusted identity in req.user.id.
-        */
-
-        const userId = req.user.id;
-
-
-        /*
-        ==================================
-        Session Access Validation
-        ==================================
-
-        This MUST happen before:
-
-        - model selection
-        - Ollama generation
-        - message persistence
-        - session updates
-        */
-
-        const access = await canAccessSession(
-            userId,
-            sessionId
-        );
-
-
-        if (!access.allowed) {
-
-            return res.status(
-                access.status
-            ).json({
-
-                success: false,
-
-                message: access.message
-
-            });
-
+        if (
+            typeof sessionId !== "string" ||
+            !sessionId.trim()
+        ) {
+            return sendError(
+                res,
+                400,
+                "Session ID is required."
+            );
         }
 
+        /*==================================
+        AUTHENTICATION
+        ==================================*/
 
-        /*
-        ==================================
-        Model Validation
-        ==================================
-        */
+        const userId =
+            req.user?.id
+                ? String(req.user.id)
+                : null;
 
-        if (!ALLOWED.has(model)) {
+        const isGuest =
+            !userId;
 
-            return res.status(400).json({
+        /*==================================
+        CLEAN VALUES
+        ==================================*/
 
-                success: false,
-
-                message: "Invalid chat model."
-
-            });
-
-        }
-
-
-        /*
-        ==================================
-        Clean Message
-        ==================================
-        */
+        const cleanSessionId =
+            sessionId.trim();
 
         const cleanMessage =
             message.trim();
 
+        /*==================================
+        SESSION ACCESS
+        ==================================*/
 
-        /*
-        ==================================
-        Model Selection
-        ==================================
-        */
+        let access = null;
 
-        const selected = chooseModel(
-            cleanMessage,
-            model
-        );
+        if (!isGuest) {
+            access =
+                await canAccessSession(
+                    userId,
+                    cleanSessionId
+                );
 
+            if (
+                !access ||
+                !access.allowed
+            ) {
+                return sendError(
+                    res,
+                    access?.status || 403,
+                    access?.message ||
+                        "Forbidden: You do not have access to this session."
+                );
+            }
+        }
 
-        /*
-        ==================================
-        AI Response State
-        ==================================
-        */
+        /*==================================
+        MODEL VALIDATION
+        ==================================*/
+
+        if (
+            typeof model !== "string" ||
+            !ALLOWED.has(model)
+        ) {
+            return sendError(
+                res,
+                400,
+                "Invalid chat model."
+            );
+        }
+
+        /*==================================
+        MODEL SELECTION
+        ==================================*/
+
+        let selected;
+
+        try {
+            selected =
+                await chooseModel(
+                    cleanMessage,
+                    model
+                );
+        }
+        catch (modelError) {
+            console.error(
+                "Model Selection Error:",
+                modelError
+            );
+
+            return sendError(
+                res,
+                500,
+                "Unable to select an AI model."
+            );
+        }
+
+        if (
+            !selected ||
+            !selected.model
+        ) {
+            return sendError(
+                res,
+                500,
+                "Unable to select an AI model."
+            );
+        }
+
+        /*==================================
+        MODEL INFORMATION
+        ==================================*/
+
+        const modelName =
+            String(
+                selected.name ||
+                selected.model ||
+                "Unknown"
+            );
+
+        const modelId =
+            String(
+                selected.model ||
+                "unknown"
+            );
+
+        const modelReason =
+            sanitizeReason(
+                selected.reason
+            );
+
+        /*==================================
+        AI RESPONSE
+        ==================================*/
 
         let aiReply = "";
 
+        /*==================================
+        STREAM HEADERS
+        ==================================*/
 
-        /*
-        ==================================
-        Start Streaming Response
-        ==================================
-        */
+        res.writeHead(
+            200,
+            {
+                "Content-Type":
+                    "text/plain; charset=utf-8",
 
-        res.writeHead(200, {
+                "Transfer-Encoding":
+                    "chunked",
 
-            "Content-Type":
-                "text/plain; charset=utf-8",
+                "Cache-Control":
+                    "no-cache, no-store, must-revalidate",
 
-            "Transfer-Encoding":
-                "chunked",
+                "Connection":
+                    "keep-alive",
 
-            "Cache-Control":
-                "no-cache",
+                "X-Model-Name":
+                    modelName,
 
-            "Connection":
-                "keep-alive",
+                "X-Model-ID":
+                    modelId,
 
-            "X-Model-Name":
-                selected.name,
+                "X-Model-Reason":
+                    modelReason
+            }
+        );
 
-            "X-Model-ID":
-                selected.model,
+        streamStarted = true;
 
-            "X-Model-Reason":
-                String(selected.reason)
-                    .replace(
-                        /[^\x20-\x7E]/g,
-                        ""
-                    )
+        /*==================================
+        CLIENT DISCONNECT
+        ==================================*/
 
-        });
+        handleDisconnect = () => {
+            clientDisconnected =
+                true;
 
+            console.log(
+                `Chat client disconnected. Session: ${cleanSessionId}`
+            );
+        };
 
-        /*
-        ==================================
-        Ollama Generation
-        ==================================
-        */
+        req.on(
+            "close",
+            handleDisconnect
+        );
+
+        /*==================================
+        AI GENERATION
+
+        MongoDB memory is handled
+        inside ollamaService.
+        ==================================*/
 
         await askOllama(
-
             cleanMessage,
 
             (chunk) => {
+                if (
+                    clientDisconnected ||
+                    res.destroyed ||
+                    res.writableEnded
+                ) {
+                    return;
+                }
 
-                aiReply += chunk;
+                if (
+                    chunk === null ||
+                    chunk === undefined
+                ) {
+                    return;
+                }
 
-                res.write(chunk);
+                const text =
+                    String(chunk);
 
+                if (!text) {
+                    return;
+                }
+
+                aiReply += text;
+
+                try {
+                    res.write(text);
+                }
+                catch (writeError) {
+                    clientDisconnected =
+                        true;
+
+                    console.error(
+                        "Chat Stream Write Error:",
+                        writeError.message
+                    );
+                }
             },
 
-            selected.model
+            modelId,
 
+            cleanSessionId
         );
 
+        /*==================================
+        VALIDATE AI RESPONSE
+        ==================================*/
 
-        /*
-        ==================================
-        Persist User Message
-        ==================================
-        */
+        aiReply =
+            aiReply.trim();
 
-        await saveMessage(
+        if (!aiReply) {
+            console.error(
+                "Chat Controller: Empty AI response."
+            );
 
-            sessionId,
-
-            "user",
-
-            cleanMessage
-
-        );
-
-
-        /*
-        ==================================
-        Persist Assistant Message
-        ==================================
-        */
-
-        await saveMessage(
-
-            sessionId,
-
-            "assistant",
-
-            aiReply,
-
-            {
-
-                name:
-                    selected.name,
-
-                id:
-                    selected.model,
-
-                reason:
-                    selected.reason
-
+            if (
+                !res.destroyed &&
+                !res.writableEnded
+            ) {
+                res.end();
             }
 
-        );
+            return;
+        }
 
+        /*==================================
+        DATABASE PERSISTENCE
 
-        /*
-        ==================================
-        Update Session Metadata
-        ==================================
-        */
+        Authenticated:
+            Save user message
+            Save assistant message
 
-        await updateLastMessage(
+        Guest:
+            Do not save.
+        ==================================*/
 
-            sessionId,
-
-            cleanMessage,
-
-            selected.model
-
-        );
-
-        if (access.session.workspaceId) {
-
+        if (!isGuest) {
             try {
+                await saveMessage(
+                    cleanSessionId,
+                    "user",
+                    cleanMessage
+                );
 
+                await saveMessage(
+                    cleanSessionId,
+                    "assistant",
+                    aiReply,
+                    {
+                        name:
+                            modelName,
+
+                        id:
+                            modelId,
+
+                        reason:
+                            modelReason
+                    }
+                );
+
+                await updateLastMessage(
+                    cleanSessionId,
+                    cleanMessage,
+                    modelId
+                );
+            }
+            catch (databaseError) {
+                /*
+                AI response already exists.
+
+                Persistence failure should not
+                destroy a successful response.
+                */
+
+                console.error(
+                    "Chat Persistence Error:",
+                    databaseError
+                );
+            }
+        }
+
+        /*==================================
+        WORKSPACE USAGE
+        ==================================*/
+
+        if (
+            !isGuest &&
+            access?.session?.workspaceId
+        ) {
+            try {
                 await recordWorkspaceUsage({
                     workspaceId:
                         access.session.workspaceId,
+
                     userId,
-                    sessionId,
-                    model: selected.model,
-                    input: cleanMessage,
-                    output: aiReply
+
+                    sessionId:
+                        cleanSessionId,
+
+                    model:
+                        modelId,
+
+                    input:
+                        cleanMessage,
+
+                    output:
+                        aiReply
                 });
-
             }
-
             catch (usageError) {
+                /*
+                Usage tracking must never
+                break a successful AI response.
+                */
 
                 console.error(
                     "Workspace Usage Error:",
@@ -327,64 +474,88 @@ async function chatWithAI(req, res) {
             }
         }
 
+        /*==================================
+        FINISH STREAM
+        ==================================*/
 
-        /*
-        ==================================
-        Finish Streaming Response
-        ==================================
-        */
+        if (
+            !res.destroyed &&
+            !res.writableEnded
+        ) {
+            res.end();
+        }
 
-        res.end();
+        /*==================================
+        CLEAN LISTENER
+        ==================================*/
 
-    } catch (error) {
-
+        if (handleDisconnect) {
+            req.removeListener(
+                "close",
+                handleDisconnect
+            );
+        }
+    }
+    catch (error) {
         console.error(
             "Chat Controller Error:",
             error
         );
 
+        /*==================================
+        ERROR BEFORE STREAM
+        ==================================*/
 
-        /*
-        ==================================
-        Error Before Streaming
-        ==================================
-        */
+        if (!streamStarted) {
+            const status =
+                Number(error?.status) >= 400
+                    ? error.status
+                    : 500;
 
-        if (!res.headersSent) {
-
-            return res.status(500).json({
-
-                success: false,
-
-                message:
+            return sendError(
+                res,
+                status,
+                error?.message ||
                     "Unable to connect to Enlivonex AI."
-
-            });
-
+            );
         }
 
+        /*==================================
+        ERROR AFTER STREAM
+        ==================================*/
 
-        /*
-        ==================================
-        Error During Streaming
-        ==================================
-        */
+        try {
+            if (
+                !res.destroyed &&
+                !res.writableEnded
+            ) {
+                res.end();
+            }
+        }
+        catch (streamError) {
+            console.error(
+                "Chat Stream Close Error:",
+                streamError
+            );
+        }
 
-        res.end();
+        /*==================================
+        CLEAN LISTENER
+        ==================================*/
 
+        if (handleDisconnect) {
+            req.removeListener(
+                "close",
+                handleDisconnect
+            );
+        }
     }
-
 }
 
-
-/*
-==================================
-Exports
-==================================
-*/
+/*==================================
+EXPORTS
+==================================*/
 
 module.exports = {
-
     chatWithAI
-
 };

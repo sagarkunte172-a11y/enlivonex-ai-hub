@@ -11,6 +11,7 @@ const sessionService = require("../services/sessionService");
 const Workspace = require("../models/Workspace");
 const WorkspaceMember = require("../models/WorkspaceMember");
 const Session = require("../models/Session");
+
 const usageService = require("../services/usageService");
 
 
@@ -70,7 +71,8 @@ function getAuthenticatedUserId(req, res) {
 
         res.status(401).json({
             success: false,
-            message: "Unauthorized: Authentication required."
+            message:
+                "Unauthorized: Authentication required."
         });
 
         return null;
@@ -86,19 +88,6 @@ CREATE WORKSPACE
 ==================================
 
 POST /api/workspaces
-
-Body:
-
-{
-    "name": "...",
-    "description": "..."
-}
-
-Owner identity:
-    req.user.id
-
-Never trust ownerId
-from client.
 ==================================
 */
 
@@ -213,12 +202,6 @@ GET USER WORKSPACES
 ==================================
 
 GET /api/workspaces/user
-
-User identity:
-    req.user.id
-
-The client cannot request
-another user's workspaces.
 ==================================
 */
 
@@ -269,12 +252,6 @@ GET WORKSPACE DETAILS
 ==================================
 
 GET /api/workspaces/:workspaceId
-
-Requester:
-    req.user.id
-
-User must be an active
-workspace member.
 ==================================
 */
 
@@ -316,12 +293,6 @@ exports.getWorkspaceDetails = async (req, res) => {
 
             });
         }
-
-        /*
-        ----------------------------------
-        Verify workspace membership
-        ----------------------------------
-        */
 
         await WorkspaceMember.findOne({
             workspaceId,
@@ -370,18 +341,19 @@ ADD WORKSPACE MEMBER
 
 POST /api/workspaces/:workspaceId/members
 
-Body:
+Accepted identifiers:
 
-{
-    "userId": "...",
-    "alias": "...",
-    "role": "member"
-}
+- userId
+- identifier
+- email
+- username
+- nickname
+
+The service resolves these to the
+stable internal User._id.
 
 Requester:
     req.user.id
-
-Only admin/owner can add.
 ==================================
 */
 
@@ -402,6 +374,10 @@ exports.addMember = async (req, res) => {
 
         const {
             userId,
+            identifier,
+            email,
+            username,
+            nickname,
             alias,
             role
         } = req.body || {};
@@ -418,23 +394,32 @@ exports.addMember = async (req, res) => {
             });
         }
 
-        if (!userId) {
+        const targetIdentifier =
+            identifier ||
+            userId ||
+            email ||
+            username ||
+            nickname;
+
+        if (
+            typeof targetIdentifier !== "string" ||
+            !targetIdentifier.trim()
+        ) {
 
             return res.status(400).json({
 
                 success: false,
 
                 message:
-                    "Validation Error: userId is required."
+                    "Validation Error: Enl ID, email, username, nickname, or user ID is required."
 
             });
         }
 
         /*
-        Prevent assigning owner role through
-        normal member-add endpoint.
-        Ownership should remain controlled
-        separately.
+        ----------------------------------
+        Prevent assigning owner role
+        ----------------------------------
         */
 
         if (role === "owner") {
@@ -455,6 +440,10 @@ exports.addMember = async (req, res) => {
                 requesterId,
                 {
                     userId,
+                    identifier,
+                    email,
+                    username,
+                    nickname,
                     alias,
                     role
                 }
@@ -484,6 +473,24 @@ exports.addMember = async (req, res) => {
     }
 };
 
+exports.searchWorkspaceUsers = async (req, res) => {
+    try {
+        const requesterId = getAuthenticatedUserId(req, res);
+        if (!requesterId) return;
+
+        const { workspaceId } = req.params;
+        const users = await workspaceService.searchWorkspaceUsers(
+            workspaceId,
+            requesterId,
+            req.query?.query
+        );
+
+        return res.status(200).json({ success: true, users });
+    } catch (error) {
+        return handleError(res, error);
+    }
+};
+
 
 /*
 ==================================
@@ -491,12 +498,6 @@ REMOVE WORKSPACE MEMBER
 ==================================
 
 DELETE /api/workspaces/:workspaceId/members/:userId
-
-:userId:
-    Target member
-
-Requester:
-    req.user.id
 ==================================
 */
 
@@ -566,17 +567,6 @@ CHANGE MEMBER ROLE
 ==================================
 
 PATCH /api/workspaces/:workspaceId/members/:userId/role
-
-Body:
-
-{
-    "role": "admin"
-}
-
-Requester:
-    req.user.id
-
-Only workspace owner.
 ==================================
 */
 
@@ -623,11 +613,6 @@ exports.changeRole = async (req, res) => {
 
             });
         }
-
-        /*
-        Do not allow ownership transfer
-        through the generic role endpoint.
-        */
 
         if (role === "owner") {
 
@@ -680,9 +665,6 @@ LEAVE WORKSPACE
 ==================================
 
 POST /api/workspaces/:workspaceId/leave
-
-Requester:
-    req.user.id
 ==================================
 */
 
@@ -758,6 +740,107 @@ exports.leaveWorkspace = async (req, res) => {
 
 /*
 ==================================
+DELETE WORKSPACE
+==================================
+
+DELETE /api/workspaces/:workspaceId
+
+Only the workspace owner can
+delete the workspace.
+
+The service performs the actual
+authorization and workspace-scoped
+cleanup.
+
+IMPORTANT:
+
+This endpoint only deletes records
+belonging to the specified workspace.
+
+Solo/personal Chat and Code
+Assistant data is NOT deleted.
+==================================
+*/
+
+exports.deleteWorkspace = async (req, res) => {
+
+    try {
+
+        const userId =
+            getAuthenticatedUserId(req, res);
+
+        if (!userId) {
+            return;
+        }
+
+        const {
+            workspaceId
+        } = req.params;
+
+        if (!workspaceId) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    "Validation Error: workspaceId is required."
+
+            });
+        }
+
+        if (
+            !workspaceService.isValidObjectId(
+                workspaceId
+            )
+        ) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    "Validation Error: Invalid workspace ID format."
+
+            });
+        }
+
+        const result =
+            await workspaceService.deleteWorkspace(
+                workspaceId,
+                userId
+            );
+
+        return res.status(200).json({
+
+            success: true,
+
+            message:
+                "Workspace deleted successfully.",
+
+            result
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Delete Workspace Error:",
+            error
+        );
+
+        return handleError(
+            res,
+            error
+        );
+    }
+};
+
+
+/*
+==================================
 CREATE WORKSPACE SESSION
 ==================================
 
@@ -815,7 +898,8 @@ exports.createWorkspaceSession = async (req, res) => {
 
             session,
 
-            activeSession: session._id
+            activeSession:
+                session._id
 
         });
 
@@ -843,12 +927,6 @@ AUTHENTICATED USER
 ==================================
 
 GET /api/workspaces/:workspaceId/sessions/me
-
-User identity:
-    req.user.id
-
-This endpoint cannot access
-another user's sessions.
 ==================================
 */
 
@@ -881,10 +959,6 @@ exports.getWorkspaceSessionsForUser = async (
 
             });
         }
-
-        /*
-        Verify active membership first.
-        */
 
         const member =
             await WorkspaceMember.findOne({
@@ -943,14 +1017,7 @@ GET ALL WORKSPACE SESSIONS
 
 GET /api/workspaces/:workspaceId/sessions
 
-Requester:
-    req.user.id
-
-Returns all sessions belonging
-to this workspace.
-
-Requester must be an active
-workspace member.
+Requester must be admin/owner.
 ==================================
 */
 
@@ -984,23 +1051,10 @@ exports.getAllWorkspaceSessions = async (
             });
         }
 
-        /*
-        ----------------------------------
-        Verify active membership
-        ----------------------------------
-        */
-
-        const member =
-            await workspaceService.requireWorkspaceAdmin(
-                workspaceId,
-                requesterId
-            );
-
-        /*
-        ----------------------------------
-        Verify workspace exists
-        ----------------------------------
-        */
+        await workspaceService.requireWorkspaceAdmin(
+            workspaceId,
+            requesterId
+        );
 
         const workspace =
             await Workspace.findOne({
@@ -1019,12 +1073,6 @@ exports.getAllWorkspaceSessions = async (
 
             });
         }
-
-        /*
-        ----------------------------------
-        Load workspace sessions
-        ----------------------------------
-        */
 
         const sessions =
             await Session.find({

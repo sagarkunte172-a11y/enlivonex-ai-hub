@@ -1,38 +1,4427 @@
-.workspace-dashboard { min-height: 100vh; display: flex; color: #edf7ff; background: radial-gradient(circle at 80% 0%, rgba(33, 111, 153, .28), transparent 34%), linear-gradient(135deg, #081321, #102139 62%, #122b43); }
-.workspace-dashboard-sidebar { width: 260px; flex: 0 0 260px; display: flex; flex-direction: column; justify-content: space-between; padding: 28px 20px; background: rgba(7, 14, 26, .9); border-right: 1px solid rgba(255,255,255,.08); }
-.workspace-dashboard-brand { display: flex; gap: 10px; align-items: center; margin-bottom: 36px; }.workspace-dashboard-brand > span { font-size: 28px; }.workspace-dashboard-brand strong { display: block; color: #46c7ff; letter-spacing: 1px; }.workspace-dashboard-brand small { display: block; margin-top: 3px; color: #829bb1; font-size: 11px; }
-.workspace-select-label, .workspace-dashboard-header > div > span, .workspace-section-title span, .workspace-chat-toolbar span, .workspace-stat-panel span { display: block; color: #6f93ad; font-size: 10px; font-weight: 800; letter-spacing: 1.5px; }.workspace-dashboard-sidebar select, .workspace-chat-toolbar select, .workspace-member-form select { width: 100%; padding: 11px; border: 1px solid rgba(255,255,255,.14); border-radius: 9px; color: #e5f5ff; background: #12263b; }
-.workspace-dashboard-nav { display: grid; gap: 7px; margin-top: 24px; }.workspace-dashboard-nav button, .workspace-dashboard-sidebar-actions button { padding: 12px 13px; border: 1px solid transparent; border-radius: 10px; color: #aec5d9; background: transparent; text-align: left; font: inherit; cursor: pointer; }.workspace-dashboard-nav button:hover, .workspace-dashboard-nav button.active { color: #46c7ff; background: rgba(70,199,255,.1); border-color: rgba(70,199,255,.24); }.workspace-dashboard-sidebar-actions { display: grid; gap: 5px; }.workspace-dashboard-sidebar-actions button { color: #829bb1; font-size: 12px; }
-.workspace-dashboard-main { flex: 1; min-width: 0; padding: 45px clamp(20px, 5vw, 70px); }.workspace-dashboard-header { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; margin-bottom: 32px; }.workspace-dashboard-header h1 { margin: 8px 0 7px; font-size: clamp(32px, 4vw, 52px); }.workspace-dashboard-header p { margin: 0; color: #90a9c0; }.workspace-role-badge { padding: 8px 12px; border: 1px solid rgba(70,199,255,.35); border-radius: 20px; color: #73d8ff; text-transform: uppercase; font-size: 11px; font-weight: 800; }.workspace-dashboard-status { margin-bottom: 18px; padding: 12px 15px; border: 1px solid rgba(70,199,255,.3); border-radius: 10px; color: #dff8ff; background: rgba(70,199,255,.1); }
-.workspace-overview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }.workspace-stat-panel, .workspace-quick-panel, .workspace-section, .workspace-chat-list, .workspace-chat-panel { border: 1px solid rgba(255,255,255,.09); border-radius: 17px; background: rgba(255,255,255,.055); box-shadow: 0 18px 40px rgba(0,0,0,.18); }.workspace-stat-panel { padding: 22px; }.workspace-stat-panel strong { display: block; margin: 12px 0 4px; color: #f5fbff; font-size: 32px; }.workspace-stat-panel small { color: #849eb5; }.workspace-quick-panel { grid-column: 1 / -1; padding: 26px; }.workspace-panel-kicker { color: #46c7ff; font-size: 10px; font-weight: 800; letter-spacing: 1.5px; }.workspace-quick-panel h2 { margin: 9px 0 7px; font-size: 25px; }.workspace-quick-panel p { max-width: 560px; margin: 0 0 18px; color: #91a9c0; }.workspace-quick-panel button, .workspace-section-title button, .workspace-chat-placeholder button, .workspace-chat-input button, .workspace-member-form button { padding: 11px 15px; border: 0; border-radius: 9px; color: #071421; background: #46c7ff; font-weight: 800; cursor: pointer; }
-.workspace-section { padding: 24px; }.workspace-section-title { display: flex; justify-content: space-between; align-items: end; gap: 20px; margin-bottom: 22px; }.workspace-section-title h2 { margin: 8px 0 0; font-size: 25px; }.workspace-section-title form { display: flex; gap: 8px; }.workspace-section-title input, .workspace-member-form input { padding: 11px; border: 1px solid rgba(255,255,255,.13); border-radius: 9px; color: #effaff; background: rgba(2,9,17,.45); }.workspace-project-grid, .workspace-member-grid, .workspace-share-list, .workspace-usage-list { display: grid; gap: 11px; }.workspace-project-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }.workspace-project-card, .workspace-chat-item { padding: 17px; border: 1px solid rgba(255,255,255,.1); border-radius: 12px; color: inherit; background: rgba(255,255,255,.045); text-align: left; cursor: pointer; }.workspace-project-card:hover, .workspace-chat-item:hover, .workspace-chat-item.active { border-color: #46c7ff; background: rgba(70,199,255,.1); }.workspace-project-card strong, .workspace-project-card small, .workspace-project-card em { display: block; }.workspace-project-card small { margin: 8px 0 15px; color: #8ca7bd; }.workspace-project-card em { color: #6fd5fc; font-size: 12px; font-style: normal; }.workspace-empty-card { padding: 30px; border: 1px dashed rgba(255,255,255,.16); border-radius: 12px; color: #8ca6bb; text-align: center; }
-.workspace-chat-layout { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 16px; min-height: 610px; }.workspace-chat-list { padding: 17px; }.workspace-chat-list .workspace-section-title { align-items: center; }.workspace-chat-list .workspace-section-title h2 { font-size: 18px; }.workspace-chat-list .workspace-section-title button { padding: 8px 11px; }.workspace-chat-item { display: block; width: 100%; margin-bottom: 8px; }.workspace-chat-item strong, .workspace-chat-item small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.workspace-chat-item small { margin-top: 5px; color: #849eb6; }.workspace-muted { color: #849eb6; font-size: 13px; }.workspace-chat-panel { display: flex; flex-direction: column; min-width: 0; padding: 20px; }.workspace-chat-toolbar { display: flex; justify-content: space-between; gap: 15px; align-items: center; padding-bottom: 17px; border-bottom: 1px solid rgba(255,255,255,.1); }.workspace-chat-toolbar h2 { margin: 6px 0 0; font-size: 20px; }.workspace-chat-toolbar > div:last-child { display: flex; gap: 8px; }.workspace-chat-toolbar select { width: auto; }.workspace-chat-toolbar button { padding: 9px 12px; border: 1px solid rgba(70,199,255,.35); border-radius: 9px; color: #73d8ff; background: transparent; cursor: pointer; }.workspace-message-list { flex: 1; overflow-y: auto; padding: 20px 3px; }.workspace-message { max-width: 78%; margin-bottom: 16px; padding: 13px 15px; border-radius: 13px 13px 13px 3px; background: rgba(255,255,255,.075); }.workspace-message.user { margin-left: auto; border-radius: 13px 13px 3px 13px; background: rgba(70,199,255,.16); }.workspace-message span { color: #78d9ff; font-size: 11px; font-weight: 800; }.workspace-message p { margin: 6px 0 0; color: #e8f5ff; white-space: pre-wrap; }.workspace-chat-input { display: flex; gap: 9px; }.workspace-chat-input input { flex: 1; padding: 13px; border: 1px solid rgba(255,255,255,.14); border-radius: 10px; color: #effaff; background: rgba(2,9,17,.45); }.workspace-chat-placeholder { display: grid; place-items: center; align-content: center; flex: 1; text-align: center; }.workspace-chat-placeholder span { color: #46c7ff; font-size: 34px; }.workspace-chat-placeholder h2 { margin: 13px 0 7px; }.workspace-chat-placeholder p { color: #8da6bb; margin: 0 0 18px; }
-.workspace-member-form { display: flex; gap: 9px; margin-bottom: 20px; }.workspace-member-form input { flex: 1; }.workspace-member-card { display: flex; align-items: center; gap: 12px; padding: 14px; border: 1px solid rgba(255,255,255,.09); border-radius: 12px; }.workspace-member-card > span { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; color: #071421; background: #46c7ff; font-weight: 900; }.workspace-member-card div { flex: 1; }.workspace-member-card strong, .workspace-member-card small { display: block; }.workspace-member-card small { margin-top: 4px; color: #849eb5; }.workspace-member-card em { color: #73d8ff; font-size: 11px; font-style: normal; text-transform: uppercase; }.workspace-share-card, .workspace-usage-row { display: flex; gap: 15px; align-items: center; padding: 15px; border: 1px solid rgba(255,255,255,.09); border-radius: 11px; }.workspace-share-card strong, .workspace-usage-row strong { min-width: 100px; color: #73d8ff; }.workspace-share-card span, .workspace-usage-row span { color: #a6bdd0; }.workspace-share-card small { margin-left: auto; color: #8099af; }.workspace-usage-row span:last-child { margin-left: auto; color: #73d8ff; }
-.workspace-dashboard-empty { min-height: 100vh; display: grid; place-items: center; color: #eaf8ff; background: #091525; }.workspace-dashboard-empty p { color: #91a9c0; }
-.workspace-chooser { min-height: 100vh; padding: 58px clamp(20px, 6vw, 90px); color: #edf7ff; background: radial-gradient(circle at 80% 0%, rgba(33,111,153,.28), transparent 34%), linear-gradient(135deg, #081321, #102139 62%, #122b43); }
-.workspace-chooser-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; max-width: 1200px; margin: 0 auto 42px; }
-.workspace-chooser-header > div > span, .workspace-choice-kicker { color: #6f93ad; font-size: 10px; font-weight: 800; letter-spacing: 1.6px; }
-.workspace-chooser-header h1 { margin: 10px 0 8px; font-size: clamp(32px, 5vw, 58px); }
-.workspace-chooser-header p { max-width: 630px; margin: 0; color: #91a9c0; }
-.workspace-chooser-header > button { padding: 10px 14px; border: 1px solid rgba(255,255,255,.15); border-radius: 9px; color: #bcd1e4; background: transparent; cursor: pointer; }
-.workspace-choice-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 17px; max-width: 1200px; margin: 0 auto; }
-.workspace-choice-card { display: flex; flex-direction: column; align-items: flex-start; min-height: 340px; padding: 24px; border: 1px solid rgba(255,255,255,.1); border-radius: 17px; color: #edf7ff; background: rgba(255,255,255,.055); box-shadow: 0 18px 40px rgba(0,0,0,.2); }
-.workspace-choice-card:hover { border-color: rgba(70,199,255,.48); background: rgba(70,199,255,.08); }
-.workspace-choice-icon { display: grid; place-items: center; width: 42px; height: 42px; margin-bottom: 22px; border-radius: 11px; color: #071421; background: #46c7ff; font-size: 24px; font-weight: 900; }
-.workspace-choice-card h2 { margin: 10px 0 8px; font-size: 22px; }
-.workspace-choice-card p { min-height: 52px; margin: 0 0 17px; color: #91a9c0; line-height: 1.6; }
-.workspace-choice-card input, .workspace-choice-card textarea { width: 100%; box-sizing: border-box; margin-bottom: 10px; padding: 12px; border: 1px solid rgba(255,255,255,.13); border-radius: 9px; color: #edf7ff; background: rgba(2,9,17,.45); resize: vertical; }
-.workspace-choice-card input:focus, .workspace-choice-card textarea:focus { border-color: #46c7ff; outline: none; }
-.workspace-choice-card > button { margin-top: auto; padding: 11px 15px; border: 0; border-radius: 9px; color: #071421; background: #46c7ff; font-weight: 800; cursor: pointer; }
-.workspace-existing-list { display: grid; width: 100%; gap: 9px; margin-top: auto; }
-.workspace-existing-list button { display: block; width: 100%; padding: 12px; border: 1px solid rgba(255,255,255,.12); border-radius: 9px; color: #edf7ff; background: rgba(255,255,255,.05); text-align: left; cursor: pointer; }
-.workspace-existing-list button:hover { border-color: #46c7ff; }
-.workspace-existing-list strong, .workspace-existing-list small { display: block; }.workspace-existing-list small { margin-top: 4px; color: #78d9ff; }
-@media (max-width: 900px) { .workspace-choice-grid { grid-template-columns: 1fr 1fr; }.workspace-existing-card { grid-column: 1 / -1; min-height: auto; } }
-@media (max-width: 620px) { .workspace-chooser { padding: 32px 16px 45px; }.workspace-chooser-header { display: block; }.workspace-chooser-header > button { margin-top: 18px; }.workspace-choice-grid { grid-template-columns: 1fr; }.workspace-existing-card { grid-column: auto; } }
-@media (max-width: 900px) { .workspace-dashboard-sidebar { width: 210px; flex-basis: 210px; }.workspace-overview-grid { grid-template-columns: repeat(2, 1fr); }.workspace-chat-layout { grid-template-columns: 1fr; }.workspace-chat-list { min-height: auto; } }
-@media (max-width: 640px) { .workspace-dashboard { display: block; }.workspace-dashboard-sidebar { width: auto; padding: 18px; }.workspace-dashboard-nav { display: flex; overflow-x: auto; margin-top: 18px; }.workspace-dashboard-nav button { white-space: nowrap; }.workspace-dashboard-sidebar-actions { display: none; }.workspace-dashboard-main { padding: 28px 16px 45px; }.workspace-dashboard-header { display: block; }.workspace-role-badge { display: inline-block; margin-top: 15px; }.workspace-overview-grid { grid-template-columns: 1fr; }.workspace-quick-panel { grid-column: auto; }.workspace-section-title { align-items: stretch; flex-direction: column; }.workspace-section-title form, .workspace-member-form, .workspace-chat-input { display: grid; }.workspace-section-title input, .workspace-section-title button, .workspace-member-form input, .workspace-member-form select, .workspace-member-form button { width: 100%; }.workspace-chat-toolbar { align-items: stretch; flex-direction: column; }.workspace-chat-toolbar > div:last-child { display: grid; }.workspace-chat-toolbar select { width: 100%; }.workspace-share-card, .workspace-usage-row { align-items: flex-start; flex-direction: column; }.workspace-share-card small, .workspace-usage-row span:last-child { margin-left: 0; } }
 
-.workspace-project-card > button:first-child { width: 100%; padding: 0; border: 0; color: inherit; background: transparent; text-align: left; cursor: pointer; }
-.workspace-small-action { margin-top: 12px; padding: 6px 9px; border: 1px solid rgba(255,255,255,.14); border-radius: 7px; color: #9fb5c8; background: transparent; font-size: 11px; cursor: pointer; }
-.workspace-category-select { width: 100%; margin-bottom: 12px; padding: 9px; border: 1px solid rgba(255,255,255,.12); border-radius: 8px; color: #dceefa; background: #13273b; }
+/* =========================================================
+   ENLIVONEX AI HUB
+   WORKSPACE DASHBOARD
+   Premium Glass / IDE Workspace UI
+   ========================================================= */
+
+/* =========================================================
+   ROOT
+   ========================================================= */
+
+.workspace-dashboard,
+.workspace-chooser,
+.workspace-dashboard-empty {
+    --workspace-bg: #06101c;
+    --workspace-bg-soft: #0b1828;
+
+    --workspace-panel: rgba(255, 255, 255, 0.055);
+    --workspace-panel-strong: rgba(255, 255, 255, 0.075);
+
+    --workspace-border: rgba(255, 255, 255, 0.11);
+    --workspace-border-soft: rgba(255, 255, 255, 0.07);
+
+    --workspace-primary: #46c7ff;
+    --workspace-primary-light: #78dcff;
+    --workspace-primary-soft: rgba(70, 199, 255, 0.12);
+    --workspace-primary-glow: rgba(70, 199, 255, 0.28);
+
+    --workspace-text: #edf8ff;
+    --workspace-text-soft: #b4cadc;
+    --workspace-muted: #7892a8;
+
+    --workspace-radius: 18px;
+    --workspace-radius-small: 11px;
+
+    box-sizing: border-box;
+}
+
+.workspace-dashboard *,
+.workspace-chooser *,
+.workspace-dashboard-empty * {
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   MAIN DASHBOARD
+   ========================================================= */
+
+.workspace-dashboard {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    overflow: hidden;
+
+    color: var(--workspace-text);
+
+    background:
+        radial-gradient(
+            circle at 8% 15%,
+            rgba(70, 199, 255, 0.12),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 88% 4%,
+            rgba(34, 124, 181, 0.22),
+            transparent 32%
+        ),
+        radial-gradient(
+            circle at 65% 100%,
+            rgba(20, 82, 132, 0.16),
+            transparent 32%
+        ),
+        linear-gradient(
+            135deg,
+            #040c16 0%,
+            #081522 42%,
+            #0b1c2d 72%,
+            #0c2134 100%
+        );
+}
+
+.workspace-dashboard::before {
+    content: "";
+
+    position: fixed;
+
+    width: 520px;
+    height: 520px;
+
+    top: -250px;
+    right: -180px;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    background: rgba(70, 199, 255, 0.08);
+
+    filter: blur(90px);
+
+    animation:
+        workspaceAmbientFloat 12s ease-in-out infinite alternate;
+}
+
+.workspace-dashboard::after {
+    content: "";
+
+    position: fixed;
+
+    width: 420px;
+    height: 420px;
+
+    bottom: -240px;
+    left: 180px;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    background: rgba(20, 100, 160, 0.09);
+
+    filter: blur(100px);
+
+    animation:
+        workspaceAmbientFloat 15s ease-in-out infinite alternate-reverse;
+}
+
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+.workspace-dashboard-sidebar {
+    position: relative;
+
+    z-index: 5;
+
+    width: 270px;
+    flex: 0 0 270px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    padding: 27px 19px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(5, 14, 25, 0.88),
+            rgba(4, 11, 20, 0.78)
+        );
+
+    border-right: 1px solid rgba(255, 255, 255, 0.085);
+
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+
+    box-shadow:
+        15px 0 45px rgba(0, 0, 0, 0.18),
+        inset -1px 0 rgba(255, 255, 255, 0.025);
+
+    animation:
+        workspaceSidebarEnter 0.7s ease both;
+}
+
+.workspace-dashboard-sidebar::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    right: 0;
+
+    width: 1px;
+    height: 100%;
+
+    background:
+        linear-gradient(
+            transparent,
+            rgba(70, 199, 255, 0.45),
+            transparent
+        );
+
+    opacity: 0.5;
+}
+
+
+/* =========================================================
+   BRAND
+   ========================================================= */
+
+.workspace-dashboard-brand {
+    display: flex;
+    gap: 11px;
+    align-items: center;
+
+    margin-bottom: 35px;
+    padding: 9px 8px;
+
+    border-radius: 13px;
+
+    transition:
+        background 0.25s ease,
+        transform 0.25s ease;
+}
+
+.workspace-dashboard-brand:hover {
+    background: rgba(255, 255, 255, 0.035);
+    transform: translateX(2px);
+}
+
+.workspace-dashboard-brand > span {
+    display: grid;
+    place-items: center;
+
+    width: 39px;
+    height: 39px;
+
+    border-radius: 12px;
+
+    font-size: 22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(70, 199, 255, 0.22),
+            rgba(70, 199, 255, 0.055)
+        );
+
+    border: 1px solid rgba(70, 199, 255, 0.22);
+
+    box-shadow:
+        0 0 22px rgba(70, 199, 255, 0.11),
+        inset 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.workspace-dashboard-brand strong {
+    display: block;
+
+    color: var(--workspace-primary);
+
+    letter-spacing: 1.4px;
+    font-size: 15px;
+
+    text-shadow:
+        0 0 20px rgba(70, 199, 255, 0.22);
+}
+
+.workspace-dashboard-brand small {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #718aa0;
+
+    font-size: 10px;
+    letter-spacing: 0.5px;
+}
+
+
+/* =========================================================
+   LABELS
+   ========================================================= */
+
+.workspace-select-label,
+.workspace-dashboard-header > div > span,
+.workspace-section-title span,
+.workspace-chat-toolbar span,
+.workspace-stat-panel span {
+    display: block;
+
+    color: #6f93ad;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: 1.6px;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   SELECTS
+   ========================================================= */
+
+.workspace-dashboard-sidebar select,
+.workspace-chat-toolbar select,
+.workspace-member-form select,
+.workspace-code-panel select {
+    width: 100%;
+
+    padding: 11px 12px;
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+
+    color: #e5f5ff;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.07),
+            rgba(255, 255, 255, 0.035)
+        );
+
+    outline: none;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.22s ease,
+        box-shadow 0.22s ease,
+        background 0.22s ease;
+}
+
+.workspace-dashboard-sidebar select:hover,
+.workspace-chat-toolbar select:hover,
+.workspace-member-form select:hover,
+.workspace-code-panel select:hover {
+    border-color: rgba(70, 199, 255, 0.32);
+
+    background:
+        rgba(70, 199, 255, 0.055);
+}
+
+.workspace-dashboard-sidebar select:focus,
+.workspace-chat-toolbar select:focus,
+.workspace-member-form select:focus,
+.workspace-code-panel select:focus {
+    border-color: rgba(70, 199, 255, 0.65);
+
+    box-shadow:
+        0 0 0 3px rgba(70, 199, 255, 0.08),
+        0 0 20px rgba(70, 199, 255, 0.08);
+}
+
+
+/* =========================================================
+   SIDEBAR NAV
+   ========================================================= */
+
+.workspace-dashboard-nav {
+    display: grid;
+
+    gap: 6px;
+
+    margin-top: 24px;
+}
+
+.workspace-dashboard-nav button,
+.workspace-dashboard-sidebar-actions button {
+    position: relative;
+
+    padding: 12px 13px;
+
+    border: 1px solid transparent;
+    border-radius: 11px;
+
+    color: #9eb8cc;
+
+    background: transparent;
+
+    text-align: left;
+
+    font: inherit;
+
+    cursor: pointer;
+
+    transition:
+        color 0.22s ease,
+        background 0.22s ease,
+        border-color 0.22s ease,
+        transform 0.22s ease,
+        box-shadow 0.22s ease;
+}
+
+.workspace-dashboard-nav button::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 50%;
+
+    width: 3px;
+    height: 0;
+
+    border-radius: 4px;
+
+    background:
+        var(--workspace-primary);
+
+    transform:
+        translateY(-50%);
+
+    transition:
+        height 0.22s ease;
+}
+
+.workspace-dashboard-nav button:hover {
+    color: #dff6ff;
+
+    background:
+        rgba(255, 255, 255, 0.045);
+
+    border-color:
+        rgba(255, 255, 255, 0.07);
+
+    transform:
+        translateX(3px);
+}
+
+.workspace-dashboard-nav button.active {
+    color:
+        var(--workspace-primary-light);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(70, 199, 255, 0.12),
+            rgba(70, 199, 255, 0.045)
+        );
+
+    border-color:
+        rgba(70, 199, 255, 0.22);
+
+    box-shadow:
+        inset 0 0 22px rgba(70, 199, 255, 0.035),
+        0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.workspace-dashboard-nav button.active::before {
+    height: 20px;
+}
+
+
+/* =========================================================
+   SIDEBAR ACTIONS
+   ========================================================= */
+
+.workspace-dashboard-sidebar-actions {
+    display: grid;
+
+    gap: 5px;
+}
+
+.workspace-dashboard-sidebar-actions button {
+    color: #7792a7;
+
+    font-size: 12px;
+}
+
+.workspace-dashboard-sidebar-actions button:hover {
+    color: #cce7f5;
+
+    background:
+        rgba(255, 255, 255, 0.035);
+
+    transform:
+        translateX(2px);
+}
+
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+
+.workspace-dashboard-main {
+    position: relative;
+
+    z-index: 2;
+
+    flex: 1;
+
+    min-width: 0;
+
+    padding:
+        44px clamp(20px, 5vw, 70px);
+
+    overflow: hidden auto;
+
+    animation:
+        workspaceMainEnter 0.65s ease both;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.workspace-dashboard-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    align-items: flex-start;
+
+    margin-bottom: 31px;
+}
+
+.workspace-dashboard-header h1 {
+    margin:
+        8px 0 7px;
+
+    font-size:
+        clamp(32px, 4vw, 52px);
+
+    line-height: 1.05;
+
+    letter-spacing: -1.8px;
+
+    background:
+        linear-gradient(
+            120deg,
+            #ffffff 0%,
+            #d9f4ff 42%,
+            #70d6ff 100%
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+
+    text-shadow:
+        0 0 30px rgba(70, 199, 255, 0.08);
+}
+
+.workspace-dashboard-header p {
+    margin: 0;
+
+    color: #8da8bd;
+
+    line-height: 1.65;
+}
+
+.workspace-role-badge {
+    padding:
+        8px 12px;
+
+    border:
+        1px solid rgba(70, 199, 255, 0.32);
+
+    border-radius:
+        30px;
+
+    color:
+        #73d8ff;
+
+    background:
+        rgba(70, 199, 255, 0.055);
+
+    text-transform:
+        uppercase;
+
+    font-size:
+        10px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        1px;
+
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, 0.05),
+        0 0 20px rgba(70, 199, 255, 0.06);
+
+    backdrop-filter:
+        blur(10px);
+
+    white-space:
+        nowrap;
+}
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+.workspace-dashboard-status {
+    margin-bottom: 18px;
+
+    padding:
+        13px 16px;
+
+    border:
+        1px solid rgba(70, 199, 255, 0.22);
+
+    border-radius:
+        12px;
+
+    color:
+        #dff8ff;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(70, 199, 255, 0.105),
+            rgba(70, 199, 255, 0.035)
+        );
+
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, 0.035),
+        0 8px 25px rgba(0, 0, 0, 0.08);
+
+    animation:
+        workspaceFadeUp 0.6s ease both;
+}
+
+
+/* =========================================================
+   OVERVIEW
+   ========================================================= */
+
+.workspace-overview-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap:
+        16px;
+
+    animation:
+        workspaceFadeUp 0.7s ease both;
+}
+
+
+/* =========================================================
+   COMMON GLASS PANELS
+   ========================================================= */
+
+.workspace-stat-panel,
+.workspace-quick-panel,
+.workspace-section,
+.workspace-chat-list,
+.workspace-chat-panel {
+    position: relative;
+
+    border:
+        1px solid var(--workspace-border);
+
+    border-radius:
+        var(--workspace-radius);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.075),
+            rgba(255, 255, 255, 0.035)
+        );
+
+    box-shadow:
+        0 22px 55px rgba(0, 0, 0, 0.19),
+        inset 0 1px rgba(255, 255, 255, 0.045);
+
+    backdrop-filter:
+        blur(22px);
+
+    -webkit-backdrop-filter:
+        blur(22px);
+
+    overflow:
+        hidden;
+}
+
+.workspace-stat-panel::before,
+.workspace-quick-panel::before,
+.workspace-section::before,
+.workspace-chat-list::before,
+.workspace-chat-panel::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 8%;
+
+    width: 84%;
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.13),
+            transparent
+        );
+
+    pointer-events:
+        none;
+}
+
+
+/* =========================================================
+   STAT CARDS
+   ========================================================= */
+
+.workspace-stat-panel {
+    padding:
+        22px;
+
+    transition:
+        transform 0.28s ease,
+        border-color 0.28s ease,
+        box-shadow 0.28s ease;
+}
+
+.workspace-stat-panel:hover {
+    transform:
+        translateY(-4px);
+
+    border-color:
+        rgba(70, 199, 255, 0.2);
+
+    box-shadow:
+        0 28px 65px rgba(0, 0, 0, 0.24),
+        0 0 35px rgba(70, 199, 255, 0.045),
+        inset 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.workspace-stat-panel strong {
+    display: block;
+
+    margin:
+        12px 0 4px;
+
+    color:
+        #f5fbff;
+
+    font-size:
+        32px;
+
+    line-height:
+        1;
+
+    letter-spacing:
+        -1px;
+}
+
+.workspace-stat-panel small {
+    color:
+        #849eb5;
+}
+
+
+/* =========================================================
+   QUICK PANEL
+   ========================================================= */
+
+.workspace-quick-panel {
+    grid-column:
+        1 / -1;
+
+    padding:
+        28px;
+}
+
+.workspace-panel-kicker {
+    color:
+        var(--workspace-primary);
+
+    font-size:
+        10px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        1.6px;
+
+    text-transform:
+        uppercase;
+}
+
+.workspace-quick-panel h2 {
+    margin:
+        9px 0 7px;
+
+    font-size:
+        26px;
+
+    letter-spacing:
+        -0.5px;
+}
+
+.workspace-quick-panel p {
+    max-width:
+        560px;
+
+    margin:
+        0 0 20px;
+
+    color:
+        #91a9c0;
+
+    line-height:
+        1.65;
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.workspace-quick-panel button,
+.workspace-section-title button,
+.workspace-chat-placeholder button,
+.workspace-chat-input button,
+.workspace-member-form button,
+.workspace-code-panel > button {
+    position: relative;
+
+    padding:
+        11px 16px;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius:
+        10px;
+
+    color:
+        #04111c;
+
+    background:
+        linear-gradient(
+            135deg,
+            #67d4ff,
+            #35b9f4
+        );
+
+    font-weight:
+        800;
+
+    cursor:
+        pointer;
+
+    box-shadow:
+        0 7px 20px rgba(70, 199, 255, 0.15),
+        inset 0 1px rgba(255, 255, 255, 0.35);
+
+    transition:
+        transform 0.22s ease,
+        box-shadow 0.22s ease,
+        filter 0.22s ease;
+}
+
+.workspace-quick-panel button:hover,
+.workspace-section-title button:hover,
+.workspace-chat-placeholder button:hover,
+.workspace-chat-input button:hover,
+.workspace-member-form button:hover,
+.workspace-code-panel > button:hover:not(:disabled) {
+    transform:
+        translateY(-2px);
+
+    filter:
+        brightness(1.08);
+
+    box-shadow:
+        0 11px 28px rgba(70, 199, 255, 0.22),
+        0 0 25px rgba(70, 199, 255, 0.1),
+        inset 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.workspace-quick-panel button:active,
+.workspace-section-title button:active,
+.workspace-chat-placeholder button:active,
+.workspace-chat-input button:active,
+.workspace-member-form button:active,
+.workspace-code-panel > button:active {
+    transform:
+        translateY(0);
+}
+
+
+/* =========================================================
+   SECTIONS
+   ========================================================= */
+
+.workspace-section {
+    padding:
+        25px;
+
+    animation:
+        workspaceFadeUp 0.65s ease both;
+}
+
+.workspace-section-title {
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        end;
+
+    gap:
+        20px;
+
+    margin-bottom:
+        22px;
+}
+
+.workspace-section-title h2 {
+    margin:
+        8px 0 0;
+
+    font-size:
+        25px;
+
+    letter-spacing:
+        -0.5px;
+}
+
+.workspace-section-title form {
+    display:
+        flex;
+
+    gap:
+        8px;
+}
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+.workspace-section-title input,
+.workspace-member-form input,
+.workspace-choice-card input,
+.workspace-choice-card textarea,
+.workspace-chat-input input,
+.workspace-code-panel textarea {
+    padding:
+        11px 12px;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.12);
+
+    border-radius:
+        10px;
+
+    color:
+        #effaff;
+
+    background:
+        rgba(1, 8, 16, 0.42);
+
+    outline:
+        none;
+
+    transition:
+        border-color 0.22s ease,
+        box-shadow 0.22s ease,
+        background 0.22s ease;
+}
+
+.workspace-section-title input::placeholder,
+.workspace-member-form input::placeholder,
+.workspace-choice-card input::placeholder,
+.workspace-choice-card textarea::placeholder,
+.workspace-chat-input input::placeholder,
+.workspace-code-panel textarea::placeholder {
+    color:
+        #617b90;
+}
+
+.workspace-section-title input:focus,
+.workspace-member-form input:focus,
+.workspace-choice-card input:focus,
+.workspace-choice-card textarea:focus,
+.workspace-chat-input input:focus,
+.workspace-code-panel textarea:focus {
+    border-color:
+        rgba(70, 199, 255, 0.58);
+
+    background:
+        rgba(3, 14, 25, 0.58);
+
+    box-shadow:
+        0 0 0 3px rgba(70, 199, 255, 0.07),
+        0 0 24px rgba(70, 199, 255, 0.07);
+}
+
+
+/* =========================================================
+   PROJECT GRID
+   ========================================================= */
+
+.workspace-project-grid,
+.workspace-member-grid,
+.workspace-share-list,
+.workspace-usage-list {
+    display:
+        grid;
+
+    gap:
+        11px;
+}
+
+.workspace-project-grid {
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(205px, 1fr)
+        );
+}
+
+
+/* =========================================================
+   PROJECT CARDS
+   ========================================================= */
+
+.workspace-project-card,
+.workspace-chat-item {
+    position:
+        relative;
+
+    padding:
+        17px;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.09);
+
+    border-radius:
+        13px;
+
+    color:
+        inherit;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.055),
+            rgba(255, 255, 255, 0.025)
+        );
+
+    text-align:
+        left;
+
+    cursor:
+        pointer;
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        background 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.workspace-project-card:hover,
+.workspace-chat-item:hover,
+.workspace-chat-item.active {
+    transform:
+        translateY(-3px);
+
+    border-color:
+        rgba(70, 199, 255, 0.42);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(70, 199, 255, 0.105),
+            rgba(70, 199, 255, 0.035)
+        );
+
+    box-shadow:
+        0 15px 30px rgba(0, 0, 0, 0.16),
+        0 0 25px rgba(70, 199, 255, 0.045);
+}
+
+.workspace-project-card strong,
+.workspace-project-card small,
+.workspace-project-card em {
+    display:
+        block;
+}
+
+.workspace-project-card strong {
+    color:
+        #edf9ff;
+}
+
+.workspace-project-card small {
+    margin:
+        8px 0 15px;
+
+    color:
+        #8ca7bd;
+
+    line-height:
+        1.5;
+}
+
+.workspace-project-card em {
+    color:
+        #6fd5fc;
+
+    font-size:
+        12px;
+
+    font-style:
+        normal;
+}
+
+
+/* =========================================================
+   EMPTY CARD
+   ========================================================= */
+
+.workspace-empty-card {
+    padding:
+        30px;
+
+    border:
+        1px dashed rgba(255, 255, 255, 0.16);
+
+    border-radius:
+        13px;
+
+    color:
+        #8ca6bb;
+
+    background:
+        rgba(255, 255, 255, 0.018);
+
+    text-align:
+        center;
+}
+
+
+/* =========================================================
+   CHAT LAYOUT
+   ========================================================= */
+
+.workspace-chat-layout {
+    display:
+        grid;
+
+    grid-template-columns:
+        285px minmax(0, 1fr);
+
+    gap:
+        16px;
+
+    min-height:
+        610px;
+}
+
+
+/* =========================================================
+   CHAT LIST
+   ========================================================= */
+
+.workspace-chat-list {
+    padding:
+        17px;
+}
+
+.workspace-chat-list .workspace-section-title {
+    align-items:
+        center;
+}
+
+.workspace-chat-list .workspace-section-title h2 {
+    font-size:
+        18px;
+}
+
+.workspace-chat-list .workspace-section-title button {
+    padding:
+        8px 11px;
+}
+
+
+/* =========================================================
+   CHAT ITEMS
+   ========================================================= */
+
+.workspace-chat-item {
+    display:
+        block;
+
+    width:
+        100%;
+
+    margin-bottom:
+        8px;
+}
+
+.workspace-chat-item strong,
+.workspace-chat-item small {
+    display:
+        block;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+
+    white-space:
+        nowrap;
+}
+
+.workspace-chat-item small {
+    margin-top:
+        5px;
+
+    color:
+        #849eb6;
+
+    font-size:
+        11px;
+}
+
+.workspace-muted {
+    color:
+        #849eb6;
+
+    font-size:
+        13px;
+}
+
+
+/* =========================================================
+   CHAT PANEL
+   ========================================================= */
+
+.workspace-chat-panel {
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    min-width:
+        0;
+
+    padding:
+        20px;
+}
+
+
+/* =========================================================
+   CHAT TOOLBAR
+   ========================================================= */
+
+.workspace-chat-toolbar {
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    gap:
+        15px;
+
+    align-items:
+        center;
+
+    padding-bottom:
+        17px;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, 0.09);
+}
+
+.workspace-chat-toolbar h2 {
+    margin:
+        6px 0 0;
+
+    font-size:
+        20px;
+}
+
+.workspace-chat-toolbar > div:last-child {
+    display:
+        flex;
+
+    gap:
+        8px;
+}
+
+.workspace-chat-toolbar select {
+    width:
+        auto;
+}
+
+.workspace-chat-toolbar button {
+    padding:
+        9px 12px;
+
+    border:
+        1px solid rgba(70, 199, 255, 0.3);
+
+    border-radius:
+        9px;
+
+    color:
+        #73d8ff;
+
+    background:
+        rgba(70, 199, 255, 0.045);
+
+    cursor:
+        pointer;
+
+    transition:
+        background 0.22s ease,
+        border-color 0.22s ease,
+        transform 0.22s ease;
+}
+
+.workspace-chat-toolbar button:hover {
+    border-color:
+        rgba(70, 199, 255, 0.55);
+
+    background:
+        rgba(70, 199, 255, 0.1);
+
+    transform:
+        translateY(-1px);
+}
+
+
+/* =========================================================
+   MESSAGE LIST
+   ========================================================= */
+
+.workspace-message-list {
+    flex:
+        1;
+
+    overflow-y:
+        auto;
+
+    padding:
+        22px 4px;
+
+    scroll-behavior:
+        smooth;
+}
+
+.workspace-message-list::-webkit-scrollbar,
+.workspace-chat-list::-webkit-scrollbar,
+.workspace-dashboard-main::-webkit-scrollbar,
+.workspace-code-panel textarea::-webkit-scrollbar,
+.workspace-code-response pre::-webkit-scrollbar {
+    width:
+        7px;
+
+    height:
+        7px;
+}
+
+.workspace-message-list::-webkit-scrollbar-track,
+.workspace-chat-list::-webkit-scrollbar-track,
+.workspace-dashboard-main::-webkit-scrollbar-track,
+.workspace-code-panel textarea::-webkit-scrollbar-track,
+.workspace-code-response pre::-webkit-scrollbar-track {
+    background:
+        transparent;
+}
+
+.workspace-message-list::-webkit-scrollbar-thumb,
+.workspace-chat-list::-webkit-scrollbar-thumb,
+.workspace-dashboard-main::-webkit-scrollbar-thumb,
+.workspace-code-panel textarea::-webkit-scrollbar-thumb,
+.workspace-code-response pre::-webkit-scrollbar-thumb {
+    border-radius:
+        10px;
+
+    background:
+        rgba(255, 255, 255, 0.11);
+}
+
+.workspace-message-list::-webkit-scrollbar-thumb:hover,
+.workspace-chat-list::-webkit-scrollbar-thumb:hover,
+.workspace-dashboard-main::-webkit-scrollbar-thumb:hover,
+.workspace-code-panel textarea::-webkit-scrollbar-thumb:hover,
+.workspace-code-response pre::-webkit-scrollbar-thumb:hover {
+    background:
+        rgba(70, 199, 255, 0.32);
+}
+
+
+/* =========================================================
+   MESSAGES
+   ========================================================= */
+
+.workspace-message {
+    position:
+        relative;
+
+    max-width:
+        78%;
+
+    margin-bottom:
+        16px;
+
+    padding:
+        13px 15px;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.065);
+
+    border-radius:
+        14px 14px 14px 4px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.075),
+            rgba(255, 255, 255, 0.035)
+        );
+
+    box-shadow:
+        0 8px 22px rgba(0, 0, 0, 0.08);
+
+    animation:
+        workspaceMessageEnter 0.35s ease both;
+}
+
+.workspace-message.user {
+    margin-left:
+        auto;
+
+    border-radius:
+        14px 14px 4px 14px;
+
+    border-color:
+        rgba(70, 199, 255, 0.14);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(70, 199, 255, 0.17),
+            rgba(70, 199, 255, 0.075)
+        );
+}
+
+.workspace-message span {
+    color:
+        #78d9ff;
+
+    font-size:
+        10px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        0.7px;
+
+    text-transform:
+        uppercase;
+}
+
+.workspace-message p {
+    margin:
+        6px 0 0;
+
+    color:
+        #e8f5ff;
+
+    line-height:
+        1.6;
+
+    white-space:
+        pre-wrap;
+}
+
+
+/* =========================================================
+   CHAT INPUT
+   ========================================================= */
+
+.workspace-chat-input {
+    display:
+        flex;
+
+    gap:
+        9px;
+
+    padding-top:
+        15px;
+
+    border-top:
+        1px solid rgba(255, 255, 255, 0.07);
+}
+
+.workspace-chat-input input {
+    flex:
+        1;
+
+    padding:
+        13px 14px;
+}
+
+.workspace-chat-input button {
+    min-width:
+        88px;
+}
+
+
+/* =========================================================
+   CHAT PLACEHOLDER
+   ========================================================= */
+
+.workspace-chat-placeholder {
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    align-content:
+        center;
+
+    flex:
+        1;
+
+    padding:
+        35px;
+
+    text-align:
+        center;
+}
+
+.workspace-chat-placeholder span {
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    width:
+        66px;
+
+    height:
+        66px;
+
+    border-radius:
+        20px;
+
+    color:
+        var(--workspace-primary);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(70, 199, 255, 0.15),
+            rgba(70, 199, 255, 0.035)
+        );
+
+    border:
+        1px solid rgba(70, 199, 255, 0.18);
+
+    box-shadow:
+        0 0 35px rgba(70, 199, 255, 0.08);
+
+    font-size:
+        31px;
+
+    animation:
+        workspaceIconPulse 3s ease-in-out infinite;
+}
+
+.workspace-chat-placeholder h2 {
+    margin:
+        15px 0 7px;
+
+    font-size:
+        22px;
+}
+
+.workspace-chat-placeholder p {
+    max-width:
+        480px;
+
+    color:
+        #8da6bb;
+
+    margin:
+        0 0 18px;
+
+    line-height:
+        1.6;
+}
+
+
+/* =========================================================
+   =========================================================
+   WORKSPACE CODE ASSISTANT
+   =========================================================
+   ========================================================= */
+
+/*
+   This section intentionally has its own visual system.
+
+   The JSX already uses:
+
+   workspace-code-layout
+   workspace-code-panel
+   workspace-code-response
+   workspace-code-response-header
+
+   So these rules directly target the existing Code Assistant
+   DOM without requiring WorkspaceDashboard.js changes.
+*/
+
+
+/* =========================================================
+   CODE LAYOUT
+   ========================================================= */
+
+.workspace-code-layout {
+    position:
+        relative;
+
+    display:
+        grid;
+
+    grid-template-columns:
+        minmax(360px, 0.92fr)
+        minmax(420px, 1.08fr);
+
+    gap:
+        18px;
+
+    min-height:
+        650px;
+
+    width:
+        100%;
+
+    animation:
+        workspaceCodeEnter 0.65s cubic-bezier(.2,.8,.2,1) both;
+}
+
+
+/* =========================================================
+   CODE PANEL
+   ========================================================= */
+
+.workspace-code-panel {
+    position:
+        relative;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    min-width:
+        0;
+
+    min-height:
+        650px;
+
+    padding:
+        22px;
+
+    border:
+        1px solid rgba(70, 199, 255, 0.14);
+
+    border-radius:
+        18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(11, 28, 44, 0.9),
+            rgba(4, 14, 24, 0.82)
+        );
+
+    box-shadow:
+        0 25px 65px rgba(0, 0, 0, 0.24),
+        inset 0 1px rgba(255, 255, 255, 0.055),
+        0 0 45px rgba(70, 199, 255, 0.025);
+
+    backdrop-filter:
+        blur(24px);
+
+    -webkit-backdrop-filter:
+        blur(24px);
+
+    overflow:
+        hidden;
+
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.3s ease;
+}
+
+.workspace-code-panel::before {
+    content:
+        "";
+
+    position:
+        absolute;
+
+    top:
+        0;
+
+    left:
+        8%;
+
+    width:
+        84%;
+
+    height:
+        1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(120, 220, 255, 0.42),
+            transparent
+        );
+
+    pointer-events:
+        none;
+}
+
+.workspace-code-panel::after {
+    content:
+        "";
+
+    position:
+        absolute;
+
+    width:
+        250px;
+
+    height:
+        250px;
+
+    top:
+        -150px;
+
+    right:
+        -120px;
+
+    border-radius:
+        50%;
+
+    background:
+        rgba(70, 199, 255, 0.055);
+
+    filter:
+        blur(55px);
+
+    pointer-events:
+        none;
+}
+
+.workspace-code-panel:hover {
+    border-color:
+        rgba(70, 199, 255, 0.23);
+
+    box-shadow:
+        0 30px 75px rgba(0, 0, 0, 0.28),
+        0 0 40px rgba(70, 199, 255, 0.035),
+        inset 0 1px rgba(255, 255, 255, 0.07);
+}
+
+
+/* =========================================================
+   CODE PANEL LABELS
+   ========================================================= */
+
+.workspace-code-panel > label {
+    position:
+        relative;
+
+    z-index:
+        1;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    margin:
+        16px 0 8px;
+
+    color:
+        #8caabd;
+
+    font-size:
+        10px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        1.45px;
+
+    text-transform:
+        uppercase;
+}
+
+.workspace-code-panel > label:first-child {
+    margin-top:
+        0;
+}
+
+.workspace-code-panel > label::before {
+    content:
+        "";
+
+    width:
+        5px;
+
+    height:
+        5px;
+
+    flex:
+        0 0 5px;
+
+    border-radius:
+        50%;
+
+    background:
+        var(--workspace-primary);
+
+    box-shadow:
+        0 0 10px rgba(70, 199, 255, 0.55);
+}
+
+
+/* =========================================================
+   CODE MODEL SELECT
+   ========================================================= */
+
+.workspace-code-panel select {
+    position:
+        relative;
+
+    z-index:
+        1;
+
+    min-height:
+        43px;
+
+    border-radius:
+        11px;
+
+    border:
+        1px solid rgba(70, 199, 255, 0.16);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(70, 199, 255, 0.08),
+            rgba(255, 255, 255, 0.035)
+        );
+
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, 0.035);
+
+    font-size:
+        13px;
+
+    font-weight:
+        600;
+}
+
+
+/* =========================================================
+   CODE TEXTAREAS
+   ========================================================= */
+
+.workspace-code-panel textarea {
+    position:
+        relative;
+
+    z-index:
+        1;
+
+    width:
+        100%;
+
+    margin:
+        0;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.085);
+
+    border-radius:
+        12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(1, 7, 14, 0.74),
+            rgba(4, 13, 22, 0.64)
+        );
+
+    color:
+        #eaf8ff;
+
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, 0.025);
+
+    font-family:
+        "JetBrains Mono",
+        "Cascadia Code",
+        "SFMono-Regular",
+        Consolas,
+        "Liberation Mono",
+        monospace;
+
+    font-size:
+        13px;
+
+    line-height:
+        1.65;
+
+    letter-spacing:
+        0.1px;
+
+    resize:
+        vertical;
+
+    tab-size:
+        4;
+
+    transition:
+        border-color 0.25s ease,
+        background 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.workspace-code-panel textarea:hover {
+    border-color:
+        rgba(70, 199, 255, 0.18);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(2, 10, 18, 0.8),
+            rgba(4, 15, 26, 0.7)
+        );
+}
+
+.workspace-code-panel textarea:focus {
+    border-color:
+        rgba(70, 199, 255, 0.52);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(2, 11, 20, 0.86),
+            rgba(4, 16, 28, 0.76)
+        );
+
+    box-shadow:
+        0 0 0 3px rgba(70, 199, 255, 0.055),
+        0 0 30px rgba(70, 199, 255, 0.055),
+        inset 0 1px rgba(255, 255, 255, 0.04);
+}
+
+
+/* Instruction textarea */
+
+.workspace-code-panel textarea[rows="5"] {
+    min-height:
+        105px;
+
+    max-height:
+        190px;
+}
+
+
+/* Code editor textarea */
+
+.workspace-code-panel textarea[rows="14"] {
+    flex:
+        1;
+
+    min-height:
+        330px;
+
+    max-height:
+        none;
+
+    padding:
+        15px 16px;
+
+    color:
+        #d9f5ff;
+
+    caret-color:
+        #73d8ff;
+}
+
+
+/* =========================================================
+   CODE EDITOR GUTTER FEEL
+   ========================================================= */
+
+.workspace-code-panel textarea[rows="14"] {
+    background:
+        linear-gradient(
+            90deg,
+            rgba(70, 199, 255, 0.025) 0,
+            rgba(70, 199, 255, 0.025) 42px,
+            rgba(1, 7, 14, 0.78) 42px
+        );
+
+    background-attachment:
+        local;
+}
+
+
+/* =========================================================
+   CODE ASSISTANT RUN BUTTON
+   ========================================================= */
+
+.workspace-code-panel > button {
+    position:
+        relative;
+
+    z-index:
+        1;
+
+    width:
+        100%;
+
+    min-height:
+        46px;
+
+    margin-top:
+        15px;
+
+    border:
+        1px solid rgba(120, 220, 255, 0.22);
+
+    border-radius:
+        12px;
+
+    color:
+        #03111c;
+
+    background:
+        linear-gradient(
+            135deg,
+            #82e1ff 0%,
+            #4fc8fa 48%,
+            #31aee8 100%
+        );
+
+    font-size:
+        13px;
+
+    font-weight:
+        900;
+
+    letter-spacing:
+        0.25px;
+
+    box-shadow:
+        0 10px 28px rgba(70, 199, 255, 0.15),
+        inset 0 1px rgba(255, 255, 255, 0.45);
+
+    overflow:
+        hidden;
+}
+
+.workspace-code-panel > button::before {
+    content:
+        "";
+
+    position:
+        absolute;
+
+    top:
+        0;
+
+    left:
+        -100%;
+
+    width:
+        70%;
+
+    height:
+        100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.38),
+            transparent
+        );
+
+    transform:
+        skewX(-20deg);
+
+    transition:
+        left 0.7s ease;
+}
+
+.workspace-code-panel > button:hover::before {
+    left:
+        140%;
+}
+
+.workspace-code-panel > button:disabled {
+    cursor:
+        not-allowed;
+
+    opacity:
+        0.68;
+
+    filter:
+        saturate(0.7);
+
+    transform:
+        none;
+
+    box-shadow:
+        0 7px 20px rgba(0, 0, 0, 0.16);
+}
+
+.workspace-code-panel > button:disabled::after {
+    content:
+        "";
+
+    position:
+        absolute;
+
+    top:
+        50%;
+
+    right:
+        16px;
+
+    width:
+        13px;
+
+    height:
+        13px;
+
+    margin-top:
+        -7px;
+
+    border:
+        2px solid rgba(3, 17, 28, 0.3);
+
+    border-top-color:
+        #03111c;
+
+    border-radius:
+        50%;
+
+    animation:
+        workspaceCodeSpin 0.8s linear infinite;
+}
+
+
+/* =========================================================
+   CODE RESPONSE PANEL
+   ========================================================= */
+
+.workspace-code-response {
+    position:
+        relative;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    min-width:
+        0;
+
+    min-height:
+        650px;
+
+    border:
+        1px solid rgba(70, 199, 255, 0.16);
+
+    border-radius:
+        18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(6, 20, 32, 0.92),
+            rgba(2, 10, 18, 0.9)
+        );
+
+    box-shadow:
+        0 25px 65px rgba(0, 0, 0, 0.25),
+        inset 0 1px rgba(255, 255, 255, 0.05);
+
+    backdrop-filter:
+        blur(24px);
+
+    -webkit-backdrop-filter:
+        blur(24px);
+
+    overflow:
+        hidden;
+
+    animation:
+        workspaceResponseEnter 0.75s ease 0.08s both;
+
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.workspace-code-response::before {
+    content:
+        "";
+
+    position:
+        absolute;
+
+    top:
+        0;
+
+    left:
+        0;
+
+    right:
+        0;
+
+    height:
+        2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(70, 199, 255, 0.55),
+            rgba(120, 220, 255, 0.2),
+            transparent
+        );
+
+    opacity:
+        0.75;
+
+    pointer-events:
+        none;
+}
+
+.workspace-code-response:hover {
+    border-color:
+        rgba(70, 199, 255, 0.25);
+
+    box-shadow:
+        0 30px 75px rgba(0, 0, 0, 0.3),
+        0 0 35px rgba(70, 199, 255, 0.035),
+        inset 0 1px rgba(255, 255, 255, 0.065);
+}
+
+
+/* =========================================================
+   RESPONSE HEADER
+   ========================================================= */
+
+.workspace-code-response-header {
+    position:
+        relative;
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+    gap:
+        15px;
+
+    min-height:
+        61px;
+
+    padding:
+        0 19px;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, 0.075);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.045),
+            rgba(255, 255, 255, 0.015)
+        );
+}
+
+.workspace-code-response-header span {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        9px;
+
+    color:
+        #78dcff;
+
+    font-size:
+        10px;
+
+    font-weight:
+        900;
+
+    letter-spacing:
+        1.65px;
+
+    text-transform:
+        uppercase;
+}
+
+.workspace-code-response-header span::before {
+    content:
+        "";
+
+    width:
+        7px;
+
+    height:
+        7px;
+
+    border-radius:
+        50%;
+
+    background:
+        #46c7ff;
+
+    box-shadow:
+        0 0 12px rgba(70, 199, 255, 0.65);
+
+    animation:
+        workspaceResponsePulse 2.2s ease-in-out infinite;
+}
+
+.workspace-code-response-header small {
+    color:
+        #66879e;
+
+    font-size:
+        10px;
+
+    letter-spacing:
+        0.6px;
+
+    white-space:
+        nowrap;
+}
+
+
+/* =========================================================
+   RESPONSE TERMINAL
+   ========================================================= */
+
+.workspace-code-response pre {
+    position:
+        relative;
+
+    flex:
+        1;
+
+    min-height:
+        0;
+
+    margin:
+        0;
+
+    padding:
+        21px;
+
+    overflow:
+        auto;
+
+    color:
+        #dcefff;
+
+    background:
+        radial-gradient(
+            circle at 80% 10%,
+            rgba(70, 199, 255, 0.035),
+            transparent 30%
+        ),
+        #020a12;
+
+    font-family:
+        "JetBrains Mono",
+        "Cascadia Code",
+        "SFMono-Regular",
+        Consolas,
+        "Liberation Mono",
+        monospace;
+
+    font-size:
+        12.5px;
+
+    line-height:
+        1.72;
+
+    letter-spacing:
+        0.05px;
+
+    white-space:
+        pre-wrap;
+
+    word-break:
+        break-word;
+
+    tab-size:
+        4;
+}
+
+.workspace-code-response pre::before {
+    content:
+        "OUTPUT";
+
+    position:
+        absolute;
+
+    top:
+        14px;
+
+    right:
+        18px;
+
+    padding:
+        4px 7px;
+
+    border:
+        1px solid rgba(70, 199, 255, 0.11);
+
+    border-radius:
+        6px;
+
+    color:
+        rgba(120, 220, 255, 0.42);
+
+    background:
+        rgba(70, 199, 255, 0.025);
+
+    font-family:
+        inherit;
+
+    font-size:
+        8px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        1.1px;
+
+    pointer-events:
+        none;
+}
+
+.workspace-code-response pre:empty::before {
+    display:
+        none;
+}
+
+
+/* =========================================================
+   RESPONSE EMPTY STATE
+   ========================================================= */
+
+.workspace-code-response pre:not(:empty) {
+    animation:
+        workspaceOutputReveal 0.35s ease both;
+}
+
+
+/* =========================================================
+   MEMBER FORM
+   ========================================================= */
+
+.workspace-member-form {
+    display:
+        flex;
+
+    gap:
+        9px;
+
+    margin-bottom:
+        20px;
+}
+
+.workspace-member-form input {
+    flex:
+        1;
+}
+
+
+/* =========================================================
+   MEMBER CARD
+   ========================================================= */
+
+.workspace-member-card {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        12px;
+
+    padding:
+        14px;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius:
+        13px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.055),
+            rgba(255, 255, 255, 0.025)
+        );
+
+    transition:
+        transform 0.22s ease,
+        border-color 0.22s ease,
+        background 0.22s ease;
+}
+
+.workspace-member-card:hover {
+    transform:
+        translateX(3px);
+
+    border-color:
+        rgba(70, 199, 255, 0.25);
+
+    background:
+        rgba(70, 199, 255, 0.055);
+}
+
+.workspace-member-card > span {
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    width:
+        36px;
+
+    height:
+        36px;
+
+    flex:
+        0 0 36px;
+
+    border-radius:
+        50%;
+
+    color:
+        #071421;
+
+    background:
+        linear-gradient(
+            135deg,
+            #78dcff,
+            #38baf1
+        );
+
+    font-weight:
+        900;
+
+    box-shadow:
+        0 0 20px rgba(70, 199, 255, 0.12);
+}
+
+.workspace-member-card div {
+    flex:
+        1;
+
+    min-width:
+        0;
+}
+
+.workspace-member-card strong,
+.workspace-member-card small {
+    display:
+        block;
+}
+
+.workspace-member-card strong {
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+
+    white-space:
+        nowrap;
+}
+
+.workspace-member-card small {
+    margin-top:
+        4px;
+
+    color:
+        #849eb5;
+}
+
+.workspace-member-card em {
+    color:
+        #73d8ff;
+
+    font-size:
+        11px;
+
+    font-style:
+        normal;
+
+    text-transform:
+        uppercase;
+}
+
+
+/* =========================================================
+   SHARE / USAGE
+   ========================================================= */
+
+.workspace-share-card,
+.workspace-usage-row {
+    display:
+        flex;
+
+    gap:
+        15px;
+
+    align-items:
+        center;
+
+    padding:
+        15px;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius:
+        12px;
+
+    background:
+        rgba(255, 255, 255, 0.032);
+
+    transition:
+        background 0.22s ease,
+        border-color 0.22s ease;
+}
+
+.workspace-share-card:hover,
+.workspace-usage-row:hover {
+    background:
+        rgba(255, 255, 255, 0.05);
+
+    border-color:
+        rgba(70, 199, 255, 0.18);
+}
+
+.workspace-share-card strong,
+.workspace-usage-row strong {
+    min-width:
+        100px;
+
+    color:
+        #73d8ff;
+}
+
+.workspace-share-card span,
+.workspace-usage-row span {
+    color:
+        #a6bdd0;
+}
+
+.workspace-share-card small {
+    margin-left:
+        auto;
+
+    color:
+        #8099af;
+}
+
+.workspace-usage-row span:last-child {
+    margin-left:
+        auto;
+
+    color:
+        #73d8ff;
+
+    font-weight:
+        700;
+}
+
+
+/* =========================================================
+   SMALL ACTION
+   ========================================================= */
+
+.workspace-project-card > button:first-child {
+    width:
+        100%;
+
+    padding:
+        0;
+
+    border:
+        0;
+
+    color:
+        inherit;
+
+    background:
+        transparent;
+
+    text-align:
+        left;
+
+    cursor:
+        pointer;
+}
+
+.workspace-small-action {
+    margin-top:
+        12px;
+
+    padding:
+        6px 9px;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.12);
+
+    border-radius:
+        8px;
+
+    color:
+        #9fb5c8;
+
+    background:
+        rgba(255, 255, 255, 0.025);
+
+    font-size:
+        11px;
+
+    cursor:
+        pointer;
+
+    transition:
+        color 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+.workspace-small-action:hover {
+    color:
+        #dff7ff;
+
+    border-color:
+        rgba(70, 199, 255, 0.35);
+
+    background:
+        rgba(70, 199, 255, 0.07);
+}
+
+
+/* =========================================================
+   CATEGORY
+   ========================================================= */
+
+.workspace-category-select {
+    width:
+        100%;
+
+    margin-bottom:
+        12px;
+
+    padding:
+        9px 10px;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.11);
+
+    border-radius:
+        9px;
+
+    color:
+        #dceefa;
+
+    background:
+        #10253a;
+
+    outline:
+        none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.workspace-category-select:focus {
+    border-color:
+        rgba(70, 199, 255, 0.48);
+
+    box-shadow:
+        0 0 0 3px rgba(70, 199, 255, 0.07);
+}
+
+
+/* =========================================================
+   MEMBER / SHARE PICKER
+   ========================================================= */
+
+.workspace-member-picker,
+.workspace-share-picker {
+    display:
+        grid;
+
+    gap:
+        8px;
+
+    margin:
+        -8px 0 20px;
+
+    padding:
+        13px;
+
+    border:
+        1px solid rgba(70, 199, 255, 0.2);
+
+    border-radius:
+        12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(70, 199, 255, 0.08),
+            rgba(70, 199, 255, 0.025)
+        );
+
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, 0.035);
+}
+
+.workspace-member-picker label,
+.workspace-share-picker label {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        9px;
+
+    padding:
+        5px;
+
+    border-radius:
+        7px;
+
+    color:
+        #dceefa;
+
+    cursor:
+        pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.workspace-member-picker label:hover,
+.workspace-share-picker label:hover {
+    background:
+        rgba(255, 255, 255, 0.04);
+
+    color:
+        #ffffff;
+}
+
+.workspace-member-picker input,
+.workspace-share-picker input {
+    accent-color:
+        var(--workspace-primary);
+}
+
+.workspace-member-picker strong,
+.workspace-member-picker small {
+    display:
+        block;
+}
+
+.workspace-member-picker small {
+    margin-top:
+        2px;
+
+    color:
+        #90a9c0;
+}
+
+.workspace-share-picker button {
+    justify-self:
+        start;
+
+    padding:
+        7px 10px;
+
+    border:
+        0;
+
+    border-radius:
+        8px;
+
+    color:
+        #071421;
+
+    background:
+        linear-gradient(
+            135deg,
+            #71d8ff,
+            #3dbcf2
+        );
+
+    font-weight:
+        700;
+
+    cursor:
+        pointer;
+
+    transition:
+        transform 0.2s ease,
+        filter 0.2s ease;
+}
+
+.workspace-share-picker button:hover {
+    transform:
+        translateY(-1px);
+
+    filter:
+        brightness(1.08);
+}
+
+
+/* =========================================================
+   WORKSPACE CHOOSER
+   ========================================================= */
+
+.workspace-chooser {
+    position:
+        relative;
+
+    min-height:
+        100vh;
+
+    padding:
+        58px clamp(20px, 6vw, 90px);
+
+    color:
+        var(--workspace-text);
+
+    overflow:
+        hidden;
+
+    background:
+        radial-gradient(
+            circle at 12% 20%,
+            rgba(70, 199, 255, 0.1),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 82% 0%,
+            rgba(33, 111, 153, 0.26),
+            transparent 34%
+        ),
+        radial-gradient(
+            circle at 50% 100%,
+            rgba(30, 100, 150, 0.09),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #06101b,
+            #0a1929 55%,
+            #0d263c
+        );
+}
+
+.workspace-chooser::before {
+    content:
+        "";
+
+    position:
+        absolute;
+
+    width:
+        550px;
+
+    height:
+        550px;
+
+    right:
+        -260px;
+
+    bottom:
+        -270px;
+
+    border-radius:
+        50%;
+
+    background:
+        rgba(70, 199, 255, 0.07);
+
+    filter:
+        blur(100px);
+
+    pointer-events:
+        none;
+
+    animation:
+        workspaceAmbientFloat 13s ease-in-out infinite alternate;
+}
+
+
+/* =========================================================
+   CHOOSER HEADER
+   ========================================================= */
+
+.workspace-chooser-header {
+    position:
+        relative;
+
+    z-index:
+        2;
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        flex-start;
+
+    gap:
+        24px;
+
+    max-width:
+        1200px;
+
+    margin:
+        0 auto 42px;
+
+    animation:
+        workspaceFadeUp 0.65s ease both;
+}
+
+.workspace-chooser-header > div > span,
+.workspace-choice-kicker {
+    color:
+        #6f93ad;
+
+    font-size:
+        10px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        1.7px;
+
+    text-transform:
+        uppercase;
+}
+
+.workspace-chooser-header h1 {
+    margin:
+        10px 0 8px;
+
+    font-size:
+        clamp(32px, 5vw, 58px);
+
+    line-height:
+        1.02;
+
+    letter-spacing:
+        -2px;
+
+    background:
+        linear-gradient(
+            120deg,
+            #ffffff,
+            #d9f4ff 45%,
+            #66d2ff
+        );
+
+    -webkit-background-clip:
+        text;
+
+    background-clip:
+        text;
+
+    color:
+        transparent;
+}
+
+.workspace-chooser-header p {
+    max-width:
+        630px;
+
+    margin:
+        0;
+
+    color:
+        #91a9c0;
+
+    line-height:
+        1.65;
+}
+
+.workspace-chooser-header > button {
+    padding:
+        10px 14px;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.14);
+
+    border-radius:
+        10px;
+
+    color:
+        #bcd1e4;
+
+    background:
+        rgba(255, 255, 255, 0.035);
+
+    cursor:
+        pointer;
+
+    backdrop-filter:
+        blur(10px);
+
+    transition:
+        transform 0.22s ease,
+        border-color 0.22s ease,
+        background 0.22s ease;
+}
+
+.workspace-chooser-header > button:hover {
+    transform:
+        translateY(-2px);
+
+    border-color:
+        rgba(70, 199, 255, 0.32);
+
+    color:
+        #e8f9ff;
+
+    background:
+        rgba(70, 199, 255, 0.065);
+}
+
+
+/* =========================================================
+   CHOICE GRID
+   ========================================================= */
+
+.workspace-choice-grid {
+    position:
+        relative;
+
+    z-index:
+        2;
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap:
+        17px;
+
+    max-width:
+        1200px;
+
+    margin:
+        0 auto;
+}
+
+
+/* =========================================================
+   CHOICE CARD
+   ========================================================= */
+
+.workspace-choice-card {
+    position:
+        relative;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        flex-start;
+
+    min-height:
+        340px;
+
+    padding:
+        25px;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.1);
+
+    border-radius:
+        19px;
+
+    color:
+        #edf7ff;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.075),
+            rgba(255, 255, 255, 0.032)
+        );
+
+    box-shadow:
+        0 22px 55px rgba(0, 0, 0, 0.2),
+        inset 0 1px rgba(255, 255, 255, 0.05);
+
+    backdrop-filter:
+        blur(22px);
+
+    -webkit-backdrop-filter:
+        blur(22px);
+
+    overflow:
+        hidden;
+
+    animation:
+        workspaceChoiceEnter 0.65s ease both;
+
+    transition:
+        transform 0.3s ease,
+        border-color 0.3s ease,
+        background 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.workspace-choice-card:nth-child(2) {
+    animation-delay:
+        0.08s;
+}
+
+.workspace-choice-card:nth-child(3) {
+    animation-delay:
+        0.16s;
+}
+
+.workspace-choice-card::before {
+    content:
+        "";
+
+    position:
+        absolute;
+
+    top:
+        0;
+
+    left:
+        -60%;
+
+    width:
+        50%;
+
+    height:
+        100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.045),
+            transparent
+        );
+
+    transform:
+        skewX(-18deg);
+
+    transition:
+        left 0.8s ease;
+}
+
+.workspace-choice-card:hover::before {
+    left:
+        120%;
+}
+
+.workspace-choice-card:hover {
+    transform:
+        translateY(-7px);
+
+    border-color:
+        rgba(70, 199, 255, 0.35);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(70, 199, 255, 0.09),
+            rgba(255, 255, 255, 0.035)
+        );
+
+    box-shadow:
+        0 30px 70px rgba(0, 0, 0, 0.25),
+        0 0 35px rgba(70, 199, 255, 0.06),
+        inset 0 1px rgba(255, 255, 255, 0.07);
+}
+
+
+/* =========================================================
+   CHOICE ICON
+   ========================================================= */
+
+.workspace-choice-icon {
+    position:
+        relative;
+
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    width:
+        46px;
+
+    height:
+        46px;
+
+    margin-bottom:
+        22px;
+
+    border-radius:
+        13px;
+
+    color:
+        #061421;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7bdcff,
+            #38baf1
+        );
+
+    font-size:
+        24px;
+
+    font-weight:
+        900;
+
+    box-shadow:
+        0 9px 25px rgba(70, 199, 255, 0.16),
+        inset 0 1px rgba(255, 255, 255, 0.42);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.workspace-choice-card:hover .workspace-choice-icon {
+    transform:
+        rotate(-3deg) scale(1.05);
+
+    box-shadow:
+        0 12px 30px rgba(70, 199, 255, 0.25),
+        0 0 25px rgba(70, 199, 255, 0.1);
+}
+
+
+/* =========================================================
+   CHOICE CONTENT
+   ========================================================= */
+
+.workspace-choice-card h2 {
+    margin:
+        10px 0 8px;
+
+    font-size:
+        22px;
+
+    letter-spacing:
+        -0.4px;
+}
+
+.workspace-choice-card p {
+    min-height:
+        52px;
+
+    margin:
+        0 0 17px;
+
+    color:
+        #91a9c0;
+
+    line-height:
+        1.6;
+}
+
+
+/* =========================================================
+   CHOICE FORM
+   ========================================================= */
+
+.workspace-choice-card input,
+.workspace-choice-card textarea {
+    width:
+        100%;
+
+    box-sizing:
+        border-box;
+
+    margin-bottom:
+        10px;
+
+    padding:
+        12px;
+
+    resize:
+        vertical;
+}
+
+.workspace-choice-card textarea {
+    min-height:
+        85px;
+}
+
+.workspace-choice-card input:focus,
+.workspace-choice-card textarea:focus {
+    border-color:
+        rgba(70, 199, 255, 0.62);
+
+    outline:
+        none;
+}
+
+
+/* =========================================================
+   CHOICE BUTTON
+   ========================================================= */
+
+.workspace-choice-card > button {
+    margin-top:
+        auto;
+
+    padding:
+        11px 16px;
+
+    border:
+        0;
+
+    border-radius:
+        10px;
+
+    color:
+        #071421;
+
+    background:
+        linear-gradient(
+            135deg,
+            #70d8ff,
+            #38b9f0
+        );
+
+    font-weight:
+        800;
+
+    cursor:
+        pointer;
+
+    box-shadow:
+        0 8px 22px rgba(70, 199, 255, 0.14),
+        inset 0 1px rgba(255, 255, 255, 0.32);
+
+    transition:
+        transform 0.22s ease,
+        filter 0.22s ease,
+        box-shadow 0.22s ease;
+}
+
+.workspace-choice-card > button:hover {
+    transform:
+        translateY(-2px);
+
+    filter:
+        brightness(1.07);
+
+    box-shadow:
+        0 12px 28px rgba(70, 199, 255, 0.22),
+        inset 0 1px rgba(255, 255, 255, 0.4);
+}
+
+
+/* =========================================================
+   EXISTING WORKSPACE
+   ========================================================= */
+
+.workspace-existing-list {
+    display:
+        grid;
+
+    width:
+        100%;
+
+    gap:
+        9px;
+
+    margin-top:
+        auto;
+}
+
+.workspace-existing-list button {
+    display:
+        block;
+
+    width:
+        100%;
+
+    padding:
+        12px;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.11);
+
+    border-radius:
+        10px;
+
+    color:
+        #edf7ff;
+
+    background:
+        rgba(255, 255, 255, 0.04);
+
+    text-align:
+        left;
+
+    cursor:
+        pointer;
+
+    transition:
+        transform 0.22s ease,
+        border-color 0.22s ease,
+        background 0.22s ease;
+}
+
+.workspace-existing-list button:hover {
+    transform:
+        translateX(3px);
+
+    border-color:
+        rgba(70, 199, 255, 0.38);
+
+    background:
+        rgba(70, 199, 255, 0.08);
+}
+
+.workspace-existing-list strong,
+.workspace-existing-list small {
+    display:
+        block;
+}
+
+.workspace-existing-list small {
+    margin-top:
+        4px;
+
+    color:
+        #78d9ff;
+
+    font-size:
+        11px;
+}
+
+
+/* =========================================================
+   EMPTY DASHBOARD
+   ========================================================= */
+
+.workspace-dashboard-empty {
+    min-height:
+        100vh;
+
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    padding:
+        25px;
+
+    color:
+        #eaf8ff;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(70, 199, 255, 0.09),
+            transparent 36%
+        ),
+        #06101c;
+}
+
+.workspace-dashboard-empty p {
+    color:
+        #91a9c0;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .workspace-dashboard-main {
+        padding-left:
+            32px;
+
+        padding-right:
+            32px;
+    }
+
+    .workspace-dashboard-sidebar {
+        width:
+            235px;
+
+        flex-basis:
+            235px;
+    }
+
+    .workspace-choice-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .workspace-choice-card:last-child {
+        grid-column:
+            1 / -1;
+    }
+
+    .workspace-code-layout {
+        grid-template-columns:
+            1fr;
+    }
+
+    .workspace-code-panel,
+    .workspace-code-response {
+        min-height:
+            560px;
+    }
+
+    .workspace-code-response pre {
+        min-height:
+            440px;
+    }
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .workspace-dashboard-sidebar {
+        width:
+            210px;
+
+        flex-basis:
+            210px;
+
+        padding-left:
+            15px;
+
+        padding-right:
+            15px;
+    }
+
+    .workspace-overview-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .workspace-chat-layout {
+        grid-template-columns:
+            1fr;
+    }
+
+    .workspace-chat-list {
+        min-height:
+            auto;
+    }
+
+    .workspace-chat-list .workspace-chat-item {
+        display:
+            inline-block;
+
+        width:
+            calc(50% - 7px);
+
+        vertical-align:
+            top;
+
+        margin-right:
+            7px;
+    }
+
+    .workspace-choice-grid {
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+    .workspace-existing-card {
+        grid-column:
+            1 / -1;
+
+        min-height:
+            auto;
+    }
+
+    .workspace-code-layout {
+        gap:
+            14px;
+    }
+
+    .workspace-code-panel,
+    .workspace-code-response {
+        min-height:
+            520px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 640px) {
+
+    .workspace-dashboard {
+        display:
+            block;
+
+        overflow:
+            visible;
+    }
+
+    .workspace-dashboard-sidebar {
+        width:
+            auto;
+
+        padding:
+            15px 16px 13px;
+
+        border-right:
+            0;
+
+        border-bottom:
+            1px solid rgba(255, 255, 255, 0.08);
+
+        box-shadow:
+            0 12px 35px rgba(0, 0, 0, 0.18);
+
+        backdrop-filter:
+            blur(25px);
+    }
+
+    .workspace-dashboard-brand {
+        margin-bottom:
+            12px;
+    }
+
+    .workspace-dashboard-nav {
+        display:
+            flex;
+
+        overflow-x:
+            auto;
+
+        gap:
+            6px;
+
+        margin-top:
+            14px;
+
+        padding-bottom:
+            3px;
+
+        scrollbar-width:
+            none;
+    }
+
+    .workspace-dashboard-nav::-webkit-scrollbar {
+        display:
+            none;
+    }
+
+    .workspace-dashboard-nav button {
+        flex:
+            0 0 auto;
+
+        white-space:
+            nowrap;
+    }
+
+    .workspace-dashboard-sidebar-actions {
+        display:
+            none;
+    }
+
+    .workspace-dashboard-main {
+        padding:
+            27px 16px 45px;
+
+        overflow:
+            visible;
+    }
+
+    .workspace-dashboard-header {
+        display:
+            block;
+    }
+
+    .workspace-dashboard-header h1 {
+        font-size:
+            36px;
+    }
+
+    .workspace-role-badge {
+        display:
+            inline-block;
+
+        margin-top:
+            15px;
+    }
+
+    .workspace-overview-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+    .workspace-quick-panel {
+        grid-column:
+            auto;
+    }
+
+    .workspace-section {
+        padding:
+            19px;
+    }
+
+    .workspace-section-title {
+        align-items:
+            stretch;
+
+        flex-direction:
+            column;
+    }
+
+    .workspace-section-title form,
+    .workspace-member-form,
+    .workspace-chat-input {
+        display:
+            grid;
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .workspace-section-title input,
+    .workspace-section-title button,
+    .workspace-member-form input,
+    .workspace-member-form select,
+    .workspace-member-form button {
+        width:
+            100%;
+    }
+
+    .workspace-chat-toolbar {
+        align-items:
+            stretch;
+
+        flex-direction:
+            column;
+    }
+
+    .workspace-chat-toolbar > div:last-child {
+        display:
+            grid;
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .workspace-chat-toolbar select {
+        width:
+            100%;
+    }
+
+    .workspace-chat-list .workspace-chat-item {
+        display:
+            block;
+
+        width:
+            100%;
+
+        margin-right:
+            0;
+    }
+
+    .workspace-message {
+        max-width:
+            91%;
+    }
+
+    .workspace-share-card,
+    .workspace-usage-row {
+        align-items:
+            flex-start;
+
+        flex-direction:
+            column;
+    }
+
+    .workspace-share-card small,
+    .workspace-usage-row span:last-child {
+        margin-left:
+            0;
+    }
+
+    .workspace-chooser {
+        padding:
+            32px 16px 45px;
+    }
+
+    .workspace-chooser-header {
+        display:
+            block;
+    }
+
+    .workspace-chooser-header h1 {
+        font-size:
+            38px;
+    }
+
+    .workspace-chooser-header > button {
+        margin-top:
+            18px;
+    }
+
+    .workspace-choice-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+    .workspace-choice-card,
+    .workspace-choice-card:last-child,
+    .workspace-existing-card {
+        grid-column:
+            auto;
+
+        min-height:
+            320px;
+    }
+
+    /* Code Assistant */
+
+    .workspace-code-layout {
+        display:
+            flex;
+
+        flex-direction:
+            column;
+
+        min-height:
+            auto;
+    }
+
+    .workspace-code-panel,
+    .workspace-code-response {
+        width:
+            100%;
+
+        min-height:
+            0;
+    }
+
+    .workspace-code-panel {
+        padding:
+            18px;
+    }
+
+    .workspace-code-panel textarea[rows="14"] {
+        min-height:
+            300px;
+    }
+
+    .workspace-code-response {
+        min-height:
+            470px;
+    }
+
+    .workspace-code-response pre {
+        min-height:
+            380px;
+
+        padding:
+            17px;
+
+        font-size:
+            11.5px;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 420px) {
+
+    .workspace-dashboard-main {
+        padding-left:
+            12px;
+
+        padding-right:
+            12px;
+    }
+
+    .workspace-dashboard-header h1 {
+        font-size:
+            31px;
+    }
+
+    .workspace-stat-panel {
+        padding:
+            18px;
+    }
+
+    .workspace-quick-panel {
+        padding:
+            21px;
+    }
+
+    .workspace-section {
+        padding:
+            16px;
+    }
+
+    .workspace-chat-panel {
+        padding:
+            15px;
+    }
+
+    .workspace-choice-card {
+        padding:
+            20px;
+    }
+
+    .workspace-message {
+        max-width:
+            95%;
+    }
+
+    .workspace-code-panel {
+        padding:
+            15px;
+    }
+
+    .workspace-code-response-header {
+        min-height:
+            55px;
+
+        padding:
+            0 14px;
+    }
+
+    .workspace-code-response-header small {
+        display:
+            none;
+    }
+
+    .workspace-code-response pre {
+        padding:
+            15px;
+
+        font-size:
+            11px;
+    }
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+.workspace-dashboard button:focus-visible,
+.workspace-dashboard input:focus-visible,
+.workspace-dashboard select:focus-visible,
+.workspace-dashboard textarea:focus-visible,
+.workspace-chooser button:focus-visible,
+.workspace-chooser input:focus-visible,
+.workspace-chooser textarea:focus-visible {
+    outline:
+        2px solid rgba(70, 199, 255, 0.7);
+
+    outline-offset:
+        2px;
+}
+
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+
+@keyframes workspaceSidebarEnter {
+
+    from {
+        opacity:
+            0;
+
+        transform:
+            translateX(-18px);
+    }
+
+    to {
+        opacity:
+            1;
+
+        transform:
+            translateX(0);
+    }
+}
+
+
+@keyframes workspaceMainEnter {
+
+    from {
+        opacity:
+            0;
+
+        transform:
+            translateY(10px);
+    }
+
+    to {
+        opacity:
+            1;
+
+        transform:
+            translateY(0);
+    }
+}
+
+
+@keyframes workspaceFadeUp {
+
+    from {
+        opacity:
+            0;
+
+        transform:
+            translateY(12px);
+    }
+
+    to {
+        opacity:
+            1;
+
+        transform:
+            translateY(0);
+    }
+}
+
+
+@keyframes workspaceChoiceEnter {
+
+    from {
+        opacity:
+            0;
+
+        transform:
+            translateY(18px)
+            scale(0.985);
+    }
+
+    to {
+        opacity:
+            1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+@keyframes workspaceMessageEnter {
+
+    from {
+        opacity:
+            0;
+
+        transform:
+            translateY(7px);
+    }
+
+    to {
+        opacity:
+            1;
+
+        transform:
+            translateY(0);
+    }
+}
+
+
+@keyframes workspaceIconPulse {
+
+    0%,
+    100% {
+        transform:
+            translateY(0);
+
+        box-shadow:
+            0 0 30px rgba(70, 199, 255, 0.07);
+    }
+
+    50% {
+        transform:
+            translateY(-3px);
+
+        box-shadow:
+            0 0 38px rgba(70, 199, 255, 0.13);
+    }
+}
+
+
+@keyframes workspaceAmbientFloat {
+
+    from {
+        transform:
+            translate3d(0, 0, 0)
+            scale(1);
+    }
+
+    to {
+        transform:
+            translate3d(20px, 15px, 0)
+            scale(1.08);
+    }
+}
+
+
+/* =========================================================
+   CODE ASSISTANT ANIMATIONS
+   ========================================================= */
+
+@keyframes workspaceCodeEnter {
+
+    from {
+        opacity:
+            0;
+
+        transform:
+            translateY(18px)
+            scale(0.99);
+    }
+
+    to {
+        opacity:
+            1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+@keyframes workspaceResponseEnter {
+
+    from {
+        opacity:
+            0;
+
+        transform:
+            translateX(18px);
+    }
+
+    to {
+        opacity:
+            1;
+
+        transform:
+            translateX(0);
+    }
+}
+
+
+@keyframes workspaceCodeSpin {
+
+    to {
+        transform:
+            rotate(360deg);
+    }
+}
+
+
+@keyframes workspaceResponsePulse {
+
+    0%,
+    100% {
+        opacity:
+            0.55;
+
+        transform:
+            scale(0.9);
+
+        box-shadow:
+            0 0 7px rgba(70, 199, 255, 0.35);
+    }
+
+    50% {
+        opacity:
+            1;
+
+        transform:
+            scale(1.15);
+
+        box-shadow:
+            0 0 14px rgba(70, 199, 255, 0.75);
+    }
+}
+
+
+@keyframes workspaceOutputReveal {
+
+    from {
+        opacity:
+            0.35;
+
+        transform:
+            translateY(5px);
+    }
+
+    to {
+        opacity:
+            1;
+
+        transform:
+            translateY(0);
+    }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .workspace-dashboard *,
+    .workspace-chooser * {
+        animation-duration:
+            0.01ms !important;
+
+        animation-iteration-count:
+            1 !important;
+
+        transition-duration:
+            0.01ms !important;
+
+        scroll-behavior:
+            auto !important;
+    }
+}
+

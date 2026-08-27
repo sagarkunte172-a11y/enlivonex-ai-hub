@@ -10,10 +10,16 @@ const MODELS = {
         }
     ],
 
-    CODE: {
-        name: "Qwen 2.5 Coder 7B",
-        model: "qwen2.5-coder:7b"
-    }
+    CODE: [
+        {
+            name: "Qwen 2.5 Coder 7B",
+            model: "qwen2.5-coder:7b"
+        },
+        {
+            name: "Qwen 2.5 Coder 14B",
+            model: "qwen2.5-coder:14b-instruct"
+        }
+    ]
 };
 
 module.exports = MODELS;

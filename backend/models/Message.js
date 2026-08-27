@@ -1,183 +1,144 @@
 const mongoose = require("mongoose");
 
-/*
-==================================
+/*==================================
 Message Schema
-==================================
-*/
+==================================*/
 
 const messageSchema = new mongoose.Schema(
-
     {
-
-        /*
-        ==================================
+        /*==================================
         Session Reference
-        ==================================
-        */
+        ==================================*/
 
         sessionId: {
-
             type: mongoose.Schema.Types.ObjectId,
-
             ref: "Session",
-
-            required: true
-
+            required: true,
+            index: true
         },
 
-        /*
-        ==================================
-        Sender
-        ==================================
-        */
+        /*==================================
+        Sender Role
+        ==================================*/
 
         role: {
-
             type: String,
-
             enum: [
-
                 "user",
-
                 "assistant",
-
                 "system"
-
             ],
-
             required: true
-
         },
 
-        /*
-        ==================================
+        /*==================================
         Message Content
-        ==================================
-        */
+        ==================================*/
 
         content: {
-
             type: String,
-
             required: true,
-
             trim: true
-
         },
 
-        /*
-        ==================================
+        /*==================================
         AI Model Information
-        ==================================
-        */
+        ==================================*/
 
         model: {
-
             name: {
-
                 type: String,
-
                 default: ""
-
             },
 
             id: {
-
                 type: String,
-
                 default: ""
-
             },
 
             reason: {
-
                 type: String,
-
                 default: ""
-
             }
-
         },
 
-        /*
-        ==================================
+        /*==================================
         Future Attachment Support
-        ==================================
-        */
+        ==================================*/
 
         attachment: {
-
             type: String,
-
             default: null
-
         },
 
         attachmentType: {
-
             type: String,
-
             default: null
-
         },
 
-        /*
-        ==================================
+        /*==================================
         Streaming Status
-        ==================================
-        */
+        ==================================*/
 
         isStreaming: {
-
             type: Boolean,
-
             default: false
-
         },
 
-        /*
-        ==================================
+        /*==================================
         Message Status
-        ==================================
-        */
+        ==================================*/
 
         isEdited: {
-
             type: Boolean,
-
             default: false
-
         },
 
         isDeleted: {
-
             type: Boolean,
-
-            default: false
-
+            default: false,
+            index: true
         }
-
     },
 
     {
-
         timestamps: true
-
     }
-
 );
+
+/*==================================
+Indexes
+==================================*/
+
+messageSchema.index({
+    sessionId: 1,
+    createdAt: 1
+});
+
+messageSchema.index({
+    sessionId: 1,
+    isDeleted: 1,
+    createdAt: -1
+});
+
+/*==================================
+Mongoose Model
+==================================*/
 
 /*
-==================================
-Export Model
-==================================
+Avoid OverwriteModelError during
+nodemon / hot reload situations.
 */
 
-module.exports = mongoose.model(
+const Message =
+    mongoose.models.Message ||
+    mongoose.model(
+        "Message",
+        messageSchema
+    );
 
-    "Message",
+/*==================================
+Export
+==================================*/
 
-    messageSchema
-
-);
+module.exports = Message;
