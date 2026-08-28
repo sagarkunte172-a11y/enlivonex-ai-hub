@@ -3,117 +3,209 @@ import { Link } from "react-router-dom";
 import { useRef } from "react";
 
 function Hero() {
-
   const heroCardRef = useRef(null);
   const heroRightRef = useRef(null);
 
-  const handleMouseMove = (e) => {
-
+  const handleMouseMove = (event) => {
     if (window.innerWidth < 992) return;
 
     const card = heroCardRef.current;
+    const container = heroRightRef.current;
 
-    if (!card) return;
+    if (!card || !container) return;
 
     const rect = card.getBoundingClientRect();
 
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
 
-    const rotateY = ((x / rect.width) - 0.5) * 18;
-    const rotateX = ((y / rect.height) - 0.5) * -18;
+    const rotateY = ((x / rect.width) - 0.5) * 14;
+    const rotateX = ((y / rect.height) - 0.5) * -14;
 
     card.style.transform = `
       perspective(1200px)
       rotateX(${rotateX}deg)
       rotateY(${rotateY}deg)
-      translateY(-6px)
+      translateY(-7px)
     `;
 
-    const widgets = heroRightRef.current.querySelectorAll(".floating-widget");
+    const widgets =
+      container.querySelectorAll(".floating-widget");
 
     widgets.forEach((widget, index) => {
-
-      const depth = (index + 1) * 5;
+      const depth = (index + 1) * 4;
 
       widget.style.transform = `
-        translate(
-          ${rotateY * depth * 0.25}px,
-          ${-rotateX * depth * 0.25}px
+        translate3d(
+          ${rotateY * depth * 0.22}px,
+          ${-rotateX * depth * 0.22}px,
+          ${depth}px
         )
       `;
-
     });
-
   };
 
   const handleMouseLeave = () => {
+    const card = heroCardRef.current;
+    const container = heroRightRef.current;
 
-    if (!heroCardRef.current) return;
+    if (card) {
+      card.style.transform = `
+        perspective(1200px)
+        rotateX(0deg)
+        rotateY(0deg)
+        translateY(0)
+      `;
+    }
 
-    heroCardRef.current.style.transform = `
-      perspective(1200px)
-      rotateX(0deg)
-      rotateY(0deg)
-      translateY(0px)
-    `;
+    if (container) {
+      const widgets =
+        container.querySelectorAll(".floating-widget");
 
-    const widgets = heroRightRef.current.querySelectorAll(".floating-widget");
-
-    widgets.forEach((widget) => {
-
-      widget.style.transform = "translate(0px,0px)";
-
-    });
-
+      widgets.forEach((widget) => {
+        widget.style.transform =
+          "translate3d(0, 0, 0)";
+      });
+    }
   };
 
-  return (
+  const tools = [
+    {
+      icon: "🤖",
+      title: "AI Chat",
+      status: "Ready",
+      type: "available"
+    },
+    {
+      icon: "💻",
+      title: "Code Assistant",
+      status: "Ready",
+      type: "available"
+    },
+    {
+      icon: "🎨",
+      title: "Image Generator",
+      status: "Coming Soon",
+      type: "coming"
+    },
+    {
+      icon: "📝",
+      title: "Script Generator",
+      status: "Coming Soon",
+      type: "coming"
+    }
+  ];
 
+  return (
     <section className="hero">
 
-      {/* LEFT */}
+      {/* =========================================
+          BACKGROUND ATMOSPHERE
+      ========================================== */}
+
+      <div
+        className="hero-orb hero-orb-one"
+        aria-hidden="true"
+      />
+
+      <div
+        className="hero-orb hero-orb-two"
+        aria-hidden="true"
+      />
+
+      <div
+        className="hero-grid"
+        aria-hidden="true"
+      />
+
+      {/* =========================================
+          LEFT CONTENT
+      ========================================== */}
 
       <div className="hero-left">
 
         <div className="hero-badge">
-          🚀 Version 0.1 Alpha
+          <span className="hero-badge-dot" />
+          <span>Version 0.2 Alpha</span>
+        </div>
+
+        <div className="hero-eyebrow">
+          ENLIVONEX AI HUB
         </div>
 
         <h1>
           The Future of
           <br />
+
           <span>Artificial Intelligence</span>
+
           <br />
+
           Starts Here.
         </h1>
 
-        <p>
-          Enlivonex AI Hub is an all-in-one AI workspace built for
-          students, developers, creators and innovators.
-          Chat with AI, generate images, write code,
-          create scripts and build the future from one platform.
+        <p className="hero-description">
+          Enlivonex AI Hub brings AI chat, coding assistance,
+          creative tools and future AI services together inside
+          one unified workspace — built for students,
+          developers, creators and innovators.
         </p>
+
+        {/* =========================================
+            CTA BUTTONS
+        ========================================== */}
 
         <div className="hero-buttons">
 
           <Link
             to="/dashboard"
-            className="primary-btn"
+            className="primary-btn hero-primary-btn"
           >
-            🚀 Launch Dashboard
+            <span>🚀</span>
+            <span>Launch AI Hub</span>
           </Link>
 
           <a
-            href="https://github.com/Enlivonex"
+            href="https://github.com/enlivonexofficial-debug"
             target="_blank"
             rel="noopener noreferrer"
-            className="secondary-btn"
+            className="secondary-btn hero-secondary-btn"
           >
-            🌐 View GitHub
+            <span>🌐</span>
+            <span>Explore GitHub</span>
           </a>
 
         </div>
+
+        {/* =========================================
+            TRUST / PLATFORM INFO
+        ========================================== */}
+
+        <div className="hero-trust-row">
+
+          <div className="hero-trust-item">
+            <span className="trust-icon">⚡</span>
+            <div>
+              <strong>Fast</strong>
+              <small>Lightweight platform</small>
+            </div>
+          </div>
+
+          <div className="hero-trust-divider" />
+
+          <div className="hero-trust-item">
+            <span className="trust-icon">🔒</span>
+            <div>
+              <strong>Built with privacy</strong>
+              <small>Local AI focused</small>
+            </div>
+          </div>
+
+        </div>
+
+        {/* =========================================
+            HERO STATS
+        ========================================== */}
 
         <div className="hero-stats">
 
@@ -123,12 +215,12 @@ function Hero() {
           </div>
 
           <div className="stat-box">
-            <h2>Open</h2>
-            <span>Source</span>
+            <h2>AI</h2>
+            <span>Workspace</span>
           </div>
 
           <div className="stat-box">
-            <h2>0.1</h2>
+            <h2>0.2</h2>
             <span>Alpha</span>
           </div>
 
@@ -136,7 +228,9 @@ function Hero() {
 
       </div>
 
-      {/* RIGHT */}
+      {/* =========================================
+          RIGHT VISUAL
+      ========================================== */}
 
       <div
         className="hero-right"
@@ -145,122 +239,268 @@ function Hero() {
         onMouseLeave={handleMouseLeave}
       >
 
+        {/* =======================================
+            FLOATING WIDGETS
+        ======================================== */}
+
         <div className="floating-widget widget-chat">
-          🤖 AI Chat
+          <span>🤖</span>
+          <div>
+            <strong>AI Chat</strong>
+            <small>Online</small>
+          </div>
         </div>
 
         <div className="floating-widget widget-image">
-          🎨 Image AI
+          <span>🎨</span>
+          <div>
+            <strong>Image AI</strong>
+            <small>Coming Soon</small>
+          </div>
         </div>
 
         <div className="floating-widget widget-code">
-          💻 Code AI
+          <span>💻</span>
+          <div>
+            <strong>Code AI</strong>
+            <small>Available</small>
+          </div>
         </div>
 
         <div className="floating-widget widget-script">
-          📝 Script AI
+          <span>📝</span>
+          <div>
+            <strong>Script AI</strong>
+            <small>Coming Soon</small>
+          </div>
         </div>
+
+        {/* =======================================
+            MAIN AI HUB CARD
+        ======================================== */}
 
         <div
           className="hero-card"
           ref={heroCardRef}
         >
 
+          {/* CARD HEADER */}
+
           <div className="hero-card-header">
 
-            <span>
-              ⚡ ENLIVONEX AI
-            </span>
+            <div className="hero-brand-mark">
+              <span>⚡</span>
+
+              <div>
+                <strong>ENLIVONEX AI</strong>
+                <small>AI HUB / ALPHA</small>
+              </div>
+            </div>
 
             <div className="live-status">
 
-              <span className="live-dot"></span>
+              <span className="live-dot" />
 
-              Online
+              <span>System Online</span>
 
             </div>
 
           </div>
+
+          {/* CARD DIVIDER */}
+
+          <div className="hero-card-line" />
+
+          {/* =====================================
+              TOOL GRID
+          ====================================== */}
 
           <div className="hero-tools">
 
-            <div className="tool">
-              🤖 AI Chat
-              <small>Ready</small>
-            </div>
+            {tools.map((tool) => (
+              <div
+                className={`tool ${tool.type}`}
+                key={tool.title}
+              >
 
-            <div className="tool">
-              💻 Code Assistant
-              <small>Available</small>
-            </div>
+                <div className="tool-top">
 
-            <div className="tool">
-              🎨 Image Generator
-              <small>Coming Soon</small>
-            </div>
+                  <span className="tool-icon">
+                    {tool.icon}
+                  </span>
 
-            <div className="tool">
-              📝 Script Generator
-              <small>Coming Soon</small>
-            </div>
+                  <span
+                    className={`tool-status ${tool.type}`}
+                  >
+                    {tool.status}
+                  </span>
+
+                </div>
+
+                <strong>
+                  {tool.title}
+                </strong>
+
+                <small>
+                  {tool.type === "available"
+                    ? "Available in AI Hub"
+                    : "Part of the upcoming ecosystem"}
+                </small>
+
+              </div>
+            ))}
 
           </div>
+
+          {/* =====================================
+              MINI SYSTEM STATUS
+          ====================================== */}
 
           <div className="dashboard-mini">
 
             <div className="mini-card">
+
+              <div className="mini-card-icon">
+                ◉
+              </div>
+
               <h4>Models</h4>
-              <span>Ollama</span>
+
+              <span>
+                Ollama
+              </span>
+
+              <small>
+                Local AI
+              </small>
+
             </div>
 
             <div className="mini-card">
-              <h4>Status</h4>
+
+              <div className="mini-card-icon">
+                ⚡
+              </div>
+
+              <h4>System</h4>
+
               <span className="online-text">
                 Connected
               </span>
+
+              <small>
+                Operational
+              </small>
+
             </div>
 
             <div className="mini-card">
-              <h4>Credits</h4>
-              <span>∞</span>
+
+              <div className="mini-card-icon">
+                ∞
+              </div>
+
+              <h4>Possibilities</h4>
+
+              <span>
+                Unlimited
+              </span>
+
+              <small>
+                Future ready
+              </small>
+
             </div>
 
           </div>
+
+          {/* =====================================
+              DEVELOPMENT PROGRESS
+          ====================================== */}
 
           <div className="hero-progress">
 
             <div className="progress-top">
 
-              <h3>Development</h3>
+              <div>
+                <h3>
+                  Platform Development
+                </h3>
 
-              <span>35%</span>
+                <small>
+                  Enlivonex AI Hub v0.2
+                </small>
+              </div>
+
+              <span>
+                40%
+              </span>
 
             </div>
 
-            <div className="progress-bar">
+            <div
+              className="progress-bar"
+              aria-label="Development progress: 40%"
+            >
+              <div className="progress-fill" />
+              <div className="progress-shimmer" />
+            </div>
 
-              <div className="progress-fill"></div>
+            <div className="progress-meta">
+
+              <span>
+                Foundation
+              </span>
+
+              <span>
+                AI Ecosystem
+              </span>
 
             </div>
 
             <p>
-
-              Building the complete AI ecosystem with
-              modern tools, cloud integration and
-              powerful productivity features.
-
+              Expanding from the core AI foundation into a
+              complete multi-tool workspace with coding,
+              creative and collaborative capabilities.
             </p>
+
+          </div>
+
+          {/* =====================================
+              CARD FOOTER
+          ====================================== */}
+
+          <div className="hero-card-footer">
+
+            <span>
+              <i />
+              AI infrastructure active
+            </span>
+
+            <span>
+              v0.2 ALPHA
+            </span>
 
           </div>
 
         </div>
 
+        {/* Decorative ring */}
+
+        <div
+          className="hero-ring hero-ring-one"
+          aria-hidden="true"
+        />
+
+        <div
+          className="hero-ring hero-ring-two"
+          aria-hidden="true"
+        />
+
       </div>
 
     </section>
-
   );
-
 }
 
 export default Hero;

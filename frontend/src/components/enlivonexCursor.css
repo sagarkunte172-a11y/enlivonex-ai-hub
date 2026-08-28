@@ -1,0 +1,614 @@
+/* =========================================================
+   ENLIVONEX CUSTOM CURSOR
+   ========================================================= */
+
+.enlivonex-cursor {
+  --cursor-x: 0px;
+  --cursor-y: 0px;
+  --cursor-speed: 0;
+
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  width: 0;
+  height: 0;
+
+  z-index: 2147483647;
+
+  pointer-events: none;
+
+  transform:
+    translate3d(
+      var(--cursor-x),
+      var(--cursor-y),
+      0
+    )
+    translate3d(-50%, -50%, 0);
+
+  transition:
+    opacity 0.2s ease;
+
+  will-change: transform;
+}
+
+/* =========================================================
+   CORE
+   ========================================================= */
+
+.enlivonex-cursor-core {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  display: flex;
+  align-items: center;
+
+  height: 38px;
+
+  padding: 0 11px;
+
+  border: 1px solid rgba(111, 216, 255, 0.34);
+
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(7, 25, 39, 0.96),
+      rgba(8, 34, 52, 0.9)
+    );
+
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.025),
+    0 0 20px rgba(70, 199, 255, 0.12),
+    inset 0 1px rgba(255, 255, 255, 0.08);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  overflow: hidden;
+
+  transform:
+    translate3d(0, 0, 0)
+    scale(0.86);
+
+  transform-origin: center;
+
+  transition:
+    width 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    padding 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.3s ease,
+    background 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* =========================================================
+   IDLE E
+   ========================================================= */
+
+.cursor-e {
+  position: relative;
+
+  display: grid;
+  place-items: center;
+
+  width: 17px;
+  height: 17px;
+
+  flex: 0 0 17px;
+
+  color: #071421;
+
+  border-radius: 5px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #9ae7ff,
+      #42c2f5
+    );
+
+  font-size: 11px;
+  font-weight: 950;
+
+  line-height: 1;
+
+  box-shadow:
+    0 0 15px rgba(70, 199, 255, 0.24),
+    inset 0 1px rgba(255, 255, 255, 0.55);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+/* =========================================================
+   BRAND
+   ========================================================= */
+
+.cursor-brand {
+  display: flex;
+  align-items: center;
+
+  width: 0;
+
+  margin-left: 0;
+
+  opacity: 0;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  transition:
+    width 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    margin-left 0.32s ease,
+    opacity 0.2s ease;
+}
+
+.cursor-letter {
+  display: inline-block;
+
+  color: #dff8ff;
+
+  font-size: 10px;
+  font-weight: 850;
+
+  letter-spacing: 0.8px;
+
+  opacity: 0;
+
+  transform:
+    translate3d(
+      calc(
+        -12px -
+        (var(--letter-index) * 2px)
+      ),
+      0,
+      0
+    )
+    scale(0.72);
+
+  filter: blur(3px);
+
+  transition:
+    opacity 0.25s ease,
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.4s ease;
+
+  transition-delay:
+    calc(var(--letter-index) * 0.025s);
+}
+
+/* =========================================================
+   MOVING STATE
+   ========================================================= */
+
+.enlivonex-cursor.is-moving
+  .enlivonex-cursor-core {
+
+  width: 126px;
+
+  padding-left: 9px;
+  padding-right: 13px;
+
+  border-color:
+    rgba(105, 218, 255, 0.52);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(6, 25, 40, 0.96),
+      rgba(9, 45, 66, 0.92)
+    );
+
+  box-shadow:
+    0 0 0 1px rgba(70, 199, 255, 0.04),
+    0 0 28px rgba(70, 199, 255, 0.18),
+    0 0 65px rgba(70, 199, 255, 0.06),
+    inset 0 1px rgba(255, 255, 255, 0.1);
+
+  transform:
+    translate3d(0, 0, 0)
+    scale(1);
+}
+
+.enlivonex-cursor.is-moving
+  .cursor-brand {
+
+  width: 92px;
+
+  margin-left: 7px;
+
+  opacity: 1;
+}
+
+.enlivonex-cursor.is-moving
+  .cursor-letter {
+
+  opacity: 1;
+
+  transform:
+    translate3d(0, 0, 0)
+    scale(1);
+
+  filter: blur(0);
+}
+
+.enlivonex-cursor.is-moving
+  .cursor-e {
+
+  box-shadow:
+    0 0 20px rgba(70, 199, 255, 0.38),
+    0 0 35px rgba(70, 199, 255, 0.11),
+    inset 0 1px rgba(255, 255, 255, 0.62);
+}
+
+/* =========================================================
+   FAST MOVEMENT
+   ========================================================= */
+
+.enlivonex-cursor.is-fast
+  .enlivonex-cursor-core {
+
+  transform:
+    translate3d(0, 0, 0)
+    scale(1.045);
+
+  box-shadow:
+    0 0 0 1px rgba(70, 199, 255, 0.07),
+    0 0 35px rgba(70, 199, 255, 0.26),
+    0 0 85px rgba(70, 199, 255, 0.1),
+    inset 0 1px rgba(255, 255, 255, 0.13);
+}
+
+.enlivonex-cursor.is-fast
+  .cursor-letter {
+
+  transform:
+    translate3d(0, 0, 0)
+    scale(1.045);
+
+  color: #ffffff;
+}
+
+/* =========================================================
+   RING
+   ========================================================= */
+
+.cursor-ring {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  width: 51px;
+  height: 51px;
+
+  border:
+    1px solid
+    rgba(70, 199, 255, 0.13);
+
+  border-radius: 50%;
+
+  transform:
+    translate(-50%, -50%)
+    scale(0.7);
+
+  opacity: 0;
+
+  transition:
+    opacity 0.35s ease,
+    transform 0.4s ease,
+    border-color 0.3s ease;
+
+  box-shadow:
+    0 0 25px rgba(70, 199, 255, 0.05);
+
+  animation:
+    cursorRingRotate 5s linear infinite;
+}
+
+.enlivonex-cursor.is-moving
+  .cursor-ring {
+
+  opacity: 1;
+
+  transform:
+    translate(-50%, -50%)
+    scale(1);
+}
+
+.enlivonex-cursor.is-fast
+  .cursor-ring {
+
+  border-color:
+    rgba(70, 199, 255, 0.25);
+
+  transform:
+    translate(-50%, -50%)
+    scale(1.18);
+}
+
+/* =========================================================
+   ENERGY PARTICLES
+   ========================================================= */
+
+.cursor-energy {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  width: 75px;
+  height: 75px;
+
+  transform:
+    translate(-50%, -50%);
+
+  opacity: 0;
+
+  transition:
+    opacity 0.25s ease;
+}
+
+.cursor-energy span {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  width: 3px;
+  height: 3px;
+
+  border-radius: 50%;
+
+  background: #7edfff;
+
+  box-shadow:
+    0 0 9px rgba(70, 199, 255, 0.65);
+
+  animation:
+    cursorParticleOrbit
+    2.4s linear infinite;
+}
+
+.cursor-energy span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.cursor-energy span:nth-child(2) {
+  animation-delay: -0.8s;
+}
+
+.cursor-energy span:nth-child(3) {
+  animation-delay: -1.6s;
+}
+
+.enlivonex-cursor.is-fast
+  .cursor-energy {
+
+  opacity: 1;
+}
+
+/* =========================================================
+   TRAIL
+   ========================================================= */
+
+.cursor-trail {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  width: 115px;
+  height: 45px;
+
+  transform:
+    translate(-50%, -50%);
+
+  pointer-events: none;
+
+  opacity: 0;
+
+  transition:
+    opacity 0.2s ease;
+}
+
+.cursor-trail i {
+  position: absolute;
+
+  top: 50%;
+
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: rgba(91, 211, 255, 0.7);
+
+  box-shadow:
+    0 0 12px rgba(70, 199, 255, 0.45);
+
+  transform:
+    translateY(-50%)
+    scale(0);
+
+  animation:
+    cursorTrailPulse
+    0.8s ease-out infinite;
+}
+
+.cursor-trail i:nth-child(1) {
+  left: 10px;
+}
+
+.cursor-trail i:nth-child(2) {
+  left: 32px;
+
+  animation-delay: 0.08s;
+}
+
+.cursor-trail i:nth-child(3) {
+  left: 54px;
+
+  animation-delay: 0.16s;
+}
+
+.cursor-trail i:nth-child(4) {
+  left: 76px;
+
+  animation-delay: 0.24s;
+}
+
+.enlivonex-cursor.is-fast
+  .cursor-trail {
+
+  opacity: 1;
+}
+
+/* =========================================================
+   CLICK EFFECT
+   ========================================================= */
+
+.enlivonex-cursor.is-clicking
+  .enlivonex-cursor-core {
+
+  transform:
+    translate3d(0, 0, 0)
+    scale(0.88);
+
+  border-color:
+    rgba(145, 231, 255, 0.8);
+
+  box-shadow:
+    0 0 35px rgba(70, 199, 255, 0.35);
+}
+
+.enlivonex-cursor.is-clicking
+  .cursor-ring {
+
+  transform:
+    translate(-50%, -50%)
+    scale(1.4);
+
+  opacity: 0.4;
+}
+
+/* =========================================================
+   HIDDEN
+   ========================================================= */
+
+.enlivonex-cursor.is-hidden {
+  opacity: 0;
+}
+
+/* =========================================================
+   ROTATION
+   ========================================================= */
+
+@keyframes cursorRingRotate {
+
+  from {
+    transform:
+      translate(-50%, -50%)
+      scale(1)
+      rotate(0deg);
+  }
+
+  to {
+    transform:
+      translate(-50%, -50%)
+      scale(1)
+      rotate(360deg);
+  }
+}
+
+/* =========================================================
+   PARTICLES
+   ========================================================= */
+
+@keyframes cursorParticleOrbit {
+
+  0% {
+    transform:
+      rotate(0deg)
+      translateX(27px)
+      scale(0.7);
+  }
+
+  50% {
+    transform:
+      rotate(180deg)
+      translateX(27px)
+      scale(1.25);
+  }
+
+  100% {
+    transform:
+      rotate(360deg)
+      translateX(27px)
+      scale(0.7);
+  }
+}
+
+/* =========================================================
+   TRAIL
+   ========================================================= */
+
+@keyframes cursorTrailPulse {
+
+  0% {
+    opacity: 0;
+
+    transform:
+      translateY(-50%)
+      translateX(-10px)
+      scale(0.25);
+  }
+
+  35% {
+    opacity: 0.9;
+
+    transform:
+      translateY(-50%)
+      translateX(0)
+      scale(1);
+  }
+
+  100% {
+    opacity: 0;
+
+    transform:
+      translateY(-50%)
+      translateX(18px)
+      scale(0.1);
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .enlivonex-cursor,
+  .enlivonex-cursor * {
+
+    animation: none !important;
+
+    transition:
+      opacity 0.15s ease !important;
+  }
+
+  .cursor-ring,
+  .cursor-energy,
+  .cursor-trail {
+
+    display: none;
+  }
+}

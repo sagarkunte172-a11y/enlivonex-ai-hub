@@ -9,7 +9,7 @@ function Home() {
       icon: "🤖",
       title: "AI Chat",
       desc:
-        "Chat with powerful AI models from one clean workspace using local and cloud intelligence.",
+        "Chat with AI through a clean workspace with conversation sessions, backend integration and persistent data support.",
       status: "Available"
     },
 
@@ -17,7 +17,15 @@ function Home() {
       icon: "💻",
       title: "Code Assistant",
       desc:
-        "Generate, debug and optimize code across multiple programming languages effortlessly.",
+        "Generate, understand, debug and improve code through the integrated Enlivonex AI Code Assistant.",
+      status: "Available"
+    },
+
+    {
+      icon: "🧩",
+      title: "AI Workspace",
+      desc:
+        "A dedicated workspace environment for organizing AI conversations, projects, members and productivity workflows.",
       status: "Available"
     },
 
@@ -25,7 +33,7 @@ function Home() {
       icon: "🎨",
       title: "Image Generator",
       desc:
-        "Create high-quality AI generated artwork from simple natural language prompts.",
+        "Generate AI-powered images from natural language prompts. This module is currently under development.",
       status: "Coming Soon"
     },
 
@@ -33,7 +41,7 @@ function Home() {
       icon: "📝",
       title: "Script Generator",
       desc:
-        "Generate YouTube scripts, blogs, captions and creative writing instantly.",
+        "Create YouTube scripts, short-form content, captions and other creative content with AI.",
       status: "Coming Soon"
     },
 
@@ -41,16 +49,8 @@ function Home() {
       icon: "🧠",
       title: "Multiple AI Models",
       desc:
-        "Switch between local AI models and future cloud models without leaving the platform.",
+        "Switch between different local and future cloud AI models while keeping the same Enlivonex workspace experience.",
       status: "Future"
-    },
-
-    {
-      icon: "⚡",
-      title: "Lightning Fast",
-      desc:
-        "Built using React, Node.js, MongoDB and optimized APIs for maximum performance.",
-      status: "Available"
     }
 
   ];
@@ -64,6 +64,7 @@ function Home() {
       ======================================= */}
 
       <Hero />
+
 
       {/* ======================================
             WHY ENLIVONEX
@@ -90,15 +91,17 @@ function Home() {
 
           <p>
 
-            Enlivonex AI Hub combines multiple AI tools into one
-            unified ecosystem so students, developers and creators
-            can focus on creating instead of switching platforms.
+            Enlivonex AI Hub brings AI tools, development
+            assistance and collaborative workspaces together
+            inside one unified ecosystem.
 
           </p>
 
         </div>
 
+
         <div className="why-grid">
+
 
           <div className="why-card">
 
@@ -116,12 +119,14 @@ function Home() {
 
             <p>
 
-              Optimized architecture built with React and Node.js
-              for an incredibly smooth user experience.
+              Built with a lightweight React and Node.js
+              architecture designed to keep the platform
+              responsive and easy to evolve.
 
             </p>
 
           </div>
+
 
           <div className="why-card">
 
@@ -133,18 +138,20 @@ function Home() {
 
             <h3>
 
-              Secure & Open
+              Built With Privacy in Mind
 
             </h3>
 
             <p>
 
-              User privacy and transparency remain at the center
-              of every feature we build.
+              Enlivonex is designed around controlled data,
+              modular services and a transparent development
+              approach as the platform continues to evolve.
 
             </p>
 
           </div>
+
 
           <div className="why-card">
 
@@ -162,16 +169,19 @@ function Home() {
 
             <p>
 
-              Whether you're learning programming or building
-              startups, Enlivonex grows with you.
+              From students and developers to creators and
+              future innovators, Enlivonex aims to provide
+              useful AI tools without unnecessary complexity.
 
             </p>
 
           </div>
 
+
         </div>
 
       </section>
+
 
       {/* ======================================
                AI TOOLS
@@ -192,18 +202,20 @@ function Home() {
             Powerful AI Tools
             <br />
 
-            Inside One Dashboard
+            Inside One Platform
 
           </h2>
 
           <p>
 
-            Every release brings new capabilities designed to
-            simplify your workflow and increase productivity.
+            The Enlivonex AI Hub is gradually expanding from
+            AI Chat into a complete AI workspace with coding,
+            generation and collaboration capabilities.
 
           </p>
 
         </div>
+
 
         <div className="tools-grid">
 
@@ -216,11 +228,21 @@ function Home() {
                 key={index}
               >
 
-                <span className={`tool-status ${tool.status}`}>
+
+                <span
+                  className={`tool-status ${
+                    tool.status === "Available"
+                      ? "available"
+                      : tool.status === "Coming Soon"
+                        ? "coming"
+                        : "future"
+                  }`}
+                >
 
                   {tool.status}
 
                 </span>
+
 
                 <div className="tool-icon">
 
@@ -228,17 +250,20 @@ function Home() {
 
                 </div>
 
+
                 <h3>
 
                   {tool.title}
 
                 </h3>
 
+
                 <p>
 
                   {tool.desc}
 
                 </p>
+
 
               </div>
 
@@ -249,7 +274,9 @@ function Home() {
         </div>
 
       </section>
-            {/* ======================================
+
+
+      {/* ======================================
             DEVELOPMENT PROGRESS
       ======================================= */}
 
@@ -274,15 +301,18 @@ function Home() {
 
           <p>
 
-            Enlivonex AI Hub is under active development.
-            Every release introduces new capabilities while
-            keeping the platform stable and lightweight.
+            Enlivonex AI Hub is currently in active Alpha
+            development. Version 0.2 expands the original
+            AI foundation with a dedicated workspace and
+            integrated Code Assistant experience.
 
           </p>
 
         </div>
 
+
         <div className="progress-grid">
+
 
           <div className="progress-card">
 
@@ -294,17 +324,18 @@ function Home() {
 
             <h1>
 
-              v0.1 Alpha
+              v0.2 Alpha
 
             </h1>
 
             <p>
 
-              Foundation Release
+              Workspace & AI Development Release
 
             </p>
 
           </div>
+
 
           <div className="progress-card">
 
@@ -320,15 +351,22 @@ function Home() {
 
               <li>✅ Express Backend</li>
 
-              <li>✅ MongoDB Database</li>
+              <li>✅ MongoDB Integration</li>
 
               <li>✅ AI Chat</li>
 
+              <li>✅ Session Management</li>
+
               <li>✅ Contact System</li>
+
+              <li>✅ AI Workspace</li>
+
+              <li>✅ Code Assistant</li>
 
             </ul>
 
           </div>
+
 
           <div className="progress-card">
 
@@ -340,23 +378,25 @@ function Home() {
 
             <ul>
 
-              <li>🚧 Image Generator</li>
+              <li>🚧 AI Image Generator</li>
 
-              <li>🚧 AI Workspace</li>
+              <li>🚧 Script Generator</li>
 
               <li>🚧 Authentication</li>
 
               <li>🚧 Cloud AI Models</li>
 
-              <li>🚧 Team Collaboration</li>
+              <li>🚧 Advanced Collaboration</li>
 
             </ul>
 
           </div>
 
+
         </div>
 
       </section>
+
 
       {/* ======================================
               ROADMAP
@@ -378,61 +418,77 @@ function Home() {
 
           </h2>
 
+          <p>
+
+            The roadmap will continue evolving as Enlivonex
+            moves from its Alpha foundation toward a complete
+            AI ecosystem.
+
+          </p>
+
         </div>
+
 
         <div className="roadmap-grid">
 
-          <div className="roadmap-card">
-
-            <h3>
-
-              🚀 v0.1
-
-            </h3>
-
-            <p>
-
-              AI Chat, Backend,
-              MongoDB Integration
-
-            </p>
-
-          </div>
 
           <div className="roadmap-card">
 
             <h3>
 
-              🎨 v0.2
+              🚀 v0.2
 
             </h3>
 
             <p>
 
-              Image Generation
-              using AI Models
+              AI Workspace,
+              Code Assistant
+              and platform refinement.
 
             </p>
 
           </div>
+
 
           <div className="roadmap-card">
 
             <h3>
 
-              ⚡ v0.5
+              🎨 v0.3
 
             </h3>
 
             <p>
 
-              Cloud AI,
-              Workspace &
-              Collaboration
+              AI Image Generation
+              and expanded creative
+              AI capabilities.
 
             </p>
 
           </div>
+
+
+          <div className="roadmap-card">
+
+            <h3>
+
+              🧠 v0.5
+
+            </h3>
+
+            <p>
+
+              Authentication,
+              cloud AI models,
+              advanced workspace
+              and collaboration.
+
+            </p>
+
+          </div>
+
 
           <div className="roadmap-card">
 
@@ -444,19 +500,22 @@ function Home() {
 
             <p>
 
-              Stable Public
-              Release
+              Stable public release
+              of the Enlivonex AI Hub
+              ecosystem.
 
             </p>
 
           </div>
 
+
         </div>
 
       </section>
 
+
       {/* ======================================
-              FINAL CTA
+              FINAL CTA / VISION
       ======================================= */}
 
       <section className="vision-section">
@@ -469,21 +528,24 @@ function Home() {
 
           </span>
 
+
           <h2>
 
             Beyond an AI Platform
 
           </h2>
 
+
           <p>
 
             Enlivonex AI Hub is only the beginning.
-            Our long-term vision is to build a complete
-            ecosystem of AI software, developer tools,
-            cloud services and future hardware products
-            that empower millions of creators worldwide.
+            The long-term vision is to create a complete
+            technology ecosystem combining AI software,
+            developer tools, collaborative workspaces,
+            cloud services and future hardware products.
 
           </p>
+
 
           <div className="vision-buttons">
 
@@ -492,6 +554,7 @@ function Home() {
               Join Our Journey
 
             </button>
+
 
             <button className="secondary-btn">
 
@@ -504,6 +567,7 @@ function Home() {
         </div>
 
       </section>
+
 
     </div>
 

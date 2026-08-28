@@ -15,6 +15,7 @@ Layout
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import EnlivonexCursor from "./components/enlivonexCursor.js";
 
 /*
 ==================================
@@ -56,143 +57,122 @@ function AppContent() {
     */
 
     const hideLayout = [
-
         "/login",
         "/register",
         "/workspace"
-
     ].includes(location.pathname);
 
     return (
 
         <div className="app">
 
+            {/* 
+            ==================================
+            ENLIVONEX CUSTOM CURSOR
+            ==================================
+            
+            Mounted globally so the E / Enlivonex
+            cursor works across the entire application.
+            */}
+
+            <EnlivonexCursor />
+
             {
-
                 !hideLayout &&
-
                 <Navbar />
-
             }
 
             <main className="page-container">
 
                 <Routes>
 
-                    {/* Home */}
+                    {/* ==================================
+                        HOME
+                    ================================== */}
 
                     <Route
-
                         path="/"
-
                         element={<Home />}
-
                     />
 
-                    {/* Website */}
+                    {/* ==================================
+                        WEBSITE PAGES
+                    ================================== */}
 
                     <Route
-
                         path="/about"
-
                         element={<About />}
-
                     />
 
                     <Route
-
                         path="/features"
-
                         element={<FeaturesPage />}
-
                     />
 
                     <Route
-
                         path="/contact"
-
                         element={<Contact />}
-
                     />
 
-                    {/* Authentication */}
+                    {/* ==================================
+                        AUTHENTICATION
+                    ================================== */}
 
                     <Route
-
                         path="/login"
-
                         element={<Login />}
-
                     />
 
                     <Route
-
                         path="/register"
-
                         element={<Register />}
-
                     />
 
                     <Route
-
                         path="/profile"
-
                         element={<Profile />}
-
                     />
 
-                    {/* Workspace */}
+                    {/* ==================================
+                        WORKSPACE
+                    ================================== */}
 
                     <Route
-
                         path="/workspace"
-
                         element={<WorkspaceDashboard />}
-
                     />
 
-                    {/* Dashboard */}
+                    {/* ==================================
+                        DASHBOARD
+                    ================================== */}
 
                     <Route
-
                         path="/dashboard"
-
                         element={<Dashboard />}
-
                     />
 
-                    {/* AI Tools */}
+                    {/* ==================================
+                        AI TOOLS
+                    ================================== */}
 
                     <Route
-
                         path="/chat"
-
                         element={<Chat />}
-
                     />
 
                     <Route
-
                         path="/code"
-
                         element={<CodeAssistant />}
-
                     />
 
                     <Route
-
                         path="/image"
-
                         element={<ImageGenerator />}
-
                     />
 
                     <Route
-
                         path="/script"
-
                         element={<ScriptGenerator />}
-
                     />
 
                 </Routes>
@@ -200,22 +180,18 @@ function AppContent() {
             </main>
 
             {
-
                 !hideLayout &&
-
                 <Footer />
-
             }
 
         </div>
 
     );
-
 }
 
 /*
 ==================================
-App
+APP
 ==================================
 */
 

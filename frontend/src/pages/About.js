@@ -1,344 +1,647 @@
 import "./About.css";
 
 function About() {
+  const progress = [
+    "✅ Responsive React Frontend",
+    "✅ Express Backend APIs",
+    "✅ MongoDB Database",
+    "✅ AI Chat with Ollama",
+    "✅ Session Management",
+    "✅ Contact System",
+    "✅ Workspace Dashboard",
+    "✅ Team Workspace",
+    "✅ Workspace Projects",
+    "✅ Workspace Sessions",
+    "✅ Workspace Member Management",
+    "✅ Workspace Sharing",
+    "✅ Workspace Usage Tracking",
+    "✅ AI Code Assistant",
+    "🚧 Authentication & advanced security",
+    "🚧 Cloud AI Models",
+    "🚧 AI Image Generator",
+    "🚧 Script Generator",
+  ];
+
+  const roadmap = [
+    "🚀 v0.1 — AI Chat Foundation",
+    "⚡ v0.2 — AI Workspace & Collaboration",
+    "💻 v0.3 — Advanced Code Assistant",
+    "🎨 v0.4 — Image Generation",
+    "📝 v0.5 — Script Generator",
+    "🔐 v0.6 — Authentication & User Accounts",
+    "☁️ v0.7 — Cloud AI Models",
+    "🌍 v0.8 — Community & Collaboration",
+    "💎 v0.9 — Premium AI Hub",
+    "🏆 v1.0 — Stable Public Release",
+  ];
+
+  const tech = [
+    "⚛ React.js",
+    "🟢 Node.js",
+    "🚂 Express.js",
+    "🍃 MongoDB",
+    "🤖 Ollama",
+    "💻 JavaScript",
+    "🔗 REST APIs",
+    "🐙 Git & GitHub",
+  ];
 
   return (
-
     <section className="about-page">
 
       {/* =======================================
-                HERO SECTION
+          HERO
       ======================================== */}
 
       <div className="about-hero">
 
-        <h1>🚀 About Enlivonex AI Hub</h1>
+        <span className="about-kicker">
+          ENLIVONEX AI HUB • PROJECT INFORMATION
+        </span>
+
+        <h1>
+          🚀 About Enlivonex AI Hub
+        </h1>
 
         <p className="about-intro">
-
-          Enlivonex AI Hub is an AI-powered productivity platform created to
-          bring multiple Artificial Intelligence tools into one seamless
-          workspace. We believe AI should be affordable, accessible and useful
-          for everyone — from students and developers to creators and future
-          innovators.
-
+          Enlivonex AI Hub is an AI-powered productivity platform
+          designed to bring intelligent tools, development assistance
+          and collaborative workspaces into one unified ecosystem.
         </p>
+
+        <div className="about-version-row">
+
+          <span className="about-version-badge">
+            VERSION 0.2 ALPHA
+          </span>
+
+          <span className="about-status-badge">
+            <span className="about-status-dot"></span>
+            Active Development
+          </span>
+
+        </div>
 
       </div>
 
+
       {/* =======================================
-                STATS
+          STATS
       ======================================== */}
 
       <div className="about-stats">
 
         <div className="stat-card">
 
-          <h2>0.1</h2>
+          <span className="stat-icon">
+            ⚡
+          </span>
 
-          <p>Current Version</p>
+          <h2>
+            0.2
+          </h2>
 
-        </div>
-
-        <div className="stat-card">
-
-          <h2>8+</h2>
-
-          <p>Planned AI Tools</p>
-
-        </div>
-
-        <div className="stat-card">
-
-          <h2>24/7</h2>
-
-          <p>Development</p>
+          <p>
+            Current Version
+          </p>
 
         </div>
 
+
         <div className="stat-card">
 
-          <h2>∞</h2>
+          <span className="stat-icon">
+            🤖
+          </span>
 
-          <p>Future Possibilities</p>
+          <h2>
+            4+
+          </h2>
+
+          <p>
+            AI Capabilities
+          </p>
+
+        </div>
+
+
+        <div className="stat-card">
+
+          <span className="stat-icon">
+            👥
+          </span>
+
+          <h2>
+            Team
+          </h2>
+
+          <p>
+            Workspace Support
+          </p>
+
+        </div>
+
+
+        <div className="stat-card">
+
+          <span className="stat-icon">
+            ∞
+          </span>
+
+          <h2>
+            Future
+          </h2>
+
+          <p>
+            Possibilities
+          </p>
 
         </div>
 
       </div>
 
+
       {/* =======================================
-                MAIN CARDS
+          MAIN INFORMATION
       ======================================== */}
 
       <div className="about-container">
 
-        {/* Mission */}
 
-        <div className="about-card">
+        {/* ===================================
+            MISSION
+        ==================================== */}
 
-          <h2>🎯 Our Mission</h2>
+        <div className="about-card about-card-featured">
+
+          <div className="about-card-icon">
+            🎯
+          </div>
+
+          <span className="about-card-label">
+            PURPOSE
+          </span>
+
+          <h2>
+            Our Mission
+          </h2>
 
           <p>
+            Our mission is to make Artificial Intelligence easier
+            to access and use by bringing multiple AI capabilities
+            into one practical workspace.
+          </p>
 
-            Our mission is to simplify Artificial Intelligence by creating
-            one platform where users can access AI Chat, Coding Assistance,
-            Image Generation, Script Writing and many future AI services
-            without switching between multiple websites.
-
+          <p>
+            Enlivonex AI Hub is being designed for students,
+            developers, creators, entrepreneurs and anyone who
+            wants to learn, create and experiment with AI.
           </p>
 
         </div>
 
-        {/* Vision */}
+
+        {/* ===================================
+            VISION
+        ==================================== */}
 
         <div className="about-card">
 
-          <h2>🌍 Our Vision</h2>
+          <div className="about-card-icon">
+            🌍
+          </div>
+
+          <span className="about-card-label">
+            LONG-TERM VISION
+          </span>
+
+          <h2>
+            Our Vision
+          </h2>
 
           <p>
-
             Enlivonex AI Hub is only the beginning.
+          </p>
 
-            <br /><br />
-
-            Our long-term vision is to build
-
+          <p>
+            The long-term vision is to build
             <strong> Enlivonex </strong>
-
-            into a global technology company focused on Artificial
-            Intelligence, innovative software, operating systems and
-            modular smartphone technology.
-
+            into a technology ecosystem focused on Artificial
+            Intelligence, developer tools, software, operating
+            systems and future hardware innovation.
           </p>
 
         </div>
 
-        {/* Why */}
+
+        {/* ===================================
+            WHY
+        ==================================== */}
 
         <div className="about-card">
 
-          <h2>💡 Why Enlivonex?</h2>
+          <div className="about-card-icon">
+            💡
+          </div>
+
+          <span className="about-card-label">
+            THE IDEA
+          </span>
+
+          <h2>
+            Why Enlivonex?
+          </h2>
 
           <p>
+            Modern AI tools are often separated across different
+            platforms and services.
+          </p>
 
-            Most AI platforms provide only one specific feature.
-
-            <br /><br />
-
-            Enlivonex aims to combine multiple AI capabilities into one
-            powerful ecosystem, making productivity faster, simpler and
-            smarter.
-
+          <p>
+            Enlivonex aims to create one ecosystem where users can
+            chat with AI, work on code, manage projects and
+            collaborate without constantly switching platforms.
           </p>
 
         </div>
 
-        {/* Founder */}
+
+        {/* ===================================
+            FOUNDER
+        ==================================== */}
 
         <div className="about-card">
 
-          <h2>👨‍💻 Founder</h2>
+          <div className="about-card-icon">
+            👨‍💻
+          </div>
+
+          <span className="about-card-label">
+            CREATOR
+          </span>
+
+          <h2>
+            Founder
+          </h2>
 
           <p>
+            <strong>
+              Sagar Kunte
+            </strong>
+          </p>
 
-            <strong>Sagar Kunte</strong>
-
-            <br /><br />
-
+          <p>
             Student Developer • AI Enthusiast • Future Entrepreneur
-
-            <br /><br />
-
-            Building Enlivonex with the vision of creating useful,
-            affordable and future-ready AI products for everyone.
-
           </p>
-
-        </div>
-
-        {/* Version */}
-
-        <div className="about-card">
-
-          <h2>📌 Current Version</h2>
 
           <p>
-
-            <strong>Version 0.1 Alpha</strong>
-
-            <br /><br />
-
-            This release establishes the foundation of the platform with
-
-            React Frontend,
-
-            Express Backend,
-
-            MongoDB Database,
-
-            AI Chat,
-
-            Session Management
-
-            and Contact System.
-
+            Enlivonex is being developed with the goal of creating
+            useful, affordable and future-ready technology products.
           </p>
 
         </div>
 
-        {/* Progress */}
+
+        {/* ===================================
+            VERSION
+        ==================================== */}
+
+        <div className="about-card about-card-wide">
+
+          <div className="about-card-icon">
+            🚀
+          </div>
+
+          <span className="about-card-label">
+            CURRENT RELEASE
+          </span>
+
+          <h2>
+            Version 0.2 Alpha
+          </h2>
+
+          <p>
+            Version 0.2 represents a major step beyond the original
+            foundation release.
+          </p>
+
+          <div className="release-highlights">
+
+            <div>
+              <strong>
+                Workspace
+              </strong>
+
+              <span>
+                Collaborative team environment
+              </span>
+            </div>
+
+            <div>
+              <strong>
+                Projects
+              </strong>
+
+              <span>
+                Workspace project organization
+              </span>
+            </div>
+
+            <div>
+              <strong>
+                AI Sessions
+              </strong>
+
+              <span>
+                Workspace-based AI conversations
+              </span>
+            </div>
+
+            <div>
+              <strong>
+                Code Assistant
+              </strong>
+
+              <span>
+                AI-powered development assistance
+              </span>
+            </div>
+
+            <div>
+              <strong>
+                Sharing
+              </strong>
+
+              <span>
+                Workspace resource sharing
+              </span>
+            </div>
+
+            <div>
+              <strong>
+                Usage
+              </strong>
+
+              <span>
+                Workspace usage information
+              </span>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        {/* ===================================
+            PROGRESS
+        ==================================== */}
 
         <div className="about-card">
 
-          <h2>📈 Development Progress</h2>
+          <div className="about-card-icon">
+            📈
+          </div>
+
+          <span className="about-card-label">
+            DEVELOPMENT
+          </span>
+
+          <h2>
+            Development Progress
+          </h2>
 
           <ul className="progress-list">
 
-            <li>✅ Responsive React Frontend</li>
-
-            <li>✅ Express Backend APIs</li>
-
-            <li>✅ MongoDB Database</li>
-
-            <li>✅ AI Chat (Ollama)</li>
-
-            <li>✅ Session Management</li>
-
-            <li>✅ Contact Form Database</li>
-
-            <li>🚧 AI Image Generator</li>
-
-            <li>🚧 Script Generator</li>
-
-            <li>🚧 Authentication</li>
-
-            <li>🚧 Cloud AI Models</li>
+            {progress.map((item, index) => (
+              <li key={index}>
+                {item}
+              </li>
+            ))}
 
           </ul>
 
         </div>
 
-        {/* Roadmap */}
 
-        <div className="about-card">
+        {/* ===================================
+            ROADMAP
+        ==================================== */}
 
-          <h2>🛣 Product Roadmap</h2>
+        <div className="about-card about-card-wide">
 
-          <ul className="roadmap-list">
+          <div className="about-card-icon">
+            🛣
+          </div>
 
-            <li>🚀 v0.1 — AI Chat & MongoDB</li>
+          <span className="about-card-label">
+            WHAT COMES NEXT
+          </span>
 
-            <li>🚀 v0.2 — Image Generation</li>
+          <h2>
+            Product Roadmap
+          </h2>
 
-            <li>🚀 v0.3 — Code Assistant</li>
+          <div className="roadmap-list">
 
-            <li>🚀 v0.4 — Script Generator</li>
+            {roadmap.map((item, index) => {
 
-            <li>🚀 v0.5 — Authentication</li>
+              const [version, ...description] =
+                item.split(" — ");
 
-            <li>🚀 v0.6 — Cloud AI Models</li>
+              return (
+                <div
+                  className={
+                    `roadmap-item ${
+                      index === 1
+                        ? "current"
+                        : ""
+                    }`
+                  }
+                  key={index}
+                >
 
-            <li>🚀 v0.7 — AI Workspace</li>
+                  <span className="roadmap-number">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
 
-            <li>🚀 v0.8 — Community Features</li>
+                  <div>
 
-            <li>🚀 v0.9 — Premium AI Hub</li>
+                    <strong>
+                      {version}
+                    </strong>
 
-            <li>🏆 v1.0 — Stable Public Release</li>
+                    <p>
+                      {description.join(" — ")}
+                    </p>
 
-          </ul>
+                  </div>
+
+                </div>
+              );
+
+            })}
+
+          </div>
 
         </div>
 
-        {/* Tech Stack */}
+
+        {/* ===================================
+            TECH STACK
+        ==================================== */}
 
         <div className="about-card">
 
-          <h2>⚙ Technology Stack</h2>
+          <div className="about-card-icon">
+            ⚙
+          </div>
 
-          <ul className="progress-list">
+          <span className="about-card-label">
+            ENGINEERING
+          </span>
 
-            <li>⚛ React.js</li>
+          <h2>
+            Technology Stack
+          </h2>
 
-            <li>🟢 Node.js</li>
+          <div className="tech-list">
 
-            <li>🚂 Express.js</li>
+            {tech.map((item, index) => (
+              <span
+                className="tech-pill"
+                key={index}
+              >
+                {item}
+              </span>
+            ))}
 
-            <li>🍃 MongoDB</li>
-
-            <li>🤖 Ollama AI</li>
-
-            <li>💻 JavaScript</li>
-
-            <li>🔗 REST APIs</li>
-
-            <li>🐙 Git & GitHub</li>
-
-          </ul>
+          </div>
 
         </div>
 
-        {/* Open Source */}
+
+        {/* ===================================
+            OPEN DEVELOPMENT
+        ==================================== */}
 
         <div className="about-card">
 
-          <h2>🌐 Open Source</h2>
+          <div className="about-card-icon">
+            🌐
+          </div>
+
+          <span className="about-card-label">
+            DEVELOPMENT MODEL
+          </span>
+
+          <h2>
+            Open Development
+          </h2>
 
           <p>
+            Enlivonex AI Hub is being developed as an evolving
+            technology project where every version represents
+            a new stage of learning, experimentation and improvement.
+          </p>
 
-            Enlivonex AI Hub is being built publicly.
-
-            Every version represents our journey,
-            improvements and learning process.
-
-            Future developers and contributors will be
-            able to participate in making the platform
-            even better.
-
+          <p>
+            The project will continue to evolve as new AI
+            capabilities, collaboration systems and developer
+            tools are introduced.
           </p>
 
         </div>
 
-        {/* Contact */}
 
-        <div className="about-card">
+        {/* ===================================
+            CONTACT
+        ==================================== */}
 
-          <h2>📧 Official Contact</h2>
+        <div className="about-card about-card-contact">
 
-          <p>
+          <div className="about-card-icon">
+            📧
+          </div>
 
-            <strong>Email</strong>
+          <span className="about-card-label">
+            CONNECT
+          </span>
 
-            <br />
+          <h2>
+            Official Contact
+          </h2>
 
-            enlivonexofficial@gmail.com
+          <div className="contact-info">
 
-            <br /><br />
+            <div>
+              <span>
+                Email
+              </span>
 
-            <strong>GitHub</strong>
+              <strong>
+                enlivonexofficial@gmail.com
+              </strong>
+            </div>
 
-            <br />
 
-            github.com/Enlivonex
+            <div>
+              <span>
+                GitHub
+              </span>
 
-            <br /><br />
+              <strong>
+                github.com/Enlivonex
+              </strong>
+            </div>
 
-            <strong>Status</strong>
 
-            <br />
+            <div>
+              <span>
+                Status
+              </span>
 
-            🚀 Active Development
+              <strong className="contact-active">
+                🚀 Active Development
+              </strong>
+            </div>
 
-          </p>
+          </div>
 
         </div>
 
       </div>
 
+
+      {/* =======================================
+          FINAL VISION
+      ======================================== */}
+
+      <div className="about-final">
+
+        <span>
+          🌌 ENLIVONEX
+        </span>
+
+        <h2>
+          Building More Than an AI Platform.
+        </h2>
+
+        <p>
+          From AI software to developer tools and future
+          technology products, Enlivonex is being built
+          step by step toward a larger vision.
+        </p>
+
+        <div className="about-final-line"></div>
+
+        <small>
+          Version 0.2 Alpha • Active Development
+        </small>
+
+      </div>
+
     </section>
-
   );
-
 }
 
 export default About;
