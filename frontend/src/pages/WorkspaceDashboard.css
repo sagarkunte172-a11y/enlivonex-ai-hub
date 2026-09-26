@@ -2736,6 +2736,32 @@
     cursor: wait;
 }
 
+.workspace-code-history {
+    margin-bottom: 24px;
+}
+
+.workspace-history-button,
+.workspace-code-share button {
+    padding: 8px 12px;
+    color: #dceeff;
+    background: #26364f;
+    border: 1px solid #354158;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.workspace-history-button {
+    margin: 0 8px 8px 0;
+}
+
+.workspace-code-share {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 16px;
+}
+
 .workspace-usage-row span:last-child {
     margin-left:
         auto;

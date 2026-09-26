@@ -10,6 +10,7 @@ async function recordWorkspaceUsage({
     workspaceId,
     userId,
     sessionId,
+    codeConversationId,
     model,
     input,
     output
@@ -21,6 +22,7 @@ async function recordWorkspaceUsage({
         workspaceId,
         userId,
         sessionId,
+        codeConversationId: codeConversationId || null,
         model,
         inputTokens,
         outputTokens,

@@ -34,7 +34,11 @@ import {
 
 import {
     CODE_ASSISTANT_MODELS,
-    sendCodeAssistant
+    sendCodeAssistant,
+    createCodeConversation,
+    getCodeConversations,
+    getCodeConversation,
+    shareCodeConversation
 } from "../services/api";
 
 
@@ -107,6 +111,11 @@ function WorkspaceDashboard() {
 
     const [workspaceCodeSessionId, setWorkspaceCodeSessionId] =
         useState("");
+    const [workspaceCodeScope, setWorkspaceCodeScope] = useState("");
+    const [workspaceCodeHistory, setWorkspaceCodeHistory] = useState([]);
+    const [workspaceSharedCodeHistory, setWorkspaceSharedCodeHistory] = useState([]);
+    const [workspaceCodePermission, setWorkspaceCodePermission] = useState("owner");
+    const [workspaceCodeCanShare, setWorkspaceCodeCanShare] = useState(true);
 
     const [role, setRole] =
         useState("member");
@@ -205,6 +214,9 @@ function WorkspaceDashboard() {
                         projectData.projects ||
                         []
                     );
+                    setProjectId((current) =>
+                        (projectData.projects || []).some((project) => project._id === current) ? current : ""
+                    );
 
                     setSessions(
                         sessionData.sessions ||
@@ -278,6 +290,16 @@ function WorkspaceDashboard() {
             loadSpaces();
         }
     }, [loadSpaces]);
+
+    useEffect(() => {
+        if (tab !== "code" || !activeId) return;
+        getCodeConversations({ scope: "mine", workspaceId: activeId, projectId: projectId || undefined })
+            .then((data) => setWorkspaceCodeHistory(data.conversations || []))
+            .catch(() => setWorkspaceCodeHistory([]));
+        getCodeConversations({ scope: "shared", workspaceId: activeId, projectId: projectId || undefined })
+            .then((data) => setWorkspaceSharedCodeHistory(data.conversations || []))
+            .catch(() => setWorkspaceSharedCodeHistory([]));
+    }, [tab, activeId, projectId]);
 
 
     /* ==================================
@@ -1032,35 +1054,27 @@ function WorkspaceDashboard() {
 
 
         try {
-            let sessionId =
+            let conversationId =
                 workspaceCodeSessionId;
 
-
-            if (!sessionId) {
-                const data =
-                    await createWorkspaceSession(
-                        activeId,
-                        "Workspace Code Assistant",
-                        projectId || null,
-                        "coding"
-                    );
+            const requestedScope = `${activeId}:${projectId || ""}`;
+            if (workspaceCodeScope && workspaceCodeScope !== requestedScope) {
+                conversationId = "";
+                setWorkspaceCodeSessionId("");
+            }
 
 
-                sessionId =
-                    data.session._id;
-
-
-                setWorkspaceCodeSessionId(
-                    sessionId
-                );
-
-
-                setSessions(
-                    (current) => [
-                        data.session,
-                        ...current
-                    ]
-                );
+            if (!conversationId) {
+                const data = await createCodeConversation({
+                    workspaceId: activeId,
+                    projectId: projectId || null,
+                    title: "Workspace Code Assistant"
+                });
+                conversationId = data.conversation._id;
+                setWorkspaceCodeSessionId(conversationId);
+                setWorkspaceCodeScope(requestedScope);
+                setWorkspaceCodePermission("owner");
+                setWorkspaceCodeCanShare(true);
             }
 
 
@@ -1080,9 +1094,9 @@ ${workspaceCode.trim() ||
                     (answer) =>
                         setWorkspaceCodeResponse(
                             answer
-                        ),
+                    ),
                     workspaceCodeModel,
-                    sessionId
+                    conversationId
                 );
 
 
@@ -1093,7 +1107,7 @@ ${workspaceCode.trim() ||
 
 
             setStatus(
-                "Code Assistant response saved to this workspace session."
+                "Code Assistant response saved to Code Assistant history."
             );
 
         } catch (error) {
@@ -1103,6 +1117,36 @@ ${workspaceCode.trim() ||
 
         } finally {
             setBusy(false);
+        }
+    }
+
+    async function openWorkspaceCodeConversation(conversationId) {
+        try {
+            const data = await getCodeConversation(conversationId);
+            setWorkspaceCodeSessionId(data.conversation._id);
+            setWorkspaceCodeScope(`${data.conversation.workspaceId || ""}:${data.conversation.projectId || ""}`);
+            setProjectId(data.conversation.projectId || "");
+            setWorkspaceCodePermission(data.permission);
+            setWorkspaceCodeCanShare(Boolean(data.canShare));
+            const lastAnswer = [...(data.conversation.messages || [])].reverse().find((message) => message.role === "assistant");
+            setWorkspaceCodeResponse(lastAnswer?.content || "");
+            setStatus(data.permission === "view" ? "Opened shared Code Assistant history (view only)." : "Code Assistant history opened.");
+        } catch (error) {
+            setStatus("This Code Assistant conversation is unavailable or you no longer have access.");
+        }
+    }
+
+    async function shareWorkspaceCodeConversation() {
+        if (!workspaceCodeSessionId || !shareTargets.length) {
+            setStatus("Choose workspace members to share this Code Assistant chat with.");
+            return;
+        }
+        try {
+            await shareCodeConversation(workspaceCodeSessionId, shareTargets, "view");
+            setShareTargets([]);
+            setStatus("Code Assistant chat shared.");
+        } catch (error) {
+            setStatus("Unable to share this Code Assistant chat.");
         }
     }
 
@@ -1864,6 +1908,9 @@ Type the workspace name to confirm:`
                                                 setProjectId(
                                                     project._id
                                                 );
+                                                setWorkspaceCodeSessionId("");
+                                                setWorkspaceCodeScope("");
+                                                setWorkspaceCodePermission("owner");
 
                                                 setTab(
                                                     "chats"
@@ -2288,6 +2335,19 @@ Type the workspace name to confirm:`
                 {tab === "code" && (
                     <section className="workspace-section">
 
+                        <div className="workspace-code-history">
+                            <div className="workspace-section-title"><div><span>CODE ASSISTANT</span><h2>My Code Chats</h2></div></div>
+                            <div className="workspace-share-list">
+                                {workspaceCodeHistory.map((chat) => <button className="workspace-history-button" type="button" key={chat._id} onClick={() => openWorkspaceCodeConversation(chat._id)}>{chat.title}{chat.projectId ? ` · Project ${String(chat.projectId).slice(-6)}` : ""}</button>)}
+                                {!workspaceCodeHistory.length && <small>No Code Assistant chats in this project yet.</small>}
+                            </div>
+                            <div className="workspace-section-title"><div><span>TEAM EXCHANGE</span><h2>Shared Code Chats</h2></div></div>
+                            <div className="workspace-share-list">
+                                {workspaceSharedCodeHistory.map((chat) => <button className="workspace-history-button" type="button" key={chat._id} onClick={() => openWorkspaceCodeConversation(chat._id)}>{chat.title}{chat.projectId ? ` · Project ${String(chat.projectId).slice(-6)}` : ""}</button>)}
+                                {!workspaceSharedCodeHistory.length && <small>No shared Code Assistant chats.</small>}
+                            </div>
+                        </div>
+
                         <div className="workspace-section-title">
 
                             <div>
@@ -2401,12 +2461,25 @@ Type the workspace name to confirm:`
                                     onClick={
                                         runWorkspaceCodeAssistant
                                     }
-                                    disabled={busy}
+                                    disabled={busy || workspaceCodePermission === "view"}
                                 >
                                     {busy
                                         ? "Analyzing..."
                                         : "Run Code Assistant"}
                                 </button>
+
+                                {workspaceCodeSessionId && workspaceCodeCanShare && (
+                                    <div className="workspace-code-share">
+                                        <strong>Share this Code Assistant chat</strong>
+                                        {details?.members?.map((member) => (
+                                            <label key={member.userId}>
+                                                <input type="checkbox" checked={shareTargets.includes(member.userId)} onChange={() => toggleShareTarget(member.userId)} />
+                                                {member.alias || member.username}
+                                            </label>
+                                        ))}
+                                        <button type="button" onClick={shareWorkspaceCodeConversation}>Share selected</button>
+                                    </div>
+                                )}
 
                             </div>
 
@@ -2420,7 +2493,7 @@ Type the workspace name to confirm:`
                                     </span>
 
                                     <small>
-                                        Workspace session
+                                        {workspaceCodePermission === "view" ? "Shared · view only" : "Code Assistant history"}
                                     </small>
 
                                 </div>

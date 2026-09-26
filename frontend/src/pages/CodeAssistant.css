@@ -383,6 +383,46 @@
     }
 }
 
+.code-history {
+    margin: 0 0 24px;
+    padding: 18px;
+    background: #202b40;
+    border: 1px solid #303d55;
+    border-radius: 12px;
+}
+
+.code-history > div {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.code-history h2 {
+    margin: 0 12px 8px 0;
+    color: #dce5f5;
+    font-size: 16px;
+}
+
+.code-history-list {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 0 0 12px;
+}
+
+.code-history button,
+.code-history button {
+    padding: 8px 12px;
+    color: #dceeff;
+    background: #26364f;
+    border: 1px solid #354158;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+
 .model-badge select {
     border: 0;
     outline: 0;

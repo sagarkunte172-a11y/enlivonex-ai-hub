@@ -515,7 +515,7 @@ export async function sendCodeAssistant(
     prompt,
     onChunk,
     selectedModel = "qwen2.5-coder:7b",
-    sessionId = null,
+    conversationId = null,
     signal
 ) {
     if (
@@ -567,7 +567,7 @@ export async function sendCodeAssistant(
 
                     model,
 
-                    sessionId
+                    conversationId
                 }),
 
                 signal
@@ -700,4 +700,31 @@ export async function sendCodeAssistant(
         answer,
         model: modelInfo
     };
+}
+
+export async function createCodeConversation(options = {}) {
+    return apiRequest("/code-assistant/conversations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(options)
+    }).then((response) => response.json());
+}
+
+export async function getCodeConversations({ scope = "mine", workspaceId, projectId } = {}) {
+    const params = new URLSearchParams({ scope });
+    if (workspaceId) params.set("workspaceId", workspaceId);
+    if (projectId) params.set("projectId", projectId);
+    return apiRequest(`/code-assistant/conversations?${params.toString()}`).then((response) => response.json());
+}
+
+export async function getCodeConversation(conversationId) {
+    return apiRequest(`/code-assistant/conversations/${encodeURIComponent(conversationId)}`).then((response) => response.json());
+}
+
+export async function shareCodeConversation(conversationId, sharedWith, permission = "view") {
+    return apiRequest(`/code-assistant/conversations/${encodeURIComponent(conversationId)}/share`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sharedWith, permission })
+    }).then((response) => response.json());
 }

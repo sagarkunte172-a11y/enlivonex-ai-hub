@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./CodeAssistant.css";
 
 import {
-    sendCodeAssistant
+    sendCodeAssistant,
+    createCodeConversation,
+    getCodeConversations,
+    getCodeConversation
 } from "../services/api";
 
 function CodeAssistant() {
@@ -12,6 +15,43 @@ function CodeAssistant() {
     const [response, setResponse] = useState("");
     const [loading, setLoading] = useState(false);
     const [model, setModel] = useState("qwen2.5-coder:7b");
+    const [conversationId, setConversationId] = useState("");
+    const [permission, setPermission] = useState("owner");
+    const [myChats, setMyChats] = useState([]);
+    const [sharedChats, setSharedChats] = useState([]);
+    const [historyError, setHistoryError] = useState("");
+
+    async function loadHistory() {
+        try {
+            const [mine, shared] = await Promise.all([
+                getCodeConversations({ scope: "mine" }),
+                getCodeConversations({ scope: "shared" })
+            ]);
+            setMyChats(mine.conversations || []);
+            setSharedChats(shared.conversations || []);
+            setHistoryError("");
+        } catch (error) {
+            setHistoryError("Unable to load Code Assistant history.");
+        }
+    }
+
+    useEffect(() => { loadHistory(); }, []);
+
+    async function openConversation(id) {
+        try {
+            const data = await getCodeConversation(id);
+            setConversationId(data.conversation._id);
+            setPermission(data.permission);
+            const entries = data.conversation.messages || [];
+            const lastUser = [...entries].reverse().find((item) => item.role === "user");
+            const lastAssistant = [...entries].reverse().find((item) => item.role === "assistant");
+            setInstruction(lastUser?.content || "");
+            setResponse(lastAssistant?.content || "");
+            setHistoryError("");
+        } catch (error) {
+            setHistoryError("This Code Assistant conversation is unavailable or you no longer have access.");
+        }
+    }
 
     const MODEL_NAME = model === "qwen2.5-coder:14b-instruct"
         ? "Qwen 2.5 Coder 14B"
@@ -37,17 +77,26 @@ ${code.trim() ||
         `.trim();
 
         try {
+            let activeConversationId = conversationId;
+            if (!activeConversationId) {
+                const created = await createCodeConversation({ title: instruction.trim().slice(0, 80) || "Code Assistant Chat" });
+                activeConversationId = created.conversation._id;
+                setConversationId(activeConversationId);
+                setPermission("owner");
+            }
             const result = await sendCodeAssistant(
                 prompt,
                 (liveResponse) => {
                     setResponse(liveResponse);
                 },
-                model
+                model,
+                activeConversationId
             );
 
             setResponse(
                 result.answer || ""
             );
+            await loadHistory();
         } catch (error) {
             setResponse(`❌ ${error.message || "Unable to generate a response."}`);
         } finally {
@@ -62,6 +111,8 @@ ${code.trim() ||
         setCode("");
         setInstruction("");
         setResponse("");
+        setConversationId("");
+        setPermission("owner");
     }
 
     return (
@@ -101,6 +152,18 @@ ${code.trim() ||
                 </div>
 
             </header>
+
+            <section className="code-history">
+                <div><h2>My Code Chats</h2><button type="button" onClick={clearAssistant}>New chat</button></div>
+                {historyError && <p role="status">{historyError}</p>}
+                <div className="code-history-list">
+                    {myChats.map((chat) => <button type="button" key={chat._id} onClick={() => openConversation(chat._id)}>{chat.title}</button>)}
+                </div>
+                <div><h2>Shared Code Chats</h2></div>
+                <div className="code-history-list">
+                    {sharedChats.map((chat) => <button type="button" key={chat._id} onClick={() => openConversation(chat._id)}>{chat.title}</button>)}
+                </div>
+            </section>
 
 
             {/* WORKSPACE */}
@@ -169,7 +232,7 @@ Optimize this code for better performance.`}
                         <button
                             className="generate-button"
                             onClick={handleGenerate}
-                            disabled={loading}
+                            disabled={loading || permission === "view"}
                         >
                             {loading
                                 ? "⏳ Qwen is working..."

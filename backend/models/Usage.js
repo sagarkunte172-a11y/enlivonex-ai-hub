@@ -15,7 +15,12 @@ const usageSchema = new mongoose.Schema(
         sessionId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Session",
-            required: true
+            default: null
+        },
+        codeConversationId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "CodeConversation",
+            default: null
         },
         model: {
             type: String,
@@ -49,5 +54,6 @@ const usageSchema = new mongoose.Schema(
 
 usageSchema.index({ workspaceId: 1, userId: 1, createdAt: -1 });
 usageSchema.index({ workspaceId: 1, sessionId: 1, createdAt: -1 });
+usageSchema.index({ workspaceId: 1, codeConversationId: 1, createdAt: -1 });
 
 module.exports = mongoose.model("Usage", usageSchema);

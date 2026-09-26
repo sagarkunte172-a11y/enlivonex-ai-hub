@@ -9,7 +9,11 @@ const express =
 
 
 const {
-    codeAssistant
+    codeAssistant,
+    createConversation,
+    listConversations,
+    getConversation,
+    shareConversation
 } = require(
     "../controllers/codeAssistantController"
 );
@@ -44,6 +48,11 @@ router.post(
     requireAuth,
     codeAssistant
 );
+
+router.get("/code-assistant/conversations", requireAuth, listConversations);
+router.post("/code-assistant/conversations", requireAuth, createConversation);
+router.get("/code-assistant/conversations/:id", requireAuth, getConversation);
+router.post("/code-assistant/conversations/:id/share", requireAuth, shareConversation);
 
 
 /*
