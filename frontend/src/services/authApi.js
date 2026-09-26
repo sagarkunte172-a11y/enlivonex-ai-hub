@@ -9,29 +9,44 @@ Authentication API
 API BASE URL
 ==================================
 
-The backend runs on port 5000.
+The backend normally runs on port 5000.
 
-Instead of depending on a fixed LAN IP from
-.env, the frontend dynamically uses the
-current browser hostname.
+For local/LAN development, the API URL
+can still be generated from the current
+browser hostname.
 
-Examples:
+For public deployment/testing, the
+REACT_APP_API_URL environment variable
+takes priority.
 
-localhost:3000
-    ↓
-localhost:5000/api
+Example:
 
-192.168.1.29:3000
-    ↓
-192.168.1.29:5000/api
+Local:
+    http://localhost:3000
+        ↓
+    http://localhost:5000/api
 
-This keeps localhost and LAN access working
-without hardcoding the computer's IP.
+LAN:
+    http://192.168.1.29:3000
+        ↓
+    http://192.168.1.29:5000/api
+
+Public:
+    https://resumes-soft-grab-super.trycloudflare.com
+        ↓
+    https://state-strikes-lead-alter.trycloudflare.com/api
+
 ==================================
 */
 
+const configuredApiUrl =
+    process.env.REACT_APP_API_URL?.trim();
+
+
 const API_BASE_URL =
-    `${window.location.protocol}//${window.location.hostname}:5000/api`;
+    configuredApiUrl
+        ? configuredApiUrl.replace(/\/+$/, "")
+        : `${window.location.protocol}//${window.location.hostname}:5000/api`;
 
 
 /*
