@@ -169,6 +169,14 @@ async function chatWithAI(
                         "Forbidden: You do not have access to this session."
                 );
             }
+
+            if (access.shared && access.permission !== "edit") {
+                return sendError(
+                    res,
+                    403,
+                    "Forbidden: This shared session is view-only."
+                );
+            }
         }
 
         /*==================================

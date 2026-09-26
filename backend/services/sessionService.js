@@ -285,7 +285,9 @@ async function canAccessSession(userId, sessionId) {
 
     return {
         allowed: true,
-        session
+        session,
+        permission: share.permission || "view",
+        shared: true
     };
 }
 

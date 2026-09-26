@@ -58,6 +58,7 @@ function WorkspaceDashboard() {
     const [usage, setUsage] = useState([]);
     const [messages, setMessages] = useState([]);
     const [activeSession, setActiveSession] = useState(null);
+    const [activeSharePermission, setActiveSharePermission] = useState(null);
 
     const [tab, setTab] =
         useState("overview");
@@ -397,7 +398,8 @@ function WorkspaceDashboard() {
     ================================== */
 
     async function openSession(
-        sessionId
+        sessionId,
+        sharePermission = null
     ) {
         setBusy(true);
 
@@ -413,6 +415,8 @@ function WorkspaceDashboard() {
                 data.session
             );
 
+            setActiveSharePermission(sharePermission);
+
             setMessages(
                 data.messages ||
                 []
@@ -422,9 +426,38 @@ function WorkspaceDashboard() {
 
         } catch (error) {
             setStatus(
-                error.message
+                "This shared conversation is no longer available or you no longer have access to it."
             );
 
+        } finally {
+            setBusy(false);
+        }
+    }
+
+
+    async function startChatFromShare(share) {
+        if (share.resourceType !== "session" || !activeId) return;
+        setBusy(true);
+        try {
+            const sharedConversation = await switchWorkspaceSession(share.resourceId);
+            const data = await createWorkspaceSession(
+                activeId,
+                "Chat from shared context",
+                null,
+                "general"
+            );
+            setSessions((current) => [data.session, ...current]);
+            await openSession(data.session._id);
+            const context = (sharedConversation.messages || [])
+                .slice(-20)
+                .map((message) => `${message.role === "assistant" ? "Assistant" : "User"}: ${String(message.content || "").slice(0, 3000)}`)
+                .join("\n\n");
+            if (context) {
+                setDraft(`Use this shared conversation as context for a new, separate chat:\n\n${context}\n\nMy question: `);
+            }
+            setStatus("New chat created with the shared conversation context. The original is unchanged.");
+        } catch (error) {
+            setStatus("Unable to start a new chat in this workspace.");
         } finally {
             setBusy(false);
         }
@@ -490,6 +523,7 @@ function WorkspaceDashboard() {
         if (
             !draft.trim() ||
             !activeSession ||
+            activeSharePermission === "view" ||
             busy
         ) {
             return;
@@ -2028,6 +2062,11 @@ Type the workspace name to confirm:`
                                                     activeSession.title
                                                 }
                                             </h2>
+                                            {activeSharePermission && (
+                                                <small className="workspace-muted">
+                                                    Shared conversation · {activeSharePermission} access
+                                                </small>
+                                            )}
                                         </div>
 
 
@@ -2180,6 +2219,10 @@ Type the workspace name to confirm:`
                                         }
                                     >
 
+                                        {activeSharePermission === "view" && (
+                                            <p className="workspace-muted">View only. You can read this conversation but cannot send messages.</p>
+                                        )}
+
                                         <input
                                             value={draft}
                                             onChange={
@@ -2194,7 +2237,7 @@ Type the workspace name to confirm:`
 
                                         <button
                                             type="submit"
-                                            disabled={busy}
+                                            disabled={busy || activeSharePermission === "view"}
                                         >
                                             Send
                                         </button>
@@ -2685,6 +2728,17 @@ Type the workspace name to confirm:`
                                                 share.resourceId
                                             }
                                         </small>
+
+                                        {share.resourceType === "session" && (
+                                            <div className="workspace-share-actions">
+                                                <button type="button" disabled={busy} onClick={() => openSession(share.resourceId, share.permission)}>
+                                                    {share.permission === "edit" ? "Continue conversation" : "Open"}
+                                                </button>
+                                                <button type="button" disabled={busy} onClick={() => startChatFromShare(share)}>
+                                                    Start new chat
+                                                </button>
+                                            </div>
+                                        )}
 
                                     </div>
                                 )

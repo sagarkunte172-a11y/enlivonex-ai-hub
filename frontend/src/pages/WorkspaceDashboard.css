@@ -2716,6 +2716,26 @@
         #8099af;
 }
 
+.workspace-share-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.workspace-share-actions button {
+    padding: 8px 11px;
+    border: 1px solid rgba(70, 199, 255, 0.22);
+    border-radius: 8px;
+    color: #cceeff;
+    background: rgba(70, 199, 255, 0.08);
+    cursor: pointer;
+}
+
+.workspace-share-actions button:disabled {
+    opacity: 0.55;
+    cursor: wait;
+}
+
 .workspace-usage-row span:last-child {
     margin-left:
         auto;
